@@ -1,23 +1,23 @@
 {
-  "name": "starter-ts",
+  "name": "modern-fontkit",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@8.14.1",
-  "description": "Starter template for TypeScript library",
+  "description": "Modern font kit",
   "author": "wxm",
   "license": "MIT",
-  "homepage": "https://github.com/qq15725/starter-ts",
+  "homepage": "https://github.com/qq15725/modern-fontkit",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qq15725/starter-ts.git"
+    "url": "git+https://github.com/qq15725/modern-fontkit.git"
   },
   "bugs": {
-    "url": "https://github.com/qq15725/starter-ts/issues"
+    "url": "https://github.com/qq15725/modern-fontkit/issues"
   },
   "keywords": [
-    "starter",
-    "template",
-    "typescript"
+    "modern-fontkit",
+    "font",
+    "kit"
   ],
   "sideEffects": false,
   "exports": {
@@ -58,7 +58,7 @@
     "conventional-changelog-cli": "^4.1.0",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.11",
-    "vitest": "^1.2.1"
+    "vite": "^5.1.5",
+    "vitest": "^1.3.1"
   }
 }

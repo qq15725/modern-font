@@ -6,9 +6,15 @@
 </head>
 <body>
 <script type="module">
-  import { one } from '../src'
-
-  console.log(one)
+  import { Ttf, Woff } from '../src'
+  const view = new DataView(buffer)
+  let ttf
+  if (Woff.is(view)) {
+    ttf = Ttf.from(new Woff(buffer).sfnt)
+  } else {
+    ttf = new Ttf(view)
+  }
+  console.log(ttf)
 </script>
 </body>
 </html>
