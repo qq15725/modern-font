@@ -5,7 +5,7 @@ export abstract class FontFile extends Entity {
 
   toBlob(): Blob {
     return new Blob(
-      new Uint8Array(this.buffer, this.byteOffset, this.byteLength),
+      [new Uint8Array(this.buffer, this.byteOffset, this.byteLength)],
       { type: this.mimeType },
     )
   }

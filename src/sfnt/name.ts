@@ -68,7 +68,7 @@ export class Name extends Entity {
   get nameRecords() {
     const count = this.count
     this.seek(6)
-    const nameRecords = []
+    const nameRecords: Array<Record<string, any>> = []
     for (let i = 0; i < count; ++i) {
       nameRecords.push({
         platform: this.readUint16(),
@@ -110,9 +110,9 @@ export class Name extends Entity {
         nameRecord.platform === platform
         && nameRecord.encoding === encoding
         && nameRecord.language === language
-        && nameId[nameRecord.nameId]
+        && (nameId as any)[nameRecord.nameId]
       ) {
-        names[nameId[nameRecord.nameId]] = language === 0
+        names[(nameId as any)[nameRecord.nameId]] = language === 0
           ? getUTF8String(nameRecord.name)
           : getUCS2String(nameRecord.name)
       }

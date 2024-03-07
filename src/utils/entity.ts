@@ -40,7 +40,7 @@ export class Entity extends DataView {
 
   static column(options: ColumnOptions) {
     const { size = 1, type } = options
-    return (target: Entity, name: PropertyKey) => {
+    return (target: any, name: PropertyKey) => {
       if (typeof name !== 'string') return
       let definition = entityDefinitions.get(target)
       if (!definition) {
@@ -70,14 +70,14 @@ export class Entity extends DataView {
   }
 
   static method() {
-    return function (target: Entity, name: PropertyKey) {
+    return function (target: any, name: PropertyKey) {
       Object.defineProperty(target.constructor.prototype, name, {
         get() {
           if (typeof name === 'string') {
             if (name.startsWith('read')) {
-              return (...args) => this.read(name.substring('read'.length).toLowerCase(), ...args)
+              return (...args: Array<any>) => this.read(name.substring('read'.length).toLowerCase(), ...args)
             } else if (name.startsWith('write')) {
-              return (...args) => this.write(name.substring('write'.length).toLowerCase(), ...args)
+              return (...args: Array<any>) => this.write(name.substring('write'.length).toLowerCase(), ...args)
             }
           }
           return undefined
@@ -137,7 +137,7 @@ export class Entity extends DataView {
     }
     const method = `get${ type.replace(/^\S/, s => s.toUpperCase()) }`
     const result = (this as any)[method](byteOffset, littleEndian)
-    this.cursor += dataTypeToByteLength[type]
+    this.cursor += (dataTypeToByteLength as any)[type]
     return result
   }
 
@@ -194,7 +194,7 @@ export class Entity extends DataView {
     }
     const method = `set${ type.replace(/^\S/, s => s.toUpperCase()) }`
     const result = (this as any)[method](byteOffset, value, littleEndian)
-    this.cursor += dataTypeToByteLength[type.toLowerCase()]
+    this.cursor += (dataTypeToByteLength as any)[type.toLowerCase()]
     return result
   }
 
@@ -223,7 +223,7 @@ export class Entity extends DataView {
     return this
   }
 
-  writeLongDateTime(value, byteOffset = this.cursor) {
+  writeLongDateTime(value: any, byteOffset = this.cursor) {
     const delta = -2077545600000
     if (typeof value === 'undefined') {
       value = delta

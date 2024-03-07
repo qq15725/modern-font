@@ -17,7 +17,7 @@ export class Sfnt {
     return (constructor: Function) => {
       this.registeredTable.set(tag, constructor)
       Object.defineProperty(this.prototype, tag, {
-        get() { return this.getTable(tag) },
+        get() { return this._getTable(tag) },
         configurable: true,
         enumerable: true,
       })
@@ -30,10 +30,10 @@ export class Sfnt {
     //
   }
 
-  getTable(tag: SfntTableTag): Entity | undefined {
-    const Table = Sfnt.registeredTable.get(tag)
+  protected _getTable(tag: SfntTableTag): Entity | undefined {
+    const Table = Sfnt.registeredTable.get(tag) as any
     if (Table) {
-      const view = this.tables.find(table => table.tag === tag).view
+      const view = this.tables.find(table => table.tag === tag)!.view
       return new Table(view) as any
     }
     return undefined
