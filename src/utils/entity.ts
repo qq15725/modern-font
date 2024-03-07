@@ -240,20 +240,20 @@ export class Entity extends DataView {
     return this
   }
 
-  writeBytes(value: ArrayBuffer | Array<number>, byteOffset = this.cursor): this {
-    if (value instanceof ArrayBuffer) {
-      const length = value.byteLength
-      const view = new DataView(value, 0, length)
-      for (let i = 0; i < length; ++i) {
-        this.setUint8(byteOffset + i, view.getUint8(i))
+  writeBytes(value: DataView | Array<number>, byteOffset = this.cursor): this {
+    let len
+    if (ArrayBuffer.isView(value)) {
+      len = value.byteLength
+      for (let i = 0; i < len; ++i) {
+        this.setUint8(byteOffset + i, value.getUint8(i))
       }
     } else {
-      const length = value.length
-      for (let i = 0; i < length; ++i) {
+      len = value.length
+      for (let i = 0; i < len; ++i) {
         this.setUint8(byteOffset + i, value[i])
       }
     }
-    this.cursor = byteOffset + length
+    this.cursor = byteOffset + len
     return this
   }
 

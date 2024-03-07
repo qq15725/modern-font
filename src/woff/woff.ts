@@ -7,7 +7,6 @@ import { WoffTableDirectoryEntry } from './woff-table-directory-entry'
 // https://www.w3.org/submissions/WOFF
 export class Woff extends FontFile {
   readonly mimeType = 'font/woff'
-
   @Entity.column({ type: 'uint32' }) declare signature: number
   @Entity.column({ type: 'uint32' }) declare flavor: number
   @Entity.column({ type: 'uint32' }) declare length: number

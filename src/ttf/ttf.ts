@@ -7,7 +7,6 @@ import { TableDirectory } from './table-directory'
 // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
 export class Ttf extends FontFile {
   readonly mimeType = 'font/ttf'
-
   @Entity.column({ type: 'uint32' }) declare scalerType: number
   @Entity.column({ type: 'uint16' }) declare numTables: number
   @Entity.column({ type: 'uint16' }) declare searchRange: number
@@ -25,13 +24,14 @@ export class Ttf extends FontFile {
     ].includes(view.getUint32(0))
   }
 
-  static checksum(data: Uint8Array): number {
-    const newData = [].slice.call(data) as Array<number>
-    while (newData.length % 4) newData.push(0)
-    const tmp = new DataView(new ArrayBuffer(newData.length))
+  static checksum(view: DataView): number {
+    let byteLength = view.byteLength
+    while (byteLength % 4) byteLength++
     let sum = 0
-    for (let i = 0, len = newData.length / 4; i < len; i = i += 4) {
-      sum += tmp.getUint32(i * 4, false)
+    for (let i = 0, len = byteLength / 4; i < len; i += 4) {
+      if (i * 4 < byteLength - 4) {
+        sum += view.getUint32(i * 4, false)
+      }
     }
     return sum & 0xFFFFFFFF
   }
@@ -55,13 +55,12 @@ export class Ttf extends FontFile {
     let i = 0
     ttf.updateDirectories()
     sfnt.tables.forEach((table) => {
-      const data = new Uint8Array(table.view.buffer, table.view.byteOffset, table.view.byteLength)
       const dir = ttf.directories[i++]
       dir.tag = table.tag
-      dir.checkSum = Ttf.checksum(data)
+      dir.checkSum = Ttf.checksum(table.view)
       dir.offset = dataOffset
       dir.length = table.view.byteLength
-      ttf.writeBytes(data, dataOffset)
+      ttf.writeBytes(table.view, dataOffset)
       dataOffset += dir.length
       while (dataOffset % 4) {
         dataOffset++
@@ -69,7 +68,7 @@ export class Ttf extends FontFile {
     })
     const head = ttf.sfnt.head
     head.checkSumAdjustment = 0
-    head.checkSumAdjustment = 0xB1B0AFBA - Ttf.checksum(new Uint8Array(ttf.buffer, ttf.byteOffset, ttf.byteLength))
+    head.checkSumAdjustment = 0xB1B0AFBA - Ttf.checksum(ttf)
     return ttf
   }
 

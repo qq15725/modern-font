@@ -5,7 +5,6 @@ import type { Ttf } from '../ttf'
 // http://www.w3.org/Submission/EOT
 export class Eot extends FontFile {
   readonly mimeType = 'application/vnd.ms-fontobject'
-
   @Entity.column({ type: 'uint32' }) declare EOTSize: number
   @Entity.column({ type: 'uint32' }) declare FontDataSize: number
   @Entity.column({ type: 'uint32' }) declare Version: number
@@ -58,7 +57,7 @@ export class Eot extends FontFile {
     const eot = new Eot(new ArrayBuffer(size), 0, size, true)
     eot.EOTSize = eot.byteLength
     eot.FontDataSize = ttf.byteLength
-    eot.Version = 0x20001 // 0x00010000 / 0x00020001 / 0x00020002
+    eot.Version = 0x00020001 // 0x00010000 / 0x00020001 / 0x00020002
     eot.Flags = 0
     eot.Charset = 0x1
     eot.MagicNumber = 0x504C
@@ -102,7 +101,7 @@ export class Eot extends FontFile {
     eot.writeUint16(0)
     // rootstring
     eot.writeUint16(0)
-    eot.writeBytes(ttf.buffer)
+    eot.writeBytes(ttf)
     return eot
   }
 }
