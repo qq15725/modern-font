@@ -1,8 +1,11 @@
 import { Entity, toUCS2Bytes } from '../utils'
+import { FontFile } from '../font-file'
 import type { Ttf } from '../ttf'
 
 // http://www.w3.org/Submission/EOT
-export class Eot extends Entity {
+export class Eot extends FontFile {
+  readonly mimeType = 'application/vnd.ms-fontobject'
+
   @Entity.column({ type: 'uint32' }) declare EOTSize: number
   @Entity.column({ type: 'uint32' }) declare FontDataSize: number
   @Entity.column({ type: 'uint32' }) declare Version: number
@@ -31,11 +34,8 @@ export class Eot extends Entity {
   // get FullName() {}
   // get FontData() {}
 
-  from(ttf: Ttf): Eot {
-    const buffer = ttf.buffer
+  static from(ttf: Ttf): Eot {
     const sfnt = ttf.sfnt
-    const fontDataSize = buffer.byteLength
-
     const name = sfnt.name
     const nameRecords = name.nameRecords
     const FamilyName = toUCS2Bytes(nameRecords.fontFamily || '')
@@ -53,12 +53,12 @@ export class Eot extends Entity {
       + 4 + VersionNameSize
       + 4 + FullNameSize
       + 2
-      + fontDataSize
+      + ttf.byteLength
 
-    const eot = new Eot(new ArrayBuffer(size))
-    eot.EOTSize = size
-    eot.FontDataSize = fontDataSize
-    eot.Version = 0x20001
+    const eot = new Eot(new ArrayBuffer(size), 0, size, true)
+    eot.EOTSize = eot.byteLength
+    eot.FontDataSize = ttf.byteLength
+    eot.Version = 0x20001 // 0x00010000 / 0x00020001 / 0x00020002
     eot.Flags = 0
     eot.Charset = 0x1
     eot.MagicNumber = 0x504C
@@ -86,23 +86,23 @@ export class Eot extends Entity {
     eot.UnicodeRange = os2.ulUnicodeRange
     eot.CodePageRange = os2.ulCodePageRange
 
-    eot.readWriter.seek(82)
+    eot.seek(82)
     // write names
-    eot.readWriter.writeUint16(FamilyNameSize)
-    eot.readWriter.writeBytes(FamilyName)
-    eot.readWriter.writeUint16(0)
-    eot.readWriter.writeUint16(StyleNameSize)
-    eot.readWriter.writeBytes(StyleName)
-    eot.readWriter.writeUint16(0)
-    eot.readWriter.writeUint16(VersionNameSize)
-    eot.readWriter.writeBytes(VersionName)
-    eot.readWriter.writeUint16(0)
-    eot.readWriter.writeUint16(FullNameSize)
-    eot.readWriter.writeBytes(FullName)
-    eot.readWriter.writeUint16(0)
+    eot.writeUint16(FamilyNameSize)
+    eot.writeBytes(FamilyName)
+    eot.writeUint16(0)
+    eot.writeUint16(StyleNameSize)
+    eot.writeBytes(StyleName)
+    eot.writeUint16(0)
+    eot.writeUint16(VersionNameSize)
+    eot.writeBytes(VersionName)
+    eot.writeUint16(0)
+    eot.writeUint16(FullNameSize)
+    eot.writeBytes(FullName)
+    eot.writeUint16(0)
     // rootstring
-    eot.readWriter.writeUint16(0)
-    eot.readWriter.writeBytes(buffer, eot.FontDataSize)
+    eot.writeUint16(0)
+    eot.writeBytes(ttf.buffer)
     return eot
   }
 }

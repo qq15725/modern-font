@@ -6,4 +6,8 @@ export class WoffTableDirectoryEntry extends Entity {
   @Entity.column({ type: 'uint32' }) declare compLength: number
   @Entity.column({ type: 'uint32' }) declare origLength: number
   @Entity.column({ type: 'uint32' }) declare origChecksum: number
+
+  constructor(buffer: BufferSource, byteOffset?: number) {
+    super(buffer, byteOffset, 20)
+  }
 }

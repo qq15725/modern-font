@@ -16,6 +16,11 @@ export class Sfnt {
   static table(tag: SfntTableTag) {
     return (constructor: Function) => {
       this.registeredTable.set(tag, constructor)
+      Object.defineProperty(this.prototype, tag, {
+        get() { return this.getTable(tag) },
+        configurable: true,
+        enumerable: true,
+      })
     }
   }
 

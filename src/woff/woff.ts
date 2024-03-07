@@ -1,9 +1,13 @@
+import { unzlibSync } from 'fflate'
 import { Entity } from '../utils'
 import { Sfnt } from '../sfnt'
+import { FontFile } from '../font-file'
 import { WoffTableDirectoryEntry } from './woff-table-directory-entry'
 
 // https://www.w3.org/submissions/WOFF
-export class Woff extends Entity {
+export class Woff extends FontFile {
+  readonly mimeType = 'font/woff'
+
   @Entity.column({ type: 'uint32' }) declare signature: number
   @Entity.column({ type: 'uint32' }) declare flavor: number
   @Entity.column({ type: 'uint32' }) declare length: number
@@ -26,31 +30,30 @@ export class Woff extends Entity {
     ].includes(view.getUint32(0))
   }
 
-  update(): this {
-    const buffer = this.buffer
+  updateDirectories(): this {
     let offset = 44
     this.directories = Array.from({ length: this.numTables }, () => {
-      const dir = new WoffTableDirectoryEntry(buffer, offset)
-      offset += 20
+      const dir = new WoffTableDirectoryEntry(this.buffer, offset)
+      offset += dir.byteLength
       return dir
     })
     return this
   }
 
   get sfnt() {
-    const buffer = this.buffer
+    this.updateDirectories()
     return new Sfnt(
       this.directories.map(dir => {
         const tag = dir.tag
-        const offset = dir.offset
+        const start = this.byteOffset + dir.offset
         const compLength = dir.compLength
         const origLength = dir.origLength
-        const end = offset + compLength
+        const end = start + compLength
         return {
           tag,
           view: compLength >= origLength
-            ? new DataView(buffer, offset, compLength)
-            : new DataView(unzlibSync(new Uint8Array(buffer.slice(offset, end))).buffer),
+            ? new DataView(this.buffer, start, compLength)
+            : new DataView(unzlibSync(new Uint8Array(this.buffer.slice(start, end))).buffer),
         }
       }),
     )

@@ -5,4 +5,8 @@ export class TableDirectory extends Entity {
   @Entity.column({ type: 'uint32' }) declare checkSum: number
   @Entity.column({ type: 'uint32' }) declare offset: number
   @Entity.column({ type: 'uint32' }) declare length: number
+
+  constructor(buffer: BufferSource, byteOffset?: number) {
+    super(buffer, byteOffset, 16)
+  }
 }

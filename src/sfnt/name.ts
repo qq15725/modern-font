@@ -66,23 +66,23 @@ export class Name extends Entity {
   @Entity.column({ type: 'uint16' }) declare stringOffset: number
 
   get nameRecords() {
-    this.reader.seek(6)
     const count = this.count
+    this.seek(6)
     const nameRecords = []
     for (let i = 0; i < count; ++i) {
       nameRecords.push({
-        platform: this.reader.readUint16(),
-        encoding: this.reader.readUint16(),
-        language: this.reader.readUint16(),
-        nameId: this.reader.readUint16(),
-        length: this.reader.readUint16(),
-        offset: this.reader.readUint16(),
+        platform: this.readUint16(),
+        encoding: this.readUint16(),
+        language: this.readUint16(),
+        nameId: this.readUint16(),
+        length: this.readUint16(),
+        offset: this.readUint16(),
       })
     }
-    const offset = this.reader.byteOffset + this.stringOffset
+    const offset = this.byteOffset + this.stringOffset
     for (let i = 0; i < count; ++i) {
       const nameRecord = nameRecords[i]
-      nameRecord.name = this.reader.readBytes(
+      nameRecord.name = this.readBytes(
         offset + nameRecord.offset,
         nameRecord.length,
       )

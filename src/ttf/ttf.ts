@@ -1,10 +1,13 @@
 import { Entity } from '../utils'
 import { Sfnt } from '../sfnt'
+import { FontFile } from '../font-file'
 import { TableDirectory } from './table-directory'
 
 // TrueType
 // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
-export class Ttf extends Entity {
+export class Ttf extends FontFile {
+  readonly mimeType = 'font/ttf'
+
   @Entity.column({ type: 'uint32' }) declare scalerType: number
   @Entity.column({ type: 'uint16' }) declare numTables: number
   @Entity.column({ type: 'uint16' }) declare searchRange: number
@@ -22,65 +25,6 @@ export class Ttf extends Entity {
     ].includes(view.getUint32(0))
   }
 
-  static from(sfnt: Sfnt): Ttf {
-    const numTables = sfnt.tables.length
-    let byteLength = 0
-    sfnt.tables.forEach(table => byteLength += Math.ceil(table.view.byteLength / 4) * 4)
-    const ttf = new Ttf(new ArrayBuffer(
-      12 // head
-      + numTables * 16 // directories
-      + byteLength, // tables
-    ))
-    const log2 = Math.log(2)
-    ttf.scalerType = 0x00010000
-    ttf.numTables = numTables
-    ttf.searchRange = Math.floor(Math.log(numTables) / log2) * 16
-    ttf.entrySelector = Math.floor(ttf.searchRange / log2)
-    ttf.rangeShift = numTables * 16 - ttf.searchRange
-    const offset = 12
-    let dataOffset = 12 + numTables * 16
-    let i = 0
-    sfnt.tables.forEach((table) => {
-      const data = new Uint8Array(table.view.buffer)
-      const dir = ttf.directories[i++]
-      dir.tag = table.tag
-      dir.checkSum = Ttf.checksum(data)
-      dir.offset = offset
-      dir.length = data.byteLength
-      ttf.readWriter.writeBytes(data, dataOffset)
-      dataOffset += dir.length
-      while (dataOffset % 4) {
-        dataOffset++
-      }
-    })
-    // const head = ttf.sfnt.head
-    // head.checkSumAdjustment
-    return ttf
-  }
-
-  update() {
-    const buffer = this.buffer
-
-    let offset = this.byteLength
-    this.directories = Array.from({ length: this.numTables }, () => {
-      const dir = new TableDirectory(buffer, offset)
-      offset += dir.byteLength
-      return dir
-    })
-  }
-
-  get sfnt() {
-    const buffer = this.buffer
-    return new Sfnt(
-      this.directories.map(dir => {
-        return {
-          tag: dir.tag,
-          view: new DataView(buffer, dir.offset, dir.length),
-        }
-      }),
-    )
-  }
-
   static checksum(data: Uint8Array): number {
     const newData = [].slice.call(data) as Array<number>
     while (newData.length % 4) newData.push(0)
@@ -90,5 +34,64 @@ export class Ttf extends Entity {
       sum += tmp.getUint32(i * 4, false)
     }
     return sum & 0xFFFFFFFF
+  }
+
+  static from(sfnt: Sfnt): Ttf {
+    const numTables = sfnt.tables.length
+    let tablesByteLength = 0
+    sfnt.tables.forEach(table => tablesByteLength += Math.ceil(table.view.byteLength / 4) * 4)
+    const ttf = new Ttf(new ArrayBuffer(
+      12 // head
+      + numTables * 16 // directories
+      + tablesByteLength, // tables
+    ))
+    const log2 = Math.log(2)
+    ttf.scalerType = 0x00010000
+    ttf.numTables = numTables
+    ttf.searchRange = Math.floor(Math.log(numTables) / log2) * 16
+    ttf.entrySelector = Math.floor(ttf.searchRange / log2)
+    ttf.rangeShift = numTables * 16 - ttf.searchRange
+    let dataOffset = 12 + numTables * 16
+    let i = 0
+    ttf.updateDirectories()
+    sfnt.tables.forEach((table) => {
+      const data = new Uint8Array(table.view.buffer, table.view.byteOffset, table.view.byteLength)
+      const dir = ttf.directories[i++]
+      dir.tag = table.tag
+      dir.checkSum = Ttf.checksum(data)
+      dir.offset = dataOffset
+      dir.length = table.view.byteLength
+      ttf.writeBytes(data, dataOffset)
+      dataOffset += dir.length
+      while (dataOffset % 4) {
+        dataOffset++
+      }
+    })
+    const head = ttf.sfnt.head
+    head.checkSumAdjustment = 0
+    head.checkSumAdjustment = 0xB1B0AFBA - Ttf.checksum(new Uint8Array(ttf.buffer, ttf.byteOffset, ttf.byteLength))
+    return ttf
+  }
+
+  updateDirectories(): this {
+    let offset = this.byteOffset + 12
+    this.directories = Array.from({ length: this.numTables }, () => {
+      const dir = new TableDirectory(this.buffer, offset)
+      offset += dir.byteLength
+      return dir
+    })
+    return this
+  }
+
+  get sfnt() {
+    this.updateDirectories()
+    return new Sfnt(
+      this.directories.map(dir => {
+        return {
+          tag: dir.tag,
+          view: new DataView(this.buffer, this.byteOffset + dir.offset, dir.length),
+        }
+      }),
+    )
   }
 }
