@@ -1,7 +1,7 @@
 {
   "name": "modern-font",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "packageManager": "pnpm@8.14.1",
   "description": "Minify and convert fonts in the browser, supporting woff, ttf, eot font file.",
   "author": "wxm",
