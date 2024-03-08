@@ -1,23 +1,24 @@
 {
-  "name": "modern-fontkit",
+  "name": "modern-font",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@8.14.1",
   "description": "Modern font kit",
   "author": "wxm",
   "license": "MIT",
-  "homepage": "https://github.com/qq15725/modern-fontkit",
+  "homepage": "https://github.com/qq15725/modern-font",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qq15725/modern-fontkit.git"
+    "url": "git+https://github.com/qq15725/modern-font.git"
   },
   "bugs": {
-    "url": "https://github.com/qq15725/modern-fontkit/issues"
+    "url": "https://github.com/qq15725/modern-font/issues"
   },
   "keywords": [
-    "modern-fontkit",
-    "font",
-    "kit"
+    "modern-font",
+    "font-editor",
+    "font-minify",
+    "font"
   ],
   "sideEffects": false,
   "exports": {

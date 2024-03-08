@@ -1,7 +1,6 @@
 import type { Sfnt } from '../sfnt'
 
 export function minifyGlyfs(sfnt: Sfnt, subset: string) {
-  console.log(sfnt)
   const numGlyphs = sfnt.maxp.numGlyphs
   const codePointGlyphIndexMap = sfnt.cmap.getCodePointGlyphIndexMap(numGlyphs)
   const subsetCodePoints = Array.from(
