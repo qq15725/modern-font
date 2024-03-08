@@ -1,5 +1,3 @@
-export * from './eot'
+export { Eot, Ttf, Woff } from './font'
+export { minify } from './minify'
 export * from './sfnt'
-export * from './ttf'
-export * from './woff'
-export * from './font-file'

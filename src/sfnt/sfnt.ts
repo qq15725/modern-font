@@ -1,13 +1,11 @@
 import type { Entity } from '../utils'
 
 export type SfntTableTag =
-  | 'head'
-  | 'hhea'
-  | 'hmtx'
-  | 'maxp'
-  | 'name'
-  | 'OS/2'
-  | 'post'
+  // required
+  | 'cmap' | 'glyf' | 'head' | 'hhea' | 'hmtx' | 'loca' | 'maxp' | 'name' | 'post'
+  // optional
+  | 'cvt' | 'fpgm' | 'hdmx' | 'kern' | 'OS/2' | 'prep'
+  | 'vhea' | 'vmtx'
   | string
 
 export class Sfnt {
@@ -34,7 +32,7 @@ export class Sfnt {
     const Table = Sfnt.registeredTable.get(tag) as any
     if (Table) {
       const view = this.tables.find(table => table.tag === tag)!.view
-      return new Table(view) as any
+      return new Table(view.buffer, view.byteOffset, view.byteLength) as any
     }
     return undefined
   }

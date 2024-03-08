@@ -1,11 +1,11 @@
-import { Entity } from '../utils'
-import { Sfnt } from '../sfnt'
-import { FontFile } from '../font-file'
+import { Entity, toDataView } from '../../utils'
+import { Sfnt } from '../../sfnt'
+import { FontFileFormat } from '../font-file-format'
 import { TableDirectory } from './table-directory'
 
 // TrueType
 // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
-export class Ttf extends FontFile {
+export class Ttf extends FontFileFormat {
   readonly mimeType = 'font/ttf'
   @Entity.column({ type: 'uint32' }) declare scalerType: number
   @Entity.column({ type: 'uint16' }) declare numTables: number
@@ -15,7 +15,8 @@ export class Ttf extends FontFile {
 
   directories: Array<TableDirectory> = []
 
-  static is(view: DataView) {
+  static is(source: BufferSource) {
+    const view = toDataView(source)
     return [
       0x00010000,
       0x74727565, // true
@@ -24,7 +25,8 @@ export class Ttf extends FontFile {
     ].includes(view.getUint32(0))
   }
 
-  static checksum(view: DataView): number {
+  static checksum(source: BufferSource): number {
+    const view = toDataView(source)
     let byteLength = view.byteLength
     while (byteLength % 4) byteLength++
     let sum = 0
@@ -37,14 +39,16 @@ export class Ttf extends FontFile {
   }
 
   static from(sfnt: Sfnt): Ttf {
+    const round4 = (value: number) => (value + 3) & ~3
     const numTables = sfnt.tables.length
-    let tablesByteLength = 0
-    sfnt.tables.forEach(table => tablesByteLength += Math.ceil(table.view.byteLength / 4) * 4)
-    const ttf = new Ttf(new ArrayBuffer(
-      12 // head
-      + numTables * 16 // directories
-      + tablesByteLength, // tables
-    ))
+    const sfntSize = sfnt.tables.reduce((total, table) => total + round4(table.view.byteLength), 0)
+    const ttf = new Ttf(
+      new ArrayBuffer(
+        12 // head
+        + numTables * 16 // dirs
+        + sfntSize, // tables
+      ),
+    )
     const log2 = Math.log(2)
     ttf.scalerType = 0x00010000
     ttf.numTables = numTables
@@ -61,10 +65,7 @@ export class Ttf extends FontFile {
       dir.offset = dataOffset
       dir.length = table.view.byteLength
       ttf.writeBytes(table.view, dataOffset)
-      dataOffset += dir.length
-      while (dataOffset % 4) {
-        dataOffset++
-      }
+      dataOffset += round4(dir.length)
     })
     const head = ttf.sfnt.head
     head.checkSumAdjustment = 0

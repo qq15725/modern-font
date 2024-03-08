@@ -1,4 +1,4 @@
-import { Entity } from '../utils'
+import { Entity } from '../../utils'
 
 export class WoffTableDirectoryEntry extends Entity {
   @Entity.column({ type: 'char', size: 4 }) declare tag: string

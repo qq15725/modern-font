@@ -1,6 +1,6 @@
-import { Entity } from './utils'
+import { Entity } from '../utils'
 
-export abstract class FontFile extends Entity {
+export abstract class FontFileFormat extends Entity {
   readonly abstract mimeType: string
 
   toBlob(): Blob {

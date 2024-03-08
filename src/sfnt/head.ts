@@ -7,7 +7,9 @@ declare module './sfnt' {
   }
 }
 
-// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6head.html
+/**
+ * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6head.html
+ */
 @Sfnt.table('head')
 export class Head extends Entity {
   @Entity.column({ type: 'fixed' }) declare version: number

@@ -7,7 +7,9 @@ declare module './sfnt' {
   }
 }
 
-// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6post.html
+/**
+ * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6post.html
+ */
 @Sfnt.table('post')
 export class Post extends Entity {
   @Entity.column({ type: 'fixed' }) declare format: number

@@ -3,11 +3,13 @@ import { Sfnt } from './sfnt'
 
 declare module './sfnt' {
   interface Sfnt {
-    'OS/2': Os2
+    'OS/2'?: Os2
   }
 }
 
-// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
+/**
+ * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
+ */
 @Sfnt.table('OS/2')
 export class Os2 extends Entity {
   @Entity.column({ type: 'uint16' }) declare version: number
@@ -57,4 +59,19 @@ export class Os2 extends Entity {
   @Entity.column({ type: 'uint16' }) declare usDefaultChar: number
   @Entity.column({ type: 'uint16' }) declare usBreakChar: number
   @Entity.column({ type: 'uint16' }) declare usMaxContext: number
+
+  get fontPANOSE() {
+    return [
+      this.bFamilyType,
+      this.bSerifStyle,
+      this.bWeight,
+      this.bProportion,
+      this.bContrast,
+      this.bStrokeVariation,
+      this.bArmStyle,
+      this.bLetterform,
+      this.bMidline,
+      this.bXHeight,
+    ]
+  }
 }

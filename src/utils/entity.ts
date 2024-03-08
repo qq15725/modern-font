@@ -1,5 +1,5 @@
 import { dataTypeToByteLength } from './data-type'
-import { toBuffer } from './buffer'
+import { toBuffer, toDataView } from './buffer'
 import type { DataType } from './data-type'
 
 export interface Column {
@@ -141,6 +141,11 @@ export class Entity extends DataView {
     return result
   }
 
+  readUint24(byteOffset = this.cursor) {
+    const [i, j, k] = this.readBytes(byteOffset, 3)
+    return (i << 16) + (j << 8) + k
+  }
+
   readBytes(byteOffset: number, length?: number): Array<number> {
     if (length == null) {
       length = byteOffset
@@ -240,17 +245,18 @@ export class Entity extends DataView {
     return this
   }
 
-  writeBytes(value: DataView | Array<number>, byteOffset = this.cursor): this {
+  writeBytes(value: BufferSource | Array<number>, byteOffset = this.cursor): this {
     let len
-    if (ArrayBuffer.isView(value)) {
-      len = value.byteLength
-      for (let i = 0; i < len; ++i) {
-        this.setUint8(byteOffset + i, value.getUint8(i))
-      }
-    } else {
+    if (Array.isArray(value)) {
       len = value.length
       for (let i = 0; i < len; ++i) {
         this.setUint8(byteOffset + i, value[i])
+      }
+    } else {
+      const view = toDataView(value)
+      len = view.byteLength
+      for (let i = 0; i < len; ++i) {
+        this.setUint8(byteOffset + i, view.getUint8(i))
       }
     }
     this.cursor = byteOffset + len

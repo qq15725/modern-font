@@ -58,14 +58,16 @@ declare module './sfnt' {
   }
 }
 
-// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
+/**
+ * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
+ */
 @Sfnt.table('name')
 export class Name extends Entity {
   @Entity.column({ type: 'uint16' }) declare format: number
   @Entity.column({ type: 'uint16' }) declare count: number
   @Entity.column({ type: 'uint16' }) declare stringOffset: number
 
-  get nameRecords() {
+  humanReadableNames() {
     const count = this.count
     this.seek(6)
     const nameRecords: Array<Record<string, any>> = []
@@ -79,7 +81,7 @@ export class Name extends Entity {
         offset: this.readUint16(),
       })
     }
-    const offset = this.byteOffset + this.stringOffset
+    const offset = this.stringOffset
     for (let i = 0; i < count; ++i) {
       const nameRecord = nameRecords[i]
       nameRecord.name = this.readBytes(

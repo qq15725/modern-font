@@ -7,7 +7,9 @@ declare module './sfnt' {
   }
 }
 
-// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6maxp.html
+/**
+ * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6maxp.html
+ */
 @Sfnt.table('maxp')
 export class Maxp extends Entity {
   @Entity.column({ type: 'fixed' }) declare version: number

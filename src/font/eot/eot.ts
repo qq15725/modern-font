@@ -1,9 +1,9 @@
-import { Entity, toUCS2Bytes } from '../utils'
-import { FontFile } from '../font-file'
+import { Entity, toUCS2Bytes } from '../../utils'
+import { FontFileFormat } from '../font-file-format'
 import type { Ttf } from '../ttf'
 
 // http://www.w3.org/Submission/EOT
-export class Eot extends FontFile {
+export class Eot extends FontFileFormat {
   readonly mimeType = 'application/vnd.ms-fontobject'
   @Entity.column({ type: 'uint32' }) declare EOTSize: number
   @Entity.column({ type: 'uint32' }) declare FontDataSize: number
@@ -20,30 +20,30 @@ export class Eot extends FontFile {
   @Entity.column({ type: 'uint32' }) declare CheckSumAdjustment: number
   @Entity.column({ type: 'uint8', size: 16 }) declare Reserved: Array<number>
   @Entity.column({ type: 'uint16' }) declare Padding1: number
-  // get FamilyNameSize() {}
-  // get FamilyName() {}
-  // get Padding2() {}
-  // get StyleNameSize() {}
-  // get StyleName() {}
-  // get Padding3() {}
-  // get VersionNameSize() {}
-  // get VersionName() {}
-  // get Padding4() {}
-  // get FullNameSize() {}
-  // get FullName() {}
-  // get FontData() {}
+  // FamilyNameSize
+  // FamilyName
+  // Padding2
+  // StyleNameSize
+  // StyleName
+  // Padding3
+  // VersionNameSize
+  // VersionName
+  // Padding4
+  // FullNameSize
+  // FullName
+  // FontData
 
   static from(ttf: Ttf): Eot {
     const sfnt = ttf.sfnt
     const name = sfnt.name
-    const nameRecords = name.nameRecords
-    const FamilyName = toUCS2Bytes(nameRecords.fontFamily || '')
+    const names = name.humanReadableNames()
+    const FamilyName = toUCS2Bytes(names.fontFamily || '')
     const FamilyNameSize = FamilyName.length
-    const StyleName = toUCS2Bytes(nameRecords.fontStyle || '')
+    const StyleName = toUCS2Bytes(names.fontStyle || '')
     const StyleNameSize = StyleName.length
-    const VersionName = toUCS2Bytes(nameRecords.version || '')
+    const VersionName = toUCS2Bytes(names.version || '')
     const VersionNameSize = VersionName.length
-    const FullName = toUCS2Bytes(nameRecords.fullName || '')
+    const FullName = toUCS2Bytes(names.fullName || '')
     const FullNameSize = FullName.length
 
     const size = 82
@@ -62,30 +62,18 @@ export class Eot extends FontFile {
     eot.Charset = 0x1
     eot.MagicNumber = 0x504C
     eot.Padding1 = 0
-
-    const head = sfnt.head
-    eot.CheckSumAdjustment = head.checkSumAdjustment
+    eot.CheckSumAdjustment = sfnt.head.checkSumAdjustment
 
     const os2 = sfnt['OS/2']
-    eot.FontPANOSE = [
-      os2.bFamilyType,
-      os2.bSerifStyle,
-      os2.bWeight,
-      os2.bProportion,
-      os2.bContrast,
-      os2.bStrokeVariation,
-      os2.bArmStyle,
-      os2.bLetterform,
-      os2.bMidline,
-      os2.bXHeight,
-    ]
-    eot.Italic = os2.fsSelection
-    eot.Weight = os2.usWeightClass
-    eot.fsType = os2.fsType
-    eot.UnicodeRange = os2.ulUnicodeRange
-    eot.CodePageRange = os2.ulCodePageRange
+    if (os2) {
+      eot.FontPANOSE = os2.fontPANOSE
+      eot.Italic = os2.fsSelection
+      eot.Weight = os2.usWeightClass
+      eot.fsType = os2.fsType
+      eot.UnicodeRange = os2.ulUnicodeRange
+      eot.CodePageRange = os2.ulCodePageRange
+    }
 
-    eot.seek(82)
     // write names
     eot.writeUint16(FamilyNameSize)
     eot.writeBytes(FamilyName)

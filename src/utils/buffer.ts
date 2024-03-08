@@ -8,3 +8,11 @@ export function toBuffer(source: BufferSource): ArrayBuffer {
     return source
   }
 }
+
+export function toDataView(source: BufferSource): DataView {
+  if (ArrayBuffer.isView(source)) {
+    return new DataView(source.buffer, source.byteOffset, source.byteLength)
+  } else {
+    return new DataView(source)
+  }
+}
