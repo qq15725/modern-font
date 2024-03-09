@@ -1,5 +1,6 @@
 import { Entity } from '../utils'
 import { Sfnt } from './sfnt'
+import { SfntTable } from './sfnt-table'
 
 declare module './sfnt' {
   interface Sfnt {
@@ -11,7 +12,7 @@ declare module './sfnt' {
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6maxp.html
  */
 @Sfnt.table('maxp')
-export class Maxp extends Entity {
+export class Maxp extends SfntTable {
   @Entity.column({ type: 'fixed' }) declare version: number
   @Entity.column({ type: 'uint16' }) declare numGlyphs: number
   @Entity.column({ type: 'uint16' }) declare maxPoints: number

@@ -1,5 +1,6 @@
 import { Entity } from '../utils'
 import { Sfnt } from './sfnt'
+import { SfntTable } from './sfnt-table'
 
 declare module './sfnt' {
   interface Sfnt {
@@ -11,7 +12,7 @@ declare module './sfnt' {
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
  */
 @Sfnt.table('OS/2')
-export class Os2 extends Entity {
+export class Os2 extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare version: number
   @Entity.column({ type: 'int16' }) declare xAvgCharWidth: number
   @Entity.column({ type: 'uint16' }) declare usWeightClass: number

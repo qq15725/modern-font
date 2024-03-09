@@ -1,8 +1,7 @@
 import type { Sfnt } from '../sfnt'
 
 export function minifyGlyfs(sfnt: Sfnt, subset: string) {
-  const numGlyphs = sfnt.maxp.numGlyphs
-  const codePointGlyphIndexMap = sfnt.cmap.getCodePointGlyphIndexMap(numGlyphs)
+  const codePointGlyphIndexMap = sfnt.cmap.codePointGlyphIndexMap
   const subsetCodePoints = Array.from(
     new Set(
       subset.split('')
@@ -11,12 +10,9 @@ export function minifyGlyfs(sfnt: Sfnt, subset: string) {
         .sort(),
     ),
   )
-  const indexToLocFormat = sfnt.head.indexToLocFormat
-  const locations = sfnt.loca.getLocations(numGlyphs, indexToLocFormat)
-  const numOfLongHorMetrics = sfnt.hhea.numOfLongHorMetrics
-  const hMetrics = sfnt.hmtx.getMetrics(numGlyphs, numOfLongHorMetrics)
-  const numOfLongVerMetrics = sfnt.vhea?.numOfLongVerMetrics ?? 0
-  const vMetrics = sfnt.vmtx?.getMetrics(numGlyphs, numOfLongVerMetrics)
+  const locations = sfnt.loca.locations
+  const hMetrics = sfnt.hmtx.metrics
+  const vMetrics = sfnt.vmtx?.metrics
   const glyf = sfnt.glyf
   const subsetGlyphs = subsetCodePoints.map(codePoint => {
     const glyphIndex = codePointGlyphIndexMap[codePoint]

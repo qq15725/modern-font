@@ -1,5 +1,6 @@
 import { Entity, getUCS2String, getUTF8String } from '../utils'
 import { Sfnt } from './sfnt'
+import { SfntTable } from './sfnt-table'
 
 const nameId = {
   0: 'copyright',
@@ -62,7 +63,7 @@ declare module './sfnt' {
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
  */
 @Sfnt.table('name')
-export class Name extends Entity {
+export class Name extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare format: number
   @Entity.column({ type: 'uint16' }) declare count: number
   @Entity.column({ type: 'uint16' }) declare stringOffset: number

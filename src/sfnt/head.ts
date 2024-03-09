@@ -1,5 +1,6 @@
 import { Entity } from '../utils'
 import { Sfnt } from './sfnt'
+import { SfntTable } from './sfnt-table'
 
 declare module './sfnt' {
   interface Sfnt {
@@ -11,7 +12,7 @@ declare module './sfnt' {
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6head.html
  */
 @Sfnt.table('head')
-export class Head extends Entity {
+export class Head extends SfntTable {
   @Entity.column({ type: 'fixed' }) declare version: number
   @Entity.column({ type: 'fixed' }) declare fontRevision: number
   @Entity.column({ type: 'uint32' }) declare checkSumAdjustment: number

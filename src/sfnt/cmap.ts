@@ -1,5 +1,6 @@
 import { Entity } from '../utils'
 import { Sfnt } from './sfnt'
+import { SfntTable } from './sfnt-table'
 
 declare module './sfnt' {
   interface Sfnt {
@@ -97,7 +98,7 @@ export type CmapSubtable =
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6cmap.html
  */
 @Sfnt.table('cmap')
-export class Cmap extends Entity {
+export class Cmap extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare version: number
   @Entity.column({ type: 'uint16' }) declare numberSubtables: number
 
@@ -222,7 +223,7 @@ export class Cmap extends Entity {
     return { ...table, format: 14, length, numVarSelectorRecords, groups }
   }
 
-  getSubtables(): Array<CmapSubtable> {
+  get subtables(): Array<CmapSubtable> {
     const numberSubtables = this.numberSubtables
     this.seek(4)
     return Array.from({ length: numberSubtables }, () => {
@@ -251,8 +252,9 @@ export class Cmap extends Entity {
     })
   }
 
-  getCodePointGlyphIndexMap(numGlyphs: number): Record<number, number> {
-    const tables = this.getSubtables()
+  get codePointGlyphIndexMap(): Record<number, number> {
+    const numGlyphs = this.sfnt.maxp.numGlyphs
+    const tables = this.subtables
     const format0 = tables.find(item => item.format === 0) as CmapSubtableFormat0 | undefined
     const format12 = tables.find(item => item.platformID === 3 && item.platformSpecificID === 10 && item.format === 12) as CmapSubtableFormat12 | undefined
     const format4 = tables.find(item => item.platformID === 3 && item.platformSpecificID === 1 && item.format === 4) as CmapSubtableFormat4 | undefined

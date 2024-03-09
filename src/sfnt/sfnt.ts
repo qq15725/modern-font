@@ -1,4 +1,4 @@
-import type { Entity } from '../utils'
+import type { SfntTable } from './sfnt-table'
 
 export type SfntTableTag =
   // required
@@ -28,11 +28,11 @@ export class Sfnt {
     //
   }
 
-  protected _getTable(tag: SfntTableTag): Entity | undefined {
+  protected _getTable(tag: SfntTableTag): SfntTable | undefined {
     const Table = Sfnt.registeredTable.get(tag) as any
     if (Table) {
       const view = this.tables.find(table => table.tag === tag)!.view
-      return new Table(view.buffer, view.byteOffset, view.byteLength) as any
+      return new Table(this, view.buffer, view.byteOffset, view.byteLength) as any
     }
     return undefined
   }

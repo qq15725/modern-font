@@ -1,5 +1,6 @@
 import { Entity } from '../utils'
 import { Sfnt } from './sfnt'
+import { SfntTable } from './sfnt-table'
 
 declare module './sfnt' {
   interface Sfnt {
@@ -11,7 +12,7 @@ declare module './sfnt' {
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6post.html
  */
 @Sfnt.table('post')
-export class Post extends Entity {
+export class Post extends SfntTable {
   @Entity.column({ type: 'fixed' }) declare format: number
   @Entity.column({ type: 'fixed' }) declare italicAngle: number
   @Entity.column({ type: 'int16' }) declare underlinePosition: number

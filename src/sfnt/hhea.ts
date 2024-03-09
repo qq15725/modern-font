@@ -1,5 +1,6 @@
 import { Entity } from '../utils'
 import { Sfnt } from './sfnt'
+import { SfntTable } from './sfnt-table'
 
 declare module './sfnt' {
   interface Sfnt {
@@ -11,7 +12,7 @@ declare module './sfnt' {
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hhea.html
  */
 @Sfnt.table('hhea')
-export class Hhea extends Entity {
+export class Hhea extends SfntTable {
   @Entity.column({ type: 'fixed' }) declare version: number
   @Entity.column({ type: 'int16' }) declare ascent: number
   @Entity.column({ type: 'int16' }) declare descent: number
