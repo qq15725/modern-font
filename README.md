@@ -30,14 +30,14 @@ npm i modern-font
 import { Ttf, Woff, Eot, minify } from 'modern-font'
 
 const buffer = await fetch('font.woff').then(rep => rep.arrayBuffer())
-const view = new DataView(buffer)
+
 let woff, ttf, eot
-if (Woff.is(view)) {
-  woff = new Woff(view)
+if (Woff.is(buffer)) {
+  woff = new Woff(buffer)
   ttf = Ttf.from(woff.sfnt)
   eot = Eot.from(ttf)
-} else if (Ttf.is(view)) {
-  ttf = new Ttf(view)
+} else if (Ttf.is(buffer)) {
+  ttf = new Ttf(buffer)
   woff = Woff.from(ttf.sfnt)
   eot = Eot.from(ttf)
 }
@@ -47,4 +47,23 @@ document.fonts.add(ttf.toFontFace('ttf'))
 document.fonts.add(eot.toFontFace('eot'))
 document.fonts.add(minifyWoff.toFontFace('minifyWoff'))
 console.log(woff, ttf, eot, minifyWoff)
+```
+
+
+## 🚀 Minify
+
+```ts
+import { minify } from 'modern-font'
+
+const rawBuffer = await fetch('font.woff').then(rep => rep.arrayBuffer())
+const buffer = minify(rawBuffer, 'A set of text cropped from a font file')
+
+console.log(
+  `raw size: ${ rawBuffer.byteLength / 1024 / 1024 }`,
+  `minimized size: ${ buffer.byteLength / 1024 / 1024 }`,
+)
+
+// minimized woff file
+const woff = new Blob([buffer], { type: 'font/woff' })
+window.open(URL.createObjectURL(woff))
 ```
