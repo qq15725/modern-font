@@ -15,8 +15,8 @@ export class Sfnt {
     return (constructor: Function) => {
       this.registeredTableViews.set(tag, constructor)
       Object.defineProperty(this.prototype, tag, {
-        get() { return this.getTableView(tag) },
-        set(table) { return this.setTableView(tag, table) },
+        get() { return this.get(tag) },
+        set(table) { return this.set(tag, table) },
         configurable: true,
         enumerable: true,
       })
@@ -31,21 +31,28 @@ export class Sfnt {
     //
   }
 
-  setTableView(tag: SfntTableTag, view: SfntTable): this {
+  delete(tag: SfntTableTag): this {
+    this.tableViews.delete(tag)
+    const index = this.tables.findIndex(table => table.tag === tag)
+    if (index > -1) this.tables.splice(index, 1)
+    return this
+  }
+
+  set(tag: SfntTableTag, view: SfntTable): this {
     this.tableViews.set(tag, view)
     const table = this.tables.find(table => table.tag === tag)
     if (table) table.view = view
     return this
   }
 
-  getTableView(tag: SfntTableTag): SfntTable | undefined {
+  get(tag: SfntTableTag): SfntTable | undefined {
     let view = this.tableViews.get(tag)
     if (!view) {
       const Table = Sfnt.registeredTableViews.get(tag) as any
       if (Table) {
         const rawView = this.tables.find(table => table.tag === tag)!.view
         view = new Table(rawView.buffer, rawView.byteOffset, rawView.byteLength).setSfnt(this) as any
-        this.setTableView(tag, view!)
+        this.set(tag, view!)
       }
     }
     return view

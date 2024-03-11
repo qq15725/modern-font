@@ -3,7 +3,7 @@ import { toDataView } from '../utils'
 import { minifySfnt } from './minify-sfnt'
 import type { Sfnt } from '../sfnt'
 
-export function minify<T extends (Ttf | Woff | BufferSource)>(source: T, subset: string): T {
+export function minify<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: string): T {
   let sfnt: Sfnt
   let outputFormat: 'ttf' | 'woff' | 'ttf-buffer' | 'woff-buffer'
   if (source instanceof Ttf) {

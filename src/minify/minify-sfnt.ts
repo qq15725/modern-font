@@ -63,5 +63,14 @@ export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
   post.maxMemType1 = numGlyphs
   sfnt.post = post
 
+  // TODO
+  sfnt.delete('GPOS') // 字形定位
+  sfnt.delete('GSUB') // 字形替换
+  sfnt.delete('hdmx') // 仅适用于 Macintosh 平台上的字体
+  // sfnt.delete('FFTM')
+  // sfnt.delete('GDEF') // Glyph Definition Table
+  // sfnt.delete('gasp') // grid-fitting and scan-conversion procedure
+  // sfnt.delete('prep') // control value program
+
   return sfnt
 }
