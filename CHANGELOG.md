@@ -1,3 +1,18 @@
+## [0.0.2](https://github.com/qq15725/modern-font/compare/v0.0.1...v0.0.2) (2024-03-11)
+
+
+### Bug Fixes
+
+* minify ([d71ae12](https://github.com/qq15725/modern-font/commit/d71ae12015c33ecb54c92b5446d1692ffc16e71a))
+* type ([eaecce9](https://github.com/qq15725/modern-font/commit/eaecce980ad81e36451b5af41cd4865809fc97d8))
+
+
+### Features
+
+* SfntTable ([0033fc5](https://github.com/qq15725/modern-font/commit/0033fc5b3493b117fd348ce17447579d8f487386))
+
+
+
 ## 0.0.1 (2024-03-08)
 
 
