@@ -25,6 +25,11 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string) {
       glyf.byteOffset + start,
       end - start,
     )
+    const numContours = view.getInt16(0)
+    if (numContours < 0) {
+      // TODO 支持复合形状
+      throw new Error(`Failed to minifyGlyphs, composite shapes are not supported. character: "${ String.fromCharCode(unicode) }"`)
+    }
     return {
       ...hMetric,
       ...vMetric,
