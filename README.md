@@ -49,6 +49,41 @@ document.fonts.add(minifyWoff.toFontFace('minifyWoff'))
 console.log(woff, ttf, eot, minifyWoff)
 ```
 
+## 🚀 WOFF to TTF
+
+```ts
+import { Ttf, Woff } from 'modern-font'
+
+const buffer = await fetch('font.woff').then(rep => rep.arrayBuffer())
+const ttf = Ttf.from(new Woff(buffer).sfnt)
+
+// ttf file
+window.open(URL.createObjectURL(ttf.toBlob()))
+```
+
+## 🚀 TTF to WOFF
+
+```ts
+import { Ttf, Woff } from 'modern-font'
+
+const buffer = await fetch('font.ttf').then(rep => rep.arrayBuffer())
+const woff = Woff.from(new Ttf(buffer).sfnt)
+
+// woff file
+window.open(URL.createObjectURL(woff.toBlob()))
+```
+
+## 🚀 TTF to EOT
+
+```ts
+import { Ttf, Eot } from 'modern-font'
+
+const buffer = await fetch('font.ttf').then(rep => rep.arrayBuffer())
+const eot = Eot.from(new Ttf(buffer))
+
+// eot file
+window.open(URL.createObjectURL(eot.toBlob()))
+```
 
 ## 🚀 Minify
 
