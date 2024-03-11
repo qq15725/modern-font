@@ -1,0 +1,6 @@
+export * from './cmap-subtable-format0'
+export * from './cmap-subtable-format2'
+export * from './cmap-subtable-format4'
+export * from './cmap-subtable-format6'
+export * from './cmap-subtable-format12'
+export * from './cmap-subtable-format14'

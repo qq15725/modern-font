@@ -1,21 +1,58 @@
-import { minifyGlyfs } from './minify-glyfs'
+import { Cmap, Glyf, Hmtx, Loca, Post, Vmtx } from '../sfnt'
+import { minifyGlyphs } from './minify-glyphs'
 import type { Sfnt } from '../sfnt'
 
 export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
-  const glyfs = minifyGlyfs(sfnt, subset)
-  const numGlyphs = glyfs.length
-  const head = sfnt.head
+  const glyphs = minifyGlyphs(sfnt, subset)
+  const numGlyphs = glyphs.length
+
+  const { head, maxp, hhea, vhea } = sfnt
+
   head.checkSumAdjustment = 0
   head.magickNumber = 0x5F0F3CF5
   head.indexToLocFormat = 1
-  const maxp = sfnt.maxp
+
   maxp.numGlyphs = numGlyphs
-  const hhea = sfnt.hhea
+
+  let offset = 0
+  sfnt.loca = Loca.from(
+    [
+      ...glyphs.map(glyph => {
+        const result = offset
+        offset += glyph.view.byteLength
+        return result
+      }),
+      offset,
+    ],
+    head.indexToLocFormat,
+  )
+
+  sfnt.cmap = Cmap.from(glyphs.reduce((map, glyph, glyphIndex) => {
+    map[glyph.unicode] = glyphIndex
+    return map
+  }, {} as Record<number, number>))
+
+  sfnt.glyf = Glyf.from(glyphs.map(glyph => glyph.view))
+
   hhea.numOfLongHorMetrics = numGlyphs
-  const vhea = sfnt.vhea
+
+  sfnt.hmtx = Hmtx.from(glyphs.map(glyph => ({
+    advanceWidth: glyph.advanceWidth,
+    leftSideBearing: glyph.leftSideBearing,
+  })))
+
   if (vhea) vhea.numOfLongVerMetrics = numGlyphs
-  const post = sfnt.post
-  post.format = Math.round(3 * 65536)
+
+  const vmtx = sfnt.vmtx
+  if (vmtx) {
+    sfnt.vmtx = Vmtx.from(glyphs.map(glyph => ({
+      advanceHeight: glyph.advanceHeight,
+      topSideBearing: glyph.topSideBearing,
+    })))
+  }
+
+  const post = new Post()
+  post.format = 3
   post.italicAngle = 0
   post.underlinePosition = 0
   post.underlineThickness = 0
@@ -24,5 +61,7 @@ export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
   post.minMemType42 = 0
   post.minMemType1 = 0
   post.maxMemType1 = numGlyphs
+  sfnt.post = post
+
   return sfnt
 }

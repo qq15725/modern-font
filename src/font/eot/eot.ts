@@ -36,7 +36,7 @@ export class Eot extends FontFileFormat {
   static from(ttf: Ttf): Eot {
     const sfnt = ttf.sfnt
     const name = sfnt.name
-    const names = name.humanReadableNames()
+    const names = name.getNames()
     const FamilyName = toUCS2Bytes(names.fontFamily || '')
     const FamilyNameSize = FamilyName.length
     const StyleName = toUCS2Bytes(names.fontStyle || '')

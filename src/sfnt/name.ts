@@ -68,7 +68,7 @@ export class Name extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare count: number
   @Entity.column({ type: 'uint16' }) declare stringOffset: number
 
-  humanReadableNames() {
+  getNames() {
     const count = this.count
     this.seek(6)
     const nameRecords: Array<Record<string, any>> = []

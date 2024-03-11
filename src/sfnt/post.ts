@@ -22,4 +22,8 @@ export class Post extends SfntTable {
   @Entity.column({ type: 'uint32' }) declare maxMemType42: number
   @Entity.column({ type: 'uint32' }) declare minMemType1: number
   @Entity.column({ type: 'uint32' }) declare maxMemType1: number
+
+  constructor(buffer: BufferSource = new ArrayBuffer(32), byteOffset?: number, byteLength?: number) {
+    super(buffer, byteLength, byteOffset)
+  }
 }

@@ -27,4 +27,8 @@ export class Hhea extends SfntTable {
   @Entity.column({ type: 'int16', size: 4 }) declare reserved: Array<number>
   @Entity.column({ type: 'int16' }) declare metricDataFormat: number
   @Entity.column({ type: 'uint16' }) declare numOfLongHorMetrics: number
+
+  constructor(buffer: BufferSource = new ArrayBuffer(36), byteOffset?: number) {
+    super(buffer, byteOffset, 36)
+  }
 }

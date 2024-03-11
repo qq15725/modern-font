@@ -9,18 +9,21 @@ export type SfntTableTag =
   | string
 
 export class Sfnt {
-  static registeredTable = new Map<string, Function>()
+  static registeredTableViews = new Map<string, Function>()
 
   static table(tag: SfntTableTag) {
     return (constructor: Function) => {
-      this.registeredTable.set(tag, constructor)
+      this.registeredTableViews.set(tag, constructor)
       Object.defineProperty(this.prototype, tag, {
-        get() { return this._getTable(tag) },
+        get() { return this.getTableView(tag) },
+        set(table) { return this.setTableView(tag, table) },
         configurable: true,
         enumerable: true,
       })
     }
   }
+
+  tableViews = new Map<string, SfntTable>()
 
   constructor(
     public tables: Array<{ tag: SfntTableTag; view: DataView }>,
@@ -28,12 +31,23 @@ export class Sfnt {
     //
   }
 
-  protected _getTable(tag: SfntTableTag): SfntTable | undefined {
-    const Table = Sfnt.registeredTable.get(tag) as any
-    if (Table) {
-      const view = this.tables.find(table => table.tag === tag)!.view
-      return new Table(this, view.buffer, view.byteOffset, view.byteLength) as any
+  setTableView(tag: SfntTableTag, view: SfntTable): this {
+    this.tableViews.set(tag, view)
+    const table = this.tables.find(table => table.tag === tag)
+    if (table) table.view = view
+    return this
+  }
+
+  getTableView(tag: SfntTableTag): SfntTable | undefined {
+    let view = this.tableViews.get(tag)
+    if (!view) {
+      const Table = Sfnt.registeredTableViews.get(tag) as any
+      if (Table) {
+        const rawView = this.tables.find(table => table.tag === tag)!.view
+        view = new Table(rawView.buffer, rawView.byteOffset, rawView.byteLength).setSfnt(this) as any
+        this.setTableView(tag, view)
+      }
     }
-    return undefined
+    return view
   }
 }

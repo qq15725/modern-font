@@ -55,15 +55,16 @@ export class Woff extends FontFileFormat {
     const round4 = (value: number) => (value + 3) & ~3
     const numTables = sfnt.tables.length
     const tables = sfnt.tables.map(table => {
+      const view = toDataView(zlibSync(
+        new Uint8Array(
+          table.view.buffer,
+          table.view.byteOffset,
+          table.view.byteLength,
+        ),
+      ))
       return {
         tag: table.tag,
-        view: toDataView(zlibSync(
-          new Uint8Array(
-            table.view.buffer,
-            table.view.byteOffset,
-            table.view.byteLength,
-          ),
-        )),
+        view: view.byteLength < table.view ? view : table.view,
         rawView: table.view,
       }
     })

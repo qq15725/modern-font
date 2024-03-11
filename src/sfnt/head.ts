@@ -30,4 +30,8 @@ export class Head extends SfntTable {
   @Entity.column({ type: 'int16' }) declare fontDirectionHint: number
   @Entity.column({ type: 'int16' }) declare indexToLocFormat: number
   @Entity.column({ type: 'int16' }) declare glyphDataFormat: number
+
+  constructor(buffer: BufferSource = new ArrayBuffer(54), byteOffset?: number) {
+    super(buffer, byteOffset, 54)
+  }
 }

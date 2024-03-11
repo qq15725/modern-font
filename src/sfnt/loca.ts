@@ -12,7 +12,20 @@ declare module './sfnt' {
  */
 @Sfnt.table('loca')
 export class Loca extends SfntTable {
-  get locations(): Array<number> {
+  static from(locations: Array<number>, indexToLocFormat = 1): Loca {
+    const byteLength = locations.length * (indexToLocFormat ? 4 : 2)
+    const loca = new Loca(new ArrayBuffer(byteLength))
+    locations.forEach(location => {
+      if (indexToLocFormat) {
+        loca.writeUint32(location)
+      } else {
+        loca.writeUint16(location / 2)
+      }
+    })
+    return loca
+  }
+
+  getLocations(): Array<number> {
     const numGlyphs = this.sfnt.maxp.numGlyphs
     const indexToLocFormat = this.sfnt.head.indexToLocFormat
     this.seek(0)
@@ -22,14 +35,4 @@ export class Loca extends SfntTable {
         : this.readUint16() * 2
     })
   }
-
-  // set locations() {
-  // const newLoca = new DataView(new ArrayBuffer((numGlyphs + 1) * 4))
-  // let newLocaOffset = 0
-  // glyphs.forEach((glyf, i) => {
-  //   newLoca.setUint32(i * 4, newLocaOffset, false)
-  //   newLocaOffset += glyf.buffer.byteLength
-  // })
-  // newLoca.setUint32(numGlyphs * 4, newLocaOffset, false) // extra
-  // }
 }

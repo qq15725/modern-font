@@ -17,7 +17,17 @@ export interface VMetric {
  */
 @Sfnt.table('vmtx')
 export class Vmtx extends SfntTable {
-  get metrics(): Array<VMetric> {
+  static from(metrics: Array<VMetric>): Vmtx {
+    const byteLength = metrics.length * 4
+    const vmtx = new Vmtx(new ArrayBuffer(byteLength))
+    metrics.forEach(metric => {
+      vmtx.writeUint16(metric.advanceHeight)
+      vmtx.writeInt16(metric.topSideBearing)
+    })
+    return vmtx
+  }
+
+  getMetrics(): Array<VMetric> {
     const numGlyphs = this.sfnt.maxp.numGlyphs
     const numOfLongVerMetrics = this.sfnt.vhea?.numOfLongVerMetrics ?? 0
     this.seek(0)
@@ -30,14 +40,6 @@ export class Vmtx extends SfntTable {
         advanceHeight,
         topSideBearing: this.readInt16(),
       }
-    })
-  }
-
-  set metrics(metrics: Array<VMetric>) {
-    this.seek(0)
-    metrics.forEach(metric => {
-      this.writeUint16(metric.advanceHeight)
-      this.writeInt16(metric.topSideBearing)
     })
   }
 }

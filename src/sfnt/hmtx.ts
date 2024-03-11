@@ -17,7 +17,17 @@ export interface HMetric {
  */
 @Sfnt.table('hmtx')
 export class Hmtx extends SfntTable {
-  get metrics(): Array<HMetric> {
+  static from(metrics: Array<HMetric>): Hmtx {
+    const byteLength = metrics.length * 4
+    const hmtx = new Hmtx(new ArrayBuffer(byteLength))
+    metrics.forEach(metric => {
+      hmtx.writeUint16(metric.advanceWidth)
+      hmtx.writeUint16(metric.leftSideBearing)
+    })
+    return hmtx
+  }
+
+  getMetrics(): Array<HMetric> {
     const numGlyphs = this.sfnt.maxp.numGlyphs
     const numOfLongHorMetrics = this.sfnt.hhea.numOfLongHorMetrics
     let advanceWidth = 0
@@ -28,14 +38,6 @@ export class Hmtx extends SfntTable {
         advanceWidth,
         leftSideBearing: this.readUint16(),
       }
-    })
-  }
-
-  set metrics(metrics: Array<HMetric>) {
-    this.seek(0)
-    metrics.forEach(metric => {
-      this.writeUint16(metric.advanceWidth)
-      this.writeInt16(metric.leftSideBearing)
     })
   }
 }

@@ -28,4 +28,8 @@ export class Maxp extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare maxSizeOfInstructions: number
   @Entity.column({ type: 'uint16' }) declare maxComponentElements: number
   @Entity.column({ type: 'uint16' }) declare maxComponentDepth: number
+
+  constructor(buffer: BufferSource = new ArrayBuffer(32), byteOffset?: number) {
+    super(buffer, byteOffset, 32)
+  }
 }
