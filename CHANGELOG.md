@@ -1,3 +1,17 @@
+## [0.0.3](https://github.com/qq15725/modern-font/compare/v0.0.2...v0.0.3) (2024-03-11)
+
+
+### Bug Fixes
+
+* TODO composite shape ([2a16b91](https://github.com/qq15725/modern-font/commit/2a16b91375b3bad71e688838efa4c48ef9e1bab0))
+
+
+### Features
+
+* unprocessed tables are removed during minimization ([14f12de](https://github.com/qq15725/modern-font/commit/14f12de5bd19ad6db1ab5ff27b5af5d53216a505))
+
+
+
 ## [0.0.2](https://github.com/qq15725/modern-font/compare/v0.0.1...v0.0.2) (2024-03-11)
 
 
