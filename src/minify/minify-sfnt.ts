@@ -28,7 +28,7 @@ export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
   )
 
   sfnt.cmap = Cmap.from(glyphs.reduce((map, glyph, glyphIndex) => {
-    map[glyph.unicode] = glyphIndex
+    map[glyph.unicode!] = glyphIndex
     return map
   }, {} as Record<number, number>))
 

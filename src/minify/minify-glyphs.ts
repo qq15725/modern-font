@@ -10,10 +10,10 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string) {
     new Set(
       subset.split('')
         .map(str => str.codePointAt(0))
-        .filter(unicode => unicode in unicodeGlyphIndexMap)
+        .filter(unicode => unicode !== undefined && unicode in unicodeGlyphIndexMap)
         .sort(),
     ),
-  )
+  ) as Array<number>
   const glyphs = unicodes.map(unicode => {
     const glyphIndex = unicodeGlyphIndexMap[unicode]
     const hMetric = hMetrics[glyphIndex]

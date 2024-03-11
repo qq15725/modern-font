@@ -1,5 +1,23 @@
 import { Entity } from '../../utils'
 
+export interface VarSelectorRecord {
+  varSelector: number
+  defaultUVSOffset: number
+  unicodeValueRanges: Array<UnicodeValueRange>
+  nonDefaultUVSOffset: number
+  uVSMappings: Array<VSMappings>
+}
+
+export interface UnicodeValueRange {
+  startUnicodeValue: number
+  additionalCount: number
+}
+
+export interface VSMappings {
+  unicodeValue: number
+  glyphID: number
+}
+
 export class CmapSubtableFormat14 extends Entity {
   @Entity.column({ type: 'uint16' }) declare format: 14
   @Entity.column({ type: 'uint32' }) declare length: number
@@ -9,7 +27,7 @@ export class CmapSubtableFormat14 extends Entity {
     const numVarSelectorRecords = this.numVarSelectorRecords
     this.seek(10)
     return Array.from({ length: numVarSelectorRecords }, () => {
-      const varSelectorRecord = {
+      const varSelectorRecord: VarSelectorRecord = {
         varSelector: this.readUint24(),
         defaultUVSOffset: this.readUint32(),
         unicodeValueRanges: [],

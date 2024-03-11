@@ -45,7 +45,7 @@ export class Sfnt {
       if (Table) {
         const rawView = this.tables.find(table => table.tag === tag)!.view
         view = new Table(rawView.buffer, rawView.byteOffset, rawView.byteLength).setSfnt(this) as any
-        this.setTableView(tag, view)
+        this.setTableView(tag, view!)
       }
     }
     return view

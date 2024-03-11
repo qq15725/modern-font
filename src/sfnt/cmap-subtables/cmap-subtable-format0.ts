@@ -16,9 +16,10 @@ export class CmapSubtableFormat0 extends Entity {
 
   static from(unicodeGlyphIndexMap: Record<number, number>): CmapSubtableFormat0 {
     const unicodes: Array<number> = []
-    for (const [unicode, glyphIndex] of Object.entries(unicodeGlyphIndexMap)) {
+    for (const [key, glyphIndex] of Object.entries(unicodeGlyphIndexMap)) {
+      const unicode = Number(key)
       if (unicode < 256 && glyphIndex < 256) {
-        unicodes.push(Number(unicode))
+        unicodes.push(unicode)
       }
     }
     const table = new CmapSubtableFormat0()

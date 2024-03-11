@@ -24,7 +24,7 @@ export class Cmap extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare numberSubtables: number
 
   static from(unicodeGlyphIndexMap: Record<number, number>): Cmap {
-    const has2Byte = Object.keys(unicodeGlyphIndexMap).some(unicode => unicode > 0xFFFF)
+    const has2Byte = Object.keys(unicodeGlyphIndexMap).some(unicode => Number(unicode) > 0xFFFF)
     const table4 = CmapSubtableFormat4.from(unicodeGlyphIndexMap)
     const table0 = CmapSubtableFormat0.from(unicodeGlyphIndexMap)
     const table12 = has2Byte ? CmapSubtableFormat12.from(unicodeGlyphIndexMap) : undefined

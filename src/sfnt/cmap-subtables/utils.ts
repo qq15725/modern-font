@@ -15,7 +15,8 @@ export function createSegments(unicodeGlyphIndexMap: Record<number, number>, bou
   let prev: Record<string, any> | undefined
   const segments: Segment[] = []
   let segment: Segment = {} as Segment
-  for (const [unicode, glyphIndex] of Object.entries(unicodeGlyphIndexMap)) {
+  for (const [key, glyphIndex] of Object.entries(unicodeGlyphIndexMap)) {
+    const unicode = Number(key)
     if (bound && unicode > bound) continue
     if (!prev
       || unicode !== prev.unicode + 1

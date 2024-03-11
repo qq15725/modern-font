@@ -64,7 +64,7 @@ export class Woff extends FontFileFormat {
       ))
       return {
         tag: table.tag,
-        view: view.byteLength < table.view ? view : table.view,
+        view: view.byteLength < table.view.byteLength ? view : table.view,
         rawView: table.view,
       }
     })
