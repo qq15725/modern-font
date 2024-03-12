@@ -1,3 +1,18 @@
+## [0.0.4](https://github.com/qq15725/modern-font/compare/v0.0.3...v0.0.4) (2024-03-12)
+
+
+### Bug Fixes
+
+* glyphIndexUnicodesMap ([2044ab5](https://github.com/qq15725/modern-font/commit/2044ab5179d770a3a0940cabedc606bb5f69744a))
+
+
+### Features
+
+* minify support compound glyphs ([41dc152](https://github.com/qq15725/modern-font/commit/41dc1522a06e232d8b94cc2e9b2a288eac8b7bd8))
+* minify support compound glyphs ([926a6e1](https://github.com/qq15725/modern-font/commit/926a6e1e9fd5dd385068e84021c7dacc3f3ddedf))
+
+
+
 ## [0.0.3](https://github.com/qq15725/modern-font/compare/v0.0.2...v0.0.3) (2024-03-11)
 
 
