@@ -102,3 +102,7 @@ console.log(
 const woff = new Blob([buffer], { type: 'font/woff' })
 window.open(URL.createObjectURL(woff))
 ```
+
+## TODO
+
+- [WOFF2](https://www.w3.org/TR/WOFF2)

@@ -11,12 +11,6 @@ export interface MinimizedGlyph extends HMetric, VMetric {
 export function minifyGlyphs(sfnt: Sfnt, subset: string) {
   const { cmap, loca, hmtx, vmtx, glyf } = sfnt
   const unicodeGlyphIndexMap = cmap.getUnicodeGlyphIndexMap()
-  const glyphIndexUnicodesMap = new Map<number, Set<number>>()
-  unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
-    let unicodes = glyphIndexUnicodesMap.get(glyphIndex)
-    if (!unicodes) glyphIndexUnicodesMap.set(glyphIndex, unicodes = new Set())
-    unicodes.add(unicode)
-  })
   const locations = loca.getLocations()
   const hMetrics = hmtx.getMetrics()
   const vMetrics = vmtx?.getMetrics()
@@ -27,6 +21,13 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string) {
         .filter(unicode => unicode !== undefined && unicodeGlyphIndexMap.has(unicode)) as Array<number>,
     ),
   ).sort((a, b) => a - b)
+  const glyphIndexUnicodesMap = new Map<number, Set<number>>()
+  unicodes.forEach(unicode => {
+    const glyphIndex = unicodeGlyphIndexMap.get(unicode) ?? 0
+    let unicodes = glyphIndexUnicodesMap.get(glyphIndex)
+    if (!unicodes) glyphIndexUnicodesMap.set(glyphIndex, unicodes = new Set())
+    unicodes.add(unicode)
+  })
 
   const glyphs: Array<MinimizedGlyph> = []
 

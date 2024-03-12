@@ -27,10 +27,12 @@ export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
     head.indexToLocFormat,
   )
 
-  sfnt.cmap = Cmap.from(glyphs.reduce((map, glyph, glyphIndex) => {
+  const unicodeGlyphIndexMap = glyphs.reduce((map, glyph, glyphIndex) => {
     glyph.unicodes.forEach(unicode => map.set(unicode, glyphIndex))
     return map
-  }, new Map<number, number>()))
+  }, new Map<number, number>())
+
+  sfnt.cmap = Cmap.from(unicodeGlyphIndexMap)
 
   sfnt.glyf = Glyf.from(glyphs.map(glyph => glyph.view))
 
