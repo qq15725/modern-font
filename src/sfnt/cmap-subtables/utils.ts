@@ -11,13 +11,12 @@ export interface Segment {
   delta: number
 }
 
-export function createSegments(unicodeGlyphIndexMap: Record<number, number>, bound?: number) {
+export function createSegments(unicodeGlyphIndexMap: Map<number, number>, bound?: number) {
   let prev: Record<string, any> | undefined
   const segments: Segment[] = []
   let segment: Segment = {} as Segment
-  for (const [key, glyphIndex] of Object.entries(unicodeGlyphIndexMap)) {
-    const unicode = Number(key)
-    if (bound && unicode > bound) continue
+  unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
+    if (bound && unicode > bound) return
     if (!prev
       || unicode !== prev.unicode + 1
       || glyphIndex !== prev.glyphIndex + 1
@@ -37,8 +36,7 @@ export function createSegments(unicodeGlyphIndexMap: Record<number, number>, bou
       }
     }
     prev = { unicode, glyphIndex }
-  }
-
+  })
   if (prev) {
     segment.end = prev.unicode
     segments.push(segment)

@@ -35,8 +35,8 @@ export class CmapSubtableFormat2 extends Entity {
     return Array.from({ length }, () => this.readUint16())
   }
 
-  getUnicodeGlyphIndexMap(numGlyphs: number): Record<number, number> {
-    const unicodeGlyphIndexMap: Record<number, number> = {}
+  getUnicodeGlyphIndexMap(numGlyphs: number): Map<number, number> {
+    const unicodeGlyphIndexMap = new Map<number, number>()
     const subHeaderKeys = this.subHeaderKeys
     const maxSubHeaderKey = this.maxSubHeaderKey
     const subHeaders = this.subHeaders
@@ -57,7 +57,7 @@ export class CmapSubtableFormat2 extends Entity {
           index = index + subHeaders[0].idDelta
         }
         if (index !== 0 && index < numGlyphs) {
-          unicodeGlyphIndexMap[i] = index
+          unicodeGlyphIndexMap.set(i, index)
         }
       } else {
         const k = subHeaderKeys[i]
@@ -71,7 +71,7 @@ export class CmapSubtableFormat2 extends Entity {
 
           if (index !== 0 && index < numGlyphs) {
             const unicode = ((i << 8) | (j + subHeaders[k].firstCode)) % 0xFFFF
-            unicodeGlyphIndexMap[unicode] = index
+            unicodeGlyphIndexMap.set(unicode, index)
           }
         }
       }

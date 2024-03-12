@@ -28,9 +28,9 @@ export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
   )
 
   sfnt.cmap = Cmap.from(glyphs.reduce((map, glyph, glyphIndex) => {
-    map[glyph.unicode!] = glyphIndex
+    glyph.unicodes.forEach(unicode => map.set(unicode, glyphIndex))
     return map
-  }, {} as Record<number, number>))
+  }, new Map<number, number>()))
 
   sfnt.glyf = Glyf.from(glyphs.map(glyph => glyph.view))
 

@@ -4,35 +4,34 @@ export class CmapSubtableFormat0 extends Entity {
   @Entity.column({ type: 'uint16' }) declare format: 0
   @Entity.column({ type: 'uint16' }) declare length: number
   @Entity.column({ type: 'uint16' }) declare language: number
-
-  get glyphIndexArray() {
-    this.seek(6)
-    return Array.from({ length: 256 }, () => this.readUint8())
-  }
+  @Entity.column({ type: 'uint8', size: 256 }) declare glyphIndexArray: Array<number>
 
   constructor(buffer: BufferSource = new ArrayBuffer(262), byteOffset?: number) {
     super(buffer, byteOffset, 262)
   }
 
-  static from(unicodeGlyphIndexMap: Record<number, number>): CmapSubtableFormat0 {
+  static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat0 {
     const unicodes: Array<number> = []
-    for (const [key, glyphIndex] of Object.entries(unicodeGlyphIndexMap)) {
-      const unicode = Number(key)
+    unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
       if (unicode < 256 && glyphIndex < 256) {
         unicodes.push(unicode)
       }
-    }
+    })
     const table = new CmapSubtableFormat0()
     table.format = 0
     table.length = table.byteLength
     table.language = 0
     unicodes.sort((a, b) => a - b).forEach(unicode => {
-      table.writeUint8(unicodeGlyphIndexMap[unicode], Number(6 + unicode))
+      table.writeUint8(unicodeGlyphIndexMap.get(unicode)!, Number(6 + unicode))
     })
     return table
   }
 
-  getUnicodeGlyphIndexMap(): Record<number, number> {
-    return this.glyphIndexArray
+  getUnicodeGlyphIndexMap(): Map<number, number> {
+    const unicodeGlyphIndexMap = new Map<number, number>()
+    this.glyphIndexArray.forEach((glyphIndex, unicode) => {
+      unicodeGlyphIndexMap.set(unicode, glyphIndex)
+    })
+    return unicodeGlyphIndexMap
   }
 }

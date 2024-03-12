@@ -20,7 +20,7 @@ export class CmapSubtableFormat12 extends Entity {
     })
   }
 
-  static from(unicodeGlyphIndexMap: Record<number, number>): CmapSubtableFormat12 {
+  static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat12 {
     const segments = createSegments(unicodeGlyphIndexMap)
     const table = new CmapSubtableFormat12(new ArrayBuffer(16 + segments.length * 12))
     table.format = 12
@@ -36,8 +36,8 @@ export class CmapSubtableFormat12 extends Entity {
     return table
   }
 
-  getUnicodeGlyphIndexMap(): Record<number, number> {
-    const unicodeGlyphIndexMap: Record<number, number> = {}
+  getUnicodeGlyphIndexMap(): Map<number, number> {
+    const unicodeGlyphIndexMap = new Map<number, number>()
     const groups = this.groups
     for (let i = 0, l = groups.length; i < l; i++) {
       const group = groups[i]
@@ -45,7 +45,7 @@ export class CmapSubtableFormat12 extends Entity {
       let start = group.startCharCode
       const end = group.endCharCode
       for (;start <= end;) {
-        unicodeGlyphIndexMap[start++] = startId++
+        unicodeGlyphIndexMap.set(start++, startId++)
       }
     }
     return unicodeGlyphIndexMap
