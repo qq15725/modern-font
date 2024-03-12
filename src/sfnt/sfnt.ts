@@ -31,6 +31,20 @@ export class Sfnt {
     //
   }
 
+  clone() {
+    return new Sfnt(this.tables.map(({ tag, view }) => {
+      return {
+        tag,
+        view: new DataView(
+          view.buffer.slice(
+            view.byteOffset,
+            view.byteOffset + view.byteLength,
+          ),
+        ),
+      }
+    }))
+  }
+
   delete(tag: SfntTableTag): this {
     this.tableViews.delete(tag)
     const index = this.tables.findIndex(table => table.tag === tag)
@@ -50,9 +64,11 @@ export class Sfnt {
     if (!view) {
       const Table = Sfnt.registeredTableViews.get(tag) as any
       if (Table) {
-        const rawView = this.tables.find(table => table.tag === tag)!.view
-        view = new Table(rawView.buffer, rawView.byteOffset, rawView.byteLength).setSfnt(this) as any
-        this.set(tag, view!)
+        const rawView = this.tables.find(table => table.tag === tag)?.view
+        if (rawView) {
+          view = new Table(rawView.buffer, rawView.byteOffset, rawView.byteLength).setSfnt(this) as any
+          this.set(tag, view!)
+        }
       }
     }
     return view

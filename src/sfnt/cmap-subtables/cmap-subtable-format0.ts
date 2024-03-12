@@ -11,18 +11,14 @@ export class CmapSubtableFormat0 extends Entity {
   }
 
   static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat0 {
-    const unicodes: Array<number> = []
-    unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
-      if (unicode < 256 && glyphIndex < 256) {
-        unicodes.push(unicode)
-      }
-    })
     const table = new CmapSubtableFormat0()
     table.format = 0
     table.length = table.byteLength
     table.language = 0
-    unicodes.sort((a, b) => a - b).forEach(unicode => {
-      table.writeUint8(unicodeGlyphIndexMap.get(unicode)!, Number(6 + unicode))
+    unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
+      if (unicode < 256 && glyphIndex < 256) {
+        table.writeUint8(glyphIndex, 6 + unicode)
+      }
     })
     return table
   }

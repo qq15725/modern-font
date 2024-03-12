@@ -24,18 +24,18 @@ export class Cmap extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare numberSubtables: number
 
   static from(unicodeGlyphIndexMap: Map<number, number>): Cmap {
-    const has2Byte = Array.from(unicodeGlyphIndexMap.keys()).some(unicode => Number(unicode) > 0xFFFF)
+    const has2Byte = Array.from(unicodeGlyphIndexMap.keys()).some(unicode => unicode > 0xFFFF)
     const table4 = CmapSubtableFormat4.from(unicodeGlyphIndexMap)
     const table0 = CmapSubtableFormat0.from(unicodeGlyphIndexMap)
     const table12 = has2Byte ? CmapSubtableFormat12.from(unicodeGlyphIndexMap) : undefined
-    const offset4 = 4 + (has2Byte ? 32 : 24)
+    const offset4 = 4 + (table12 ? 32 : 24)
     const offset0 = offset4 + table4.byteLength
     const offset12 = offset0 + table0.byteLength
     const subtables = [
       { platformID: 0, platformSpecificID: 3, offset: offset4 }, // subtable 4, unicode
       { platformID: 1, platformSpecificID: 0, offset: offset0 }, // subtable 0, mac standard
       { platformID: 3, platformSpecificID: 1, offset: offset4 }, // subtable 4, windows standard
-      has2Byte && { platformID: 3, platformSpecificID: 10, offset: offset12 }, // hasGLyphsOver2Bytes
+      table12 && { platformID: 3, platformSpecificID: 10, offset: offset12 }, // hasGLyphsOver2Bytes
     ].filter(Boolean) as Array<CmapSubtable>
     const cmap = new Cmap(
       new ArrayBuffer(
