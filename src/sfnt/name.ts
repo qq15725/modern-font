@@ -68,7 +68,7 @@ export class Name extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare count: number
   @Entity.column({ type: 'uint16' }) declare stringOffset: number
 
-  getNames() {
+  getNames(): Record<string, any> {
     const count = this.count
     this.seek(6)
     const nameRecords: Array<Record<string, any>> = []
@@ -96,7 +96,7 @@ export class Name extends SfntTable {
     let language = 0
     if (
       nameRecords.some(
-        (record) => record.platform === platforms.Microsoft
+        record => record.platform === platforms.Microsoft
           && record.encoding === win.UCS2
           && record.language === 1033,
       )

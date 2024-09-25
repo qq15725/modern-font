@@ -61,7 +61,7 @@ export class Os2 extends SfntTable {
   @Entity.column({ type: 'uint16' }) declare usBreakChar: number
   @Entity.column({ type: 'uint16' }) declare usMaxContext: number
 
-  get fontPANOSE() {
+  get fontPANOSE(): number[] {
     return [
       this.bFamilyType,
       this.bSerifStyle,

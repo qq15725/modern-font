@@ -1,7 +1,7 @@
 import { Entity } from '../utils'
+import { CmapSubtableFormat0, CmapSubtableFormat2, CmapSubtableFormat4, CmapSubtableFormat6, CmapSubtableFormat12, CmapSubtableFormat14 } from './cmap-subtables'
 import { Sfnt } from './sfnt'
 import { SfntTable } from './sfnt-table'
-import { CmapSubtableFormat0, CmapSubtableFormat12, CmapSubtableFormat14, CmapSubtableFormat2, CmapSubtableFormat4, CmapSubtableFormat6 } from './cmap-subtables'
 
 declare module './sfnt' {
   interface Sfnt {
@@ -36,7 +36,7 @@ export class Cmap extends SfntTable {
       { platformID: 1, platformSpecificID: 0, offset: offset0 }, // subtable 0, mac standard
       { platformID: 3, platformSpecificID: 1, offset: offset4 }, // subtable 4, windows standard
       table12 && { platformID: 3, platformSpecificID: 10, offset: offset12 }, // hasGLyphsOver2Bytes
-    ].filter(Boolean) as Array<CmapSubtable>
+    ].filter(Boolean) as CmapSubtable[]
     const cmap = new Cmap(
       new ArrayBuffer(
         4 // head
@@ -48,7 +48,7 @@ export class Cmap extends SfntTable {
     )
     cmap.numberSubtables = subtables.length
     cmap.seek(4)
-    subtables.forEach(subtable => {
+    subtables.forEach((subtable) => {
       cmap.writeUint16(subtable.platformID)
       cmap.writeUint16(subtable.platformSpecificID)
       cmap.writeUint32(subtable.offset)
@@ -59,7 +59,7 @@ export class Cmap extends SfntTable {
     return cmap
   }
 
-  getSubtables() {
+  getSubtables(): (CmapSubtable & { format: number, view: any })[] {
     const numberSubtables = this.numberSubtables
     this.seek(4)
     return Array.from({ length: numberSubtables }, () => {
@@ -68,7 +68,7 @@ export class Cmap extends SfntTable {
         platformSpecificID: this.readUint16(),
         offset: this.readUint32(),
       } as CmapSubtable
-    }).map(table => {
+    }).map((table) => {
       this.seek(table.offset)
       const format = this.readUint16()
       let view

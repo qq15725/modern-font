@@ -8,7 +8,7 @@ export class CmapSubtableFormat12 extends Entity {
   @Entity.column({ type: 'uint32' }) declare language: number
   @Entity.column({ type: 'uint32' }) declare nGroups: number
 
-  get groups() {
+  get groups(): { startCharCode: number, endCharCode: number, startGlyphCode: number }[] {
     const nGroups = this.nGroups
     this.seek(16)
     return Array.from({ length: nGroups }, () => {
@@ -28,7 +28,7 @@ export class CmapSubtableFormat12 extends Entity {
     table.length = table.byteLength
     table.language = 0
     table.nGroups = segments.length
-    segments.forEach(segment => {
+    segments.forEach((segment) => {
       table.writeUint32(segment.start)
       table.writeUint32(segment.end)
       table.writeUint32(segment.startId)

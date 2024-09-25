@@ -1,4 +1,4 @@
-function encodeDelta(delta: number) {
+function encodeDelta(delta: number): number {
   return delta > 0x7FFF
     ? delta - 0x10000
     : (delta < -0x7FFF ? delta + 0x10000 : delta)
@@ -11,12 +11,13 @@ export interface Segment {
   delta: number
 }
 
-export function createSegments(unicodeGlyphIndexMap: Map<number, number>, bound?: number) {
+export function createSegments(unicodeGlyphIndexMap: Map<number, number>, bound?: number): Segment[] {
   let prev: Record<string, any> | undefined
   const segments: Segment[] = []
   let segment: Segment = {} as Segment
   unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
-    if (bound && unicode > bound) return
+    if (bound && unicode > bound)
+      return
     if (!prev
       || unicode !== prev.unicode + 1
       || glyphIndex !== prev.glyphIndex + 1
@@ -29,7 +30,8 @@ export function createSegments(unicodeGlyphIndexMap: Map<number, number>, bound?
           startId: glyphIndex,
           delta: encodeDelta(glyphIndex - unicode),
         } as Segment
-      } else {
+      }
+      else {
         segment.start = Number(unicode)
         segment.startId = glyphIndex
         segment.delta = encodeDelta(glyphIndex - unicode)

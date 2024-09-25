@@ -1,7 +1,7 @@
+import type { Sfnt } from '../sfnt'
 import { Ttf, Woff } from '../font'
 import { toDataView } from '../utils'
 import { minifySfnt } from './minify-sfnt'
-import type { Sfnt } from '../sfnt'
 
 export function minify<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: string): T {
   let sfnt: Sfnt
@@ -9,18 +9,22 @@ export function minify<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: 
   if (source instanceof Ttf) {
     sfnt = source.sfnt.clone()
     outputFormat = 'ttf'
-  } else if (source instanceof Woff) {
+  }
+  else if (source instanceof Woff) {
     sfnt = source.sfnt.clone()
     outputFormat = 'woff'
-  } else {
+  }
+  else {
     const view = toDataView(source)
     if (Ttf.is(view)) {
       sfnt = new Ttf(view).sfnt
       outputFormat = 'ttf-buffer'
-    } else if (Woff.is(view)) {
+    }
+    else if (Woff.is(view)) {
       sfnt = new Woff(view).sfnt
       outputFormat = 'woff-buffer'
-    } else {
+    }
+    else {
       throw new Error('Failed to minify, only support ttf、woff source')
     }
   }

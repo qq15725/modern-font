@@ -1,6 +1,6 @@
-import { dataTypeToByteLength } from './data-type'
-import { toBuffer, toDataView } from './buffer'
 import type { DataType } from './data-type'
+import { toBuffer, toDataView } from './buffer'
+import { dataTypeToByteLength } from './data-type'
 
 export interface Column {
   name: string
@@ -41,7 +41,8 @@ export class Entity extends DataView {
   static column(options: ColumnOptions) {
     const { size = 1, type } = options
     return (target: any, name: PropertyKey) => {
-      if (typeof name !== 'string') return
+      if (typeof name !== 'string')
+        return
       let definition = entityDefinitions.get(target)
       if (!definition) {
         definition = {
@@ -76,7 +77,8 @@ export class Entity extends DataView {
           if (typeof name === 'string') {
             if (name.startsWith('read')) {
               return (...args: Array<any>) => this.read(name.substring('read'.length).toLowerCase(), ...args)
-            } else if (name.startsWith('write')) {
+            }
+            else if (name.startsWith('write')) {
               return (...args: Array<any>) => this.write(name.substring('write'.length).toLowerCase(), ...args)
             }
           }
@@ -110,7 +112,8 @@ export class Entity extends DataView {
         default:
           return array
       }
-    } else {
+    }
+    else {
       return this.read(column.type, column.offset)
     }
   }
@@ -121,12 +124,13 @@ export class Entity extends DataView {
       Array.from({ length: column.size }, (_, i) => {
         this.write(column.type, value[i], column.offset + i)
       })
-    } else {
+    }
+    else {
       this.write(column.type, value, column.offset)
     }
   }
 
-  read(type: DataType, byteOffset = this.cursor, littleEndian = this.littleEndian) {
+  read(type: DataType, byteOffset = this.cursor, littleEndian = this.littleEndian): any {
     switch (type) {
       case 'char':
         return this.readChar(byteOffset)
@@ -135,18 +139,18 @@ export class Entity extends DataView {
       case 'longDateTime':
         return this.readLongDateTime(byteOffset, littleEndian)
     }
-    const method = `get${ type.replace(/^\S/, s => s.toUpperCase()) }`
+    const method = `get${type.replace(/^\S/, s => s.toUpperCase())}`
     const result = (this as any)[method](byteOffset, littleEndian)
     this.cursor += (dataTypeToByteLength as any)[type]
     return result
   }
 
-  readUint24(byteOffset = this.cursor) {
+  readUint24(byteOffset = this.cursor): number {
     const [i, j, k] = this.readBytes(byteOffset, 3)
     return (i << 16) + (j << 8) + k
   }
 
-  readBytes(byteOffset: number, length?: number): Array<number> {
+  readBytes(byteOffset: number, length?: number): number[] {
     if (length == null) {
       length = byteOffset
       byteOffset = this.cursor
@@ -184,11 +188,11 @@ export class Entity extends DataView {
     return date
   }
 
-  readChar(byteOffset: number) {
+  readChar(byteOffset: number): string {
     return this.readString(byteOffset, 1)
   }
 
-  write(type: DataType, value: any, byteOffset = this.cursor, littleEndian = this.littleEndian) {
+  write(type: DataType, value: any, byteOffset = this.cursor, littleEndian = this.littleEndian): any {
     switch (type) {
       case 'char':
         return this.writeChar(value, byteOffset)
@@ -197,13 +201,13 @@ export class Entity extends DataView {
       case 'longDateTime':
         return this.writeLongDateTime(value, byteOffset)
     }
-    const method = `set${ type.replace(/^\S/, s => s.toUpperCase()) }`
+    const method = `set${type.replace(/^\S/, s => s.toUpperCase())}`
     const result = (this as any)[method](byteOffset, value, littleEndian)
     this.cursor += (dataTypeToByteLength as any)[type.toLowerCase()]
     return result
   }
 
-  writeString(str = '', byteOffset = this.cursor) {
+  writeString(str = '', byteOffset = this.cursor): this {
     // eslint-disable-next-line no-control-regex
     const length = str.replace(/[^\x00-\xFF]/g, '11').length
     this.seek(byteOffset)
@@ -211,7 +215,8 @@ export class Entity extends DataView {
       charCode = str.charCodeAt(i) || 0
       if (charCode > 127) {
         this.writeUint16(charCode)
-      } else {
+      }
+      else {
         this.writeUint8(charCode)
       }
     }
@@ -219,24 +224,27 @@ export class Entity extends DataView {
     return this
   }
 
-  writeChar(value: string, byteOffset?: number) {
+  writeChar(value: string, byteOffset?: number): this {
     return this.writeString(value, byteOffset)
   }
 
-  writeFixed(value: number, byteOffset?: number) {
+  writeFixed(value: number, byteOffset?: number): this {
     this.writeInt32(Math.round(value * 65536), byteOffset)
     return this
   }
 
-  writeLongDateTime(value: any, byteOffset = this.cursor) {
+  writeLongDateTime(value: any, byteOffset = this.cursor): this {
     const delta = -2077545600000
     if (typeof value === 'undefined') {
       value = delta
-    } else if (typeof value.getTime === 'function') {
+    }
+    else if (typeof value.getTime === 'function') {
       value = value.getTime()
-    } else if (/^\d+$/.test(value)) {
+    }
+    else if (/^\d+$/.test(value)) {
       value = +value
-    } else {
+    }
+    else {
       value = Date.parse(value)
     }
     const time = Math.round((value - delta) / 1000)
@@ -252,7 +260,8 @@ export class Entity extends DataView {
       for (let i = 0; i < len; ++i) {
         this.setUint8(byteOffset + i, value[i])
       }
-    } else {
+    }
+    else {
       const view = toDataView(value)
       len = view.byteLength
       for (let i = 0; i < len; ++i) {

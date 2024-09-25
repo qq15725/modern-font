@@ -1,5 +1,5 @@
-import { componentFlags } from '../sfnt'
 import type { HMetric, Sfnt, VMetric } from '../sfnt'
+import { componentFlags } from '../sfnt'
 
 export interface MinimizedGlyph extends HMetric, VMetric {
   rawGlyphIndex: number
@@ -8,7 +8,7 @@ export interface MinimizedGlyph extends HMetric, VMetric {
   view: DataView
 }
 
-export function minifyGlyphs(sfnt: Sfnt, subset: string) {
+export function minifyGlyphs(sfnt: Sfnt, subset: string): MinimizedGlyph[] {
   const { cmap, loca, hmtx, vmtx, glyf } = sfnt
   const unicodeGlyphIndexMap = cmap.getUnicodeGlyphIndexMap()
   const locations = loca.getLocations()
@@ -22,16 +22,17 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string) {
     ),
   ).sort((a, b) => a - b)
   const glyphIndexUnicodesMap = new Map<number, Set<number>>()
-  unicodes.forEach(unicode => {
+  unicodes.forEach((unicode) => {
     const glyphIndex = unicodeGlyphIndexMap.get(unicode) ?? 0
     let unicodes = glyphIndexUnicodesMap.get(glyphIndex)
-    if (!unicodes) glyphIndexUnicodesMap.set(glyphIndex, unicodes = new Set())
+    if (!unicodes)
+      glyphIndexUnicodesMap.set(glyphIndex, unicodes = new Set())
     unicodes.add(unicode)
   })
 
-  const glyphs: Array<MinimizedGlyph> = []
+  const glyphs: MinimizedGlyph[] = []
 
-  const addGlyph = (glyphIndex: number) => {
+  const addGlyph = (glyphIndex: number): MinimizedGlyph => {
     const hMetric = hMetrics[glyphIndex]
     const vMetric = vMetrics?.[glyphIndex] ?? { advanceHeight: 0, topSideBearing: 0 }
     const start = locations[glyphIndex]
@@ -56,11 +57,13 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string) {
 
   unicodes.forEach(unicode => addGlyph(unicodeGlyphIndexMap.get(unicode)!))
 
-  glyphs.slice().forEach(glyph => {
+  glyphs.slice().forEach((glyph) => {
     const { view } = glyph
-    if (!view.byteLength) return
+    if (!view.byteLength)
+      return
     const numberOfContours = view.getInt16(0)
-    if (numberOfContours >= 0) return
+    if (numberOfContours >= 0)
+      return
     let offset = 10
     let flags
     do {
@@ -68,11 +71,15 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string) {
       const glyphIndexOffset = offset + 2
       const glyphIndex = view.getUint16(glyphIndexOffset)
       offset += 4
-      if (componentFlags.ARG_1_AND_2_ARE_WORDS & flags) offset += 4
+      if (componentFlags.ARG_1_AND_2_ARE_WORDS & flags)
+        offset += 4
       else offset += 2
-      if (componentFlags.WE_HAVE_A_SCALE & flags) offset += 2
-      else if (componentFlags.WE_HAVE_AN_X_AND_Y_SCALE & flags) offset += 4
-      else if (componentFlags.WE_HAVE_A_TWO_BY_TWO & flags) offset += 8
+      if (componentFlags.WE_HAVE_A_SCALE & flags)
+        offset += 2
+      else if (componentFlags.WE_HAVE_AN_X_AND_Y_SCALE & flags)
+        offset += 4
+      else if (componentFlags.WE_HAVE_A_TWO_BY_TWO & flags)
+        offset += 8
       const glyph = addGlyph(glyphIndex)
       view.setUint16(glyphIndexOffset, glyph.glyphIndex)
     } while (componentFlags.MORE_COMPONENTS & flags)

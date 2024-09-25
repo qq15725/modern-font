@@ -27,26 +27,29 @@ npm i modern-font
 ## 🦄 Usage
 
 ```ts
-import { Ttf, Woff, Eot, minify } from 'modern-font'
+import { Eot, minify, Ttf, Woff } from 'modern-font'
 
-const buffer = await fetch('font.woff').then(rep => rep.arrayBuffer())
-
-let woff, ttf, eot
-if (Woff.is(buffer)) {
-  woff = new Woff(buffer)
-  ttf = Ttf.from(woff.sfnt)
-  eot = Eot.from(ttf)
-} else if (Ttf.is(buffer)) {
-  ttf = new Ttf(buffer)
-  woff = Woff.from(ttf.sfnt)
-  eot = Eot.from(ttf)
-}
-const minifyWoff = minify(woff, 'minify')
-document.fonts.add(woff.toFontFace('woff'))
-document.fonts.add(ttf.toFontFace('ttf'))
-document.fonts.add(eot.toFontFace('eot'))
-document.fonts.add(minifyWoff.toFontFace('minifyWoff'))
-console.log(woff, ttf, eot, minifyWoff)
+fetch('font.woff')
+  .then(rep => rep.arrayBuffer())
+  .then((buffer) => {
+    let woff, ttf, eot
+    if (Woff.is(buffer)) {
+      woff = new Woff(buffer)
+      ttf = Ttf.from(woff.sfnt)
+      eot = Eot.from(ttf)
+    }
+    else if (Ttf.is(buffer)) {
+      ttf = new Ttf(buffer)
+      woff = Woff.from(ttf.sfnt)
+      eot = Eot.from(ttf)
+    }
+    const minifyWoff = minify(woff, 'minify')
+    document.fonts.add(woff.toFontFace('woff'))
+    document.fonts.add(ttf.toFontFace('ttf'))
+    document.fonts.add(eot.toFontFace('eot'))
+    document.fonts.add(minifyWoff.toFontFace('minifyWoff'))
+    console.log(woff, ttf, eot, minifyWoff)
+  })
 ```
 
 ## 🚀 WOFF to TTF
@@ -54,11 +57,14 @@ console.log(woff, ttf, eot, minifyWoff)
 ```ts
 import { Ttf, Woff } from 'modern-font'
 
-const buffer = await fetch('font.woff').then(rep => rep.arrayBuffer())
-const ttf = Ttf.from(new Woff(buffer).sfnt)
+fetch('font.woff')
+  .then(rep => rep.arrayBuffer())
+  .then((buffer) => {
+    const ttf = Ttf.from(new Woff(buffer).sfnt)
 
-// ttf file
-window.open(URL.createObjectURL(ttf.toBlob()))
+    // ttf file
+    window.open(URL.createObjectURL(ttf.toBlob()))
+  })
 ```
 
 ## 🚀 TTF to WOFF
@@ -66,23 +72,29 @@ window.open(URL.createObjectURL(ttf.toBlob()))
 ```ts
 import { Ttf, Woff } from 'modern-font'
 
-const buffer = await fetch('font.ttf').then(rep => rep.arrayBuffer())
-const woff = Woff.from(new Ttf(buffer).sfnt)
+fetch('font.ttf')
+  .then(rep => rep.arrayBuffer())
+  .then((buffer) => {
+    const woff = Woff.from(new Ttf(buffer).sfnt)
 
-// woff file
-window.open(URL.createObjectURL(woff.toBlob()))
+    // woff file
+    window.open(URL.createObjectURL(woff.toBlob()))
+  })
 ```
 
 ## 🚀 TTF to EOT
 
 ```ts
-import { Ttf, Eot } from 'modern-font'
+import { Eot, Ttf } from 'modern-font'
 
-const buffer = await fetch('font.ttf').then(rep => rep.arrayBuffer())
-const eot = Eot.from(new Ttf(buffer))
+fetch('font.ttf')
+  .then(rep => rep.arrayBuffer())
+  .then((buffer) => {
+    const eot = Eot.from(new Ttf(buffer))
 
-// eot file
-window.open(URL.createObjectURL(eot.toBlob()))
+    // eot file
+    window.open(URL.createObjectURL(eot.toBlob()))
+  })
 ```
 
 ## 🚀 Minify
@@ -90,17 +102,20 @@ window.open(URL.createObjectURL(eot.toBlob()))
 ```ts
 import { minify } from 'modern-font'
 
-const rawBuffer = await fetch('font.woff').then(rep => rep.arrayBuffer())
-const buffer = minify(rawBuffer, 'A set of text cropped from a font file')
+fetch('font.woff')
+  .then(rep => rep.arrayBuffer())
+  .then((rawBuffer) => {
+    const buffer = minify(rawBuffer, 'A set of text cropped from a font file')
 
-console.log(
-  `raw size: ${ rawBuffer.byteLength / 1024 / 1024 }`,
-  `minimized size: ${ buffer.byteLength / 1024 / 1024 }`,
-)
+    console.log(
+      `raw size: ${rawBuffer.byteLength / 1024 / 1024}`,
+      `minimized size: ${buffer.byteLength / 1024 / 1024}`,
+    )
 
-// minimized woff file
-const woff = new Blob([buffer], { type: 'font/woff' })
-window.open(URL.createObjectURL(woff))
+    // minimized woff file
+    const woff = new Blob([buffer], { type: 'font/woff' })
+    window.open(URL.createObjectURL(woff))
+  })
 ```
 
 ## TODO

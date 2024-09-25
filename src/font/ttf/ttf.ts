@@ -1,5 +1,5 @@
-import { Entity, toDataView } from '../../utils'
 import { Sfnt } from '../../sfnt'
+import { Entity, toDataView } from '../../utils'
 import { FontFileFormat } from '../font-file-format'
 import { TableDirectory } from './table-directory'
 
@@ -15,7 +15,7 @@ export class Ttf extends FontFileFormat {
 
   directories: Array<TableDirectory> = []
 
-  static is(source: BufferSource) {
+  static is(source: BufferSource): boolean {
     const view = toDataView(source)
     return [
       0x00010000,
@@ -39,7 +39,7 @@ export class Ttf extends FontFileFormat {
   }
 
   static from(sfnt: Sfnt): Ttf {
-    const round4 = (value: number) => (value + 3) & ~3
+    const round4 = (value: number): number => (value + 3) & ~3
     const numTables = sfnt.tables.length
     const sfntSize = sfnt.tables.reduce((total, table) => total + round4(table.view.byteLength), 0)
     const ttf = new Ttf(
@@ -83,10 +83,10 @@ export class Ttf extends FontFileFormat {
     return this
   }
 
-  get sfnt() {
+  get sfnt(): Sfnt {
     this.updateDirectories()
     return new Sfnt(
-      this.directories.map(dir => {
+      this.directories.map((dir) => {
         return {
           tag: dir.tag,
           view: new DataView(this.buffer, this.byteOffset + dir.offset, dir.length),

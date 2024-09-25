@@ -9,10 +9,10 @@ export type SfntTableTag =
   | string
 
 export class Sfnt {
-  static registeredTableViews = new Map<string, Function>()
+  static registeredTableViews = new Map<string, new () => SfntTable>()
 
   static table(tag: SfntTableTag) {
-    return (constructor: Function) => {
+    return (constructor: any) => {
       this.registeredTableViews.set(tag, constructor)
       Object.defineProperty(this.prototype, tag, {
         get() { return this.get(tag) },
@@ -26,12 +26,12 @@ export class Sfnt {
   tableViews = new Map<string, SfntTable>()
 
   constructor(
-    public tables: Array<{ tag: SfntTableTag; view: DataView }>,
+    public tables: Array<{ tag: SfntTableTag, view: DataView }>,
   ) {
     //
   }
 
-  clone() {
+  clone(): Sfnt {
     return new Sfnt(this.tables.map(({ tag, view }) => {
       return {
         tag,
@@ -48,14 +48,16 @@ export class Sfnt {
   delete(tag: SfntTableTag): this {
     this.tableViews.delete(tag)
     const index = this.tables.findIndex(table => table.tag === tag)
-    if (index > -1) this.tables.splice(index, 1)
+    if (index > -1)
+      this.tables.splice(index, 1)
     return this
   }
 
   set(tag: SfntTableTag, view: SfntTable): this {
     this.tableViews.set(tag, view)
     const table = this.tables.find(table => table.tag === tag)
-    if (table) table.view = view
+    if (table)
+      table.view = view
     return this
   }
 

@@ -1,6 +1,6 @@
 import { unzlibSync, zlibSync } from 'fflate'
-import { Entity, toDataView } from '../../utils'
 import { Sfnt } from '../../sfnt'
+import { Entity, toDataView } from '../../utils'
 import { FontFileFormat } from '../font-file-format'
 import { WoffTableDirectoryEntry } from './woff-table-directory-entry'
 
@@ -23,7 +23,7 @@ export class Woff extends FontFileFormat {
 
   directories: Array<WoffTableDirectoryEntry> = []
 
-  static is(source: BufferSource) {
+  static is(source: BufferSource): boolean {
     const view = toDataView(source)
     return [
       0x774F4646, // wOFF
@@ -52,9 +52,9 @@ export class Woff extends FontFileFormat {
   }
 
   static from(sfnt: Sfnt, rest = new ArrayBuffer(0)): Woff {
-    const round4 = (value: number) => (value + 3) & ~3
+    const round4 = (value: number): number => (value + 3) & ~3
     const numTables = sfnt.tables.length
-    const tables = sfnt.tables.map(table => {
+    const tables = sfnt.tables.map((table) => {
       const view = toDataView(zlibSync(
         new Uint8Array(
           table.view.buffer,
@@ -109,10 +109,10 @@ export class Woff extends FontFileFormat {
     return this
   }
 
-  get sfnt() {
+  get sfnt(): Sfnt {
     this.updateDirectories()
     return new Sfnt(
-      this.directories.map(dir => {
+      this.directories.map((dir) => {
         const tag = dir.tag
         const start = this.byteOffset + dir.offset
         const compLength = dir.compLength

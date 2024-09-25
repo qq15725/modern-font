@@ -10,7 +10,7 @@ export class CmapSubtableFormat4 extends Entity {
   @Entity.column({ type: 'uint16' }) declare entrySelector: number
   @Entity.column({ type: 'uint16' }) declare rangeShift: number
 
-  get endCode() {
+  get endCode(): number[] {
     const segCountX2 = this.segCountX2
     this.seek(14)
     return Array.from({ length: segCountX2 / 2 }, () => this.readUint16())
@@ -21,7 +21,7 @@ export class CmapSubtableFormat4 extends Entity {
     value.forEach(val => this.writeUint16(val))
   }
 
-  get reservedPad() {
+  get reservedPad(): number {
     return this.readUint16(14 + this.segCountX2)
   }
 
@@ -29,7 +29,7 @@ export class CmapSubtableFormat4 extends Entity {
     this.writeUint16(value, 14 + this.segCountX2)
   }
 
-  get startCode() {
+  get startCode(): number[] {
     const segCountX2 = this.segCountX2
     this.seek(14 + segCountX2 + 2)
     return Array.from({ length: segCountX2 / 2 }, () => this.readUint16())
@@ -40,7 +40,7 @@ export class CmapSubtableFormat4 extends Entity {
     value.forEach(val => this.writeUint16(val))
   }
 
-  get idDelta() {
+  get idDelta(): number[] {
     const segCountX2 = this.segCountX2
     this.seek(14 + segCountX2 + 2 + segCountX2)
     return Array.from({ length: segCountX2 / 2 }, () => this.readUint16())
@@ -52,12 +52,12 @@ export class CmapSubtableFormat4 extends Entity {
     value.forEach(val => this.writeUint16(val))
   }
 
-  get idRangeOffsetCursor() {
+  get idRangeOffsetCursor(): number {
     const segCountX2 = this.segCountX2
     return 14 + segCountX2 + 2 + segCountX2 * 2
   }
 
-  get idRangeOffset() {
+  get idRangeOffset(): number[] {
     const segCountX2 = this.segCountX2
     this.seek(this.idRangeOffsetCursor)
     return Array.from({ length: segCountX2 / 2 }, () => this.readUint16())
@@ -68,12 +68,12 @@ export class CmapSubtableFormat4 extends Entity {
     value.forEach(val => this.writeUint16(val))
   }
 
-  get glyphIndexArrayCursor() {
+  get glyphIndexArrayCursor(): number {
     const segCountX2 = this.segCountX2
     return 14 + segCountX2 + 2 + segCountX2 * 3
   }
 
-  get glyphIndexArray() {
+  get glyphIndexArray(): number[] {
     const cursor = this.glyphIndexArrayCursor
     this.seek(cursor)
     const length = (this.byteLength - cursor) / 2
@@ -84,7 +84,7 @@ export class CmapSubtableFormat4 extends Entity {
     const segments = createSegments(unicodeGlyphIndexMap, 0xFFFF)
     const segCount = segments.length + 1
     const entrySelector = Math.floor(Math.log(segCount) / Math.LN2)
-    const searchRange = 2 * Math.pow(2, entrySelector)
+    const searchRange = 2 * 2 ** entrySelector
     const table = new CmapSubtableFormat4(new ArrayBuffer(24 + segments.length * 8))
     table.format = 4
     table.length = table.byteLength
@@ -114,14 +114,16 @@ export class CmapSubtableFormat4 extends Entity {
       for (let start = startCode[i], end = endCode[i]; start <= end; ++start) {
         if (idRangeOffset[i] === 0) {
           unicodeGlyphIndexMap.set(start, (start + idDelta[i]) % 0x10000)
-        } else {
+        }
+        else {
           const index = i + idRangeOffset[i] / 2
             + (start - startCode[i])
             - graphIndexArrayIndexOffset
           const graphId = glyphIndexArray[index]
           if (graphId !== 0) {
             unicodeGlyphIndexMap.set(start, (graphId + idDelta[i]) % 0x10000)
-          } else {
+          }
+          else {
             unicodeGlyphIndexMap.set(start, 0)
           }
         }

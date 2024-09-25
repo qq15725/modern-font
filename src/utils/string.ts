@@ -1,4 +1,4 @@
-function stringify(str: string) {
+function stringify(str: string): string {
   let newStr = ''
   for (let i = 0, l = str.length, ch; i < l; i++) {
     ch = str.charCodeAt(i)
@@ -10,7 +10,7 @@ function stringify(str: string) {
   return newStr
 }
 
-export function toUCS2Bytes(str: string): Array<number> {
+export function toUCS2Bytes(str: string): number[] {
   str = stringify(str)
   const byteArray = []
   for (let i = 0, l = str.length, ch; i < l; i++) {
@@ -21,23 +21,23 @@ export function toUCS2Bytes(str: string): Array<number> {
   return byteArray
 }
 
-export function getUTF8String(bytes: Array<number>): string {
+export function getUTF8String(bytes: number[]): string {
   let str = ''
   for (let i = 0, l = bytes.length; i < l; i++) {
     if (bytes[i] < 0x7F) {
       str += String.fromCharCode(bytes[i])
-    } else {
-      str += `%${ (256 + bytes[i]).toString(16).slice(1) }`
+    }
+    else {
+      str += `%${(256 + bytes[i]).toString(16).slice(1)}`
     }
   }
   return unescape(str)
 }
 
-export function getUCS2String(bytes: Array<number>): string {
+export function getUCS2String(bytes: number[]): string {
   let str = ''
   for (let i = 0, l = bytes.length; i < l; i += 2) {
     str += String.fromCharCode((bytes[i] << 8) + bytes[i + 1])
   }
   return str
 }
-

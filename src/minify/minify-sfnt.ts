@@ -1,6 +1,6 @@
+import type { Sfnt } from '../sfnt'
 import { Cmap, Glyf, Hmtx, Loca, Post, Vmtx } from '../sfnt'
 import { minifyGlyphs } from './minify-glyphs'
-import type { Sfnt } from '../sfnt'
 
 export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
   const glyphs = minifyGlyphs(sfnt, subset)
@@ -17,7 +17,7 @@ export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
   let offset = 0
   sfnt.loca = Loca.from(
     [
-      ...glyphs.map(glyph => {
+      ...glyphs.map((glyph) => {
         const result = offset
         offset += glyph.view.byteLength
         return result
@@ -43,7 +43,8 @@ export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
     leftSideBearing: glyph.leftSideBearing,
   })))
 
-  if (vhea) vhea.numOfLongVerMetrics = numGlyphs
+  if (vhea)
+    vhea.numOfLongVerMetrics = numGlyphs
 
   const vmtx = sfnt.vmtx
   if (vmtx) {

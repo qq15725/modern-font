@@ -7,7 +7,7 @@ export class CmapSubtableFormat6 extends Entity {
   @Entity.column({ type: 'uint16' }) declare firstCode: number
   @Entity.column({ type: 'uint16' }) declare entryCount: number
 
-  get glyphIndexArray() {
+  get glyphIndexArray(): number[] {
     this.seek(12)
     return Array.from({ length: this.entryCount }, () => this.readUint16())
   }

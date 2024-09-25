@@ -23,7 +23,7 @@ export class CmapSubtableFormat14 extends Entity {
   @Entity.column({ type: 'uint32' }) declare length: number
   @Entity.column({ type: 'uint32' }) declare numVarSelectorRecords: number
 
-  get varSelectorRecords() {
+  get varSelectorRecords(): VarSelectorRecord[] {
     const numVarSelectorRecords = this.numVarSelectorRecords
     this.seek(10)
     return Array.from({ length: numVarSelectorRecords }, () => {
@@ -63,7 +63,7 @@ export class CmapSubtableFormat14 extends Entity {
     const varSelectorRecords = this.varSelectorRecords
     for (let i = 0, l = varSelectorRecords.length; i < l; i++) {
       const { uVSMappings } = varSelectorRecords[i]
-      uVSMappings.forEach(uVSMapping => {
+      uVSMappings.forEach((uVSMapping) => {
         unicodeGlyphIndexMap.set(uVSMapping.unicodeValue, uVSMapping.glyphID)
       })
     }

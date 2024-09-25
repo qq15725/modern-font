@@ -4,7 +4,8 @@ export function toBuffer(source: BufferSource): ArrayBuffer {
       return source.buffer.slice(source.byteOffset, source.byteOffset + source.byteLength)
     }
     return source.buffer
-  } else {
+  }
+  else {
     return source
   }
 }
@@ -12,7 +13,8 @@ export function toBuffer(source: BufferSource): ArrayBuffer {
 export function toDataView(source: BufferSource): DataView {
   if (ArrayBuffer.isView(source)) {
     return new DataView(source.buffer, source.byteOffset, source.byteLength)
-  } else {
+  }
+  else {
     return new DataView(source)
   }
 }

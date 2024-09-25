@@ -20,7 +20,7 @@ export class Hmtx extends SfntTable {
   static from(metrics: Array<HMetric>): Hmtx {
     const byteLength = metrics.length * 4
     const hmtx = new Hmtx(new ArrayBuffer(byteLength))
-    metrics.forEach(metric => {
+    metrics.forEach((metric) => {
       hmtx.writeUint16(metric.advanceWidth)
       hmtx.writeUint16(metric.leftSideBearing)
     })
@@ -32,8 +32,9 @@ export class Hmtx extends SfntTable {
     const numOfLongHorMetrics = this.sfnt.hhea.numOfLongHorMetrics
     let advanceWidth = 0
     this.seek(0)
-    return Array.from(new Array(numGlyphs)).map((_, i) => {
-      if (i < numOfLongHorMetrics) advanceWidth = this.readUint16()
+    return Array.from({ length: numGlyphs }).map((_, i) => {
+      if (i < numOfLongHorMetrics)
+        advanceWidth = this.readUint16()
       return {
         advanceWidth,
         leftSideBearing: this.readUint16(),
