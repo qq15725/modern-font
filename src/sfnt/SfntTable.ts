@@ -1,7 +1,7 @@
 import type { Sfnt } from './Sfnt'
-import { FontDataView } from '../utils'
+import { Readable } from '../utils'
 
-export class SfntTable extends FontDataView {
+export class SfntTable extends Readable {
   declare sfnt: Sfnt
 
   setSfnt(sfnt: Sfnt): this {

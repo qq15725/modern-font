@@ -4,14 +4,14 @@ import { SfntTable } from './SfntTable'
 
 declare module './Sfnt' {
   interface Sfnt {
-    'OS/2'?: Os2
+    os2?: Os2
   }
 }
 
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
  */
-@defineSfntTable('OS/2')
+@defineSfntTable('os2')
 export class Os2 extends SfntTable {
   @defineColumn({ type: 'uint16' }) declare version: number
   @defineColumn({ type: 'int16' }) declare xAvgCharWidth: number

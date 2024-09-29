@@ -79,7 +79,7 @@ export class Woff extends FontFileFormat {
     )
     woff.signature = 0x774F4646
     woff.flavor = 0x00010000
-    woff.length = woff.byteLength
+    woff.length = woff.view.byteLength
     woff.numTables = numTables
     woff.totalSfntSize = 12 + 16 * numTables + tables.reduce((total, table) => total + round4(table.rawView.byteLength), 0)
     let dataOffset = 44 + numTables * 20
@@ -92,18 +92,18 @@ export class Woff extends FontFileFormat {
       dir.compLength = table.view.byteLength
       dir.origChecksum = Woff.checkSum(table.rawView)
       dir.origLength = table.rawView.byteLength
-      woff.writeBytes(table.view, dataOffset)
+      woff.view.writeBytes(table.view, dataOffset)
       dataOffset += round4(dir.compLength)
     })
-    woff.writeBytes(rest)
+    woff.view.writeBytes(rest)
     return woff
   }
 
   updateDirectories(): this {
     let offset = 44
     this.directories = Array.from({ length: this.numTables }, () => {
-      const dir = new WoffTableDirectoryEntry(this.buffer, offset)
-      offset += dir.byteLength
+      const dir = new WoffTableDirectoryEntry(this.view.buffer, offset)
+      offset += dir.view.byteLength
       return dir
     })
     return this
@@ -114,15 +114,15 @@ export class Woff extends FontFileFormat {
     return new Sfnt(
       this.directories.map((dir) => {
         const tag = dir.tag
-        const start = this.byteOffset + dir.offset
+        const start = this.view.byteOffset + dir.offset
         const compLength = dir.compLength
         const origLength = dir.origLength
         const end = start + compLength
         return {
           tag,
           view: compLength >= origLength
-            ? new DataView(this.buffer, start, compLength)
-            : new DataView(unzlibSync(new Uint8Array(this.buffer.slice(start, end))).buffer),
+            ? new DataView(this.view.buffer, start, compLength)
+            : new DataView(unzlibSync(new Uint8Array(this.view.buffer.slice(start, end))).buffer),
         }
       }),
     )

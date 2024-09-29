@@ -1,13 +1,13 @@
-import { defineColumn, FontDataView } from '../../utils'
+import { defineColumn, Readable } from '../../utils'
 
-export class CmapSubtableFormat2 extends FontDataView {
+export class CmapSubtableFormat2 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 2
   @defineColumn({ type: 'uint16' }) declare length: number
   @defineColumn({ type: 'uint16' }) declare language: number
 
   get subHeaderKeys(): number[] {
-    this.seek(6)
-    return Array.from({ length: 256 }, () => this.readUint16() / 8)
+    this.view.seek(6)
+    return Array.from({ length: 256 }, () => this.view.readUint16() / 8)
   }
 
   get maxSubHeaderKey(): number {
@@ -16,13 +16,13 @@ export class CmapSubtableFormat2 extends FontDataView {
 
   get subHeaders(): { firstCode: number, entryCount: number, idDelta: number, idRangeOffset: number }[] {
     const maxSubHeaderKey = this.maxSubHeaderKey
-    this.seek(6 + 256 * 2)
+    this.view.seek(6 + 256 * 2)
     return Array.from({ length: maxSubHeaderKey }, (_, i) => {
       return {
-        firstCode: this.readUint16(),
-        entryCount: this.readUint16(),
-        idDelta: this.readUint16(),
-        idRangeOffset: (this.readUint16() - (maxSubHeaderKey - i) * 8 - 2) / 2,
+        firstCode: this.view.readUint16(),
+        entryCount: this.view.readUint16(),
+        idDelta: this.view.readUint16(),
+        idRangeOffset: (this.view.readUint16() - (maxSubHeaderKey - i) * 8 - 2) / 2,
       }
     })
   }
@@ -30,9 +30,9 @@ export class CmapSubtableFormat2 extends FontDataView {
   get glyphIndexArray(): number[] {
     const maxSubHeaderKey = this.maxSubHeaderKey
     const cursor = 6 + 256 * 2 + maxSubHeaderKey * 8
-    this.seek(cursor)
-    const length = (this.byteLength - cursor) / 2
-    return Array.from({ length }, () => this.readUint16())
+    this.view.seek(cursor)
+    const length = (this.view.byteLength - cursor) / 2
+    return Array.from({ length }, () => this.view.readUint16())
   }
 
   getUnicodeGlyphIndexMap(numGlyphs: number): Map<number, number> {

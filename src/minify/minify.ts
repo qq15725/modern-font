@@ -35,9 +35,9 @@ export function minify<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: 
     case 'woff':
       return Woff.from(newSfnt) as T
     case 'ttf-buffer':
-      return Ttf.from(newSfnt).buffer as T
+      return Ttf.from(newSfnt).view.buffer as T
     case 'woff-buffer':
     default:
-      return Woff.from(newSfnt).buffer as T
+      return Woff.from(newSfnt).view.buffer as T
   }
 }

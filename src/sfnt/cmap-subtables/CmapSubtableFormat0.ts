@@ -1,6 +1,6 @@
-import { defineColumn, FontDataView } from '../../utils'
+import { defineColumn, Readable } from '../../utils'
 
-export class CmapSubtableFormat0 extends FontDataView {
+export class CmapSubtableFormat0 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 0
   @defineColumn({ type: 'uint16' }) declare length: number
   @defineColumn({ type: 'uint16' }) declare language: number
@@ -13,11 +13,11 @@ export class CmapSubtableFormat0 extends FontDataView {
   static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat0 {
     const table = new CmapSubtableFormat0()
     table.format = 0
-    table.length = table.byteLength
+    table.length = table.view.byteLength
     table.language = 0
     unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
       if (unicode < 256 && glyphIndex < 256) {
-        table.writeUint8(glyphIndex, 6 + unicode)
+        table.view.writeUint8(glyphIndex, 6 + unicode)
       }
     })
     return table

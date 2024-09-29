@@ -17,10 +17,10 @@ export class Loca extends SfntTable {
     const loca = new Loca(new ArrayBuffer(byteLength))
     locations.forEach((location) => {
       if (indexToLocFormat) {
-        loca.writeUint32(location)
+        loca.view.writeUint32(location)
       }
       else {
-        loca.writeUint16(location / 2)
+        loca.view.writeUint16(location / 2)
       }
     })
     return loca
@@ -29,11 +29,11 @@ export class Loca extends SfntTable {
   getLocations(): Array<number> {
     const numGlyphs = this.sfnt.maxp.numGlyphs
     const indexToLocFormat = this.sfnt.head.indexToLocFormat
-    this.seek(0)
+    this.view.seek(0)
     return Array.from({ length: numGlyphs }).map(() => {
       return indexToLocFormat
-        ? this.readUint32()
-        : this.readUint16() * 2
+        ? this.view.readUint32()
+        : this.view.readUint16() * 2
     })
   }
 }

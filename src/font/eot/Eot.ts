@@ -52,11 +52,11 @@ export class Eot extends FontFileFormat {
       + 4 + VersionNameSize
       + 4 + FullNameSize
       + 2
-      + ttf.byteLength
+      + ttf.view.byteLength
 
     const eot = new Eot(new ArrayBuffer(size), 0, size, true)
-    eot.EOTSize = eot.byteLength
-    eot.FontDataSize = ttf.byteLength
+    eot.EOTSize = eot.view.byteLength
+    eot.FontDataSize = ttf.view.byteLength
     eot.Version = 0x00020001 // 0x00010000 / 0x00020001 / 0x00020002
     eot.Flags = 0
     eot.Charset = 0x1
@@ -64,7 +64,7 @@ export class Eot extends FontFileFormat {
     eot.Padding1 = 0
     eot.CheckSumAdjustment = sfnt.head.checkSumAdjustment
 
-    const os2 = sfnt['OS/2']
+    const os2 = sfnt.os2
     if (os2) {
       eot.FontPANOSE = os2.fontPANOSE
       eot.Italic = os2.fsSelection
@@ -75,21 +75,21 @@ export class Eot extends FontFileFormat {
     }
 
     // write names
-    eot.writeUint16(FamilyNameSize)
-    eot.writeBytes(FamilyName)
-    eot.writeUint16(0)
-    eot.writeUint16(StyleNameSize)
-    eot.writeBytes(StyleName)
-    eot.writeUint16(0)
-    eot.writeUint16(VersionNameSize)
-    eot.writeBytes(VersionName)
-    eot.writeUint16(0)
-    eot.writeUint16(FullNameSize)
-    eot.writeBytes(FullName)
-    eot.writeUint16(0)
+    eot.view.writeUint16(FamilyNameSize)
+    eot.view.writeBytes(FamilyName)
+    eot.view.writeUint16(0)
+    eot.view.writeUint16(StyleNameSize)
+    eot.view.writeBytes(StyleName)
+    eot.view.writeUint16(0)
+    eot.view.writeUint16(VersionNameSize)
+    eot.view.writeBytes(VersionName)
+    eot.view.writeUint16(0)
+    eot.view.writeUint16(FullNameSize)
+    eot.view.writeBytes(FullName)
+    eot.view.writeUint16(0)
     // rootstring
-    eot.writeUint16(0)
-    eot.writeBytes(ttf)
+    eot.view.writeUint16(0)
+    eot.view.writeBytes(ttf.view)
     return eot
   }
 }

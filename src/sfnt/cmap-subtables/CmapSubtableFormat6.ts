@@ -1,6 +1,6 @@
-import { defineColumn, FontDataView } from '../../utils'
+import { defineColumn, Readable } from '../../utils'
 
-export class CmapSubtableFormat6 extends FontDataView {
+export class CmapSubtableFormat6 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 6
   @defineColumn({ type: 'uint16' }) declare length: number
   @defineColumn({ type: 'uint16' }) declare language: number
@@ -8,8 +8,8 @@ export class CmapSubtableFormat6 extends FontDataView {
   @defineColumn({ type: 'uint16' }) declare entryCount: number
 
   get glyphIndexArray(): number[] {
-    this.seek(12)
-    return Array.from({ length: this.entryCount }, () => this.readUint16())
+    this.view.seek(12)
+    return Array.from({ length: this.entryCount }, () => this.view.readUint16())
   }
 
   getUnicodeGlyphIndexMap(): Map<number, number> {

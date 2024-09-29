@@ -36,15 +36,6 @@ export interface Column {
   default?: any
 }
 
-export type ColumnOptions = Partial<Column> & { type: DataType }
-
-export interface FontDataViewDefinition {
-  columns: Column[]
-  byteLength: number
-}
-
-const definitions = new WeakMap<any, FontDataViewDefinition>()
-
 export function defineMethod() {
   return function (target: any, name: PropertyKey) {
     Object.defineProperty(target.constructor.prototype, name, {
@@ -52,11 +43,11 @@ export function defineMethod() {
         if (typeof name === 'string') {
           if (name.startsWith('read')) {
             // @ts-expect-error ...args
-            return (...args: any[]) => (this as FontDataView).read(name.substring('read'.length).toLowerCase(), ...args)
+            return (...args: any[]) => (this as IDataView).read(name.substring('read'.length).toLowerCase(), ...args)
           }
           else if (name.startsWith('write')) {
             // @ts-expect-error ...args
-            return (...args: any[]) => (this as FontDataView).write(name.substring('write'.length).toLowerCase(), ...args)
+            return (...args: any[]) => (this as IDataView).write(name.substring('write'.length).toLowerCase(), ...args)
           }
         }
         return undefined
@@ -67,39 +58,7 @@ export function defineMethod() {
   }
 }
 
-export function defineColumn(options: ColumnOptions) {
-  const { size = 1, type } = options
-  return (target: any, name: PropertyKey) => {
-    if (typeof name !== 'string')
-      return
-    let definition = definitions.get(target)
-    if (!definition) {
-      definition = {
-        columns: [],
-        byteLength: 0,
-      }
-      definitions.set(target, definition)
-    }
-    const column = {
-      ...options,
-      name,
-      byteLength: size * dataTypeToByteLength[type],
-      offset: options.offset ?? definition.columns.reduce((offset, column) => offset + column.byteLength, 0),
-    }
-    definition.columns.push(column)
-    definition.byteLength = definition.columns.reduce((byteLength, column) => {
-      return byteLength + dataTypeToByteLength[column.type] * (column.size ?? 1)
-    }, 0)
-    Object.defineProperty(target.constructor.prototype, name, {
-      get() { return (this as FontDataView).getColumn(column) },
-      set(value) { (this as FontDataView).setColumn(column, value) },
-      configurable: true,
-      enumerable: true,
-    })
-  }
-}
-
-export class FontDataView extends DataView {
+export class IDataView extends DataView {
   @defineMethod() declare readInt8: (byteOffset?: number) => number
   @defineMethod() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
   @defineMethod() declare readInt32: (byteOffset?: number, littleEndian?: boolean) => number

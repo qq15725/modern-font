@@ -1,7 +1,7 @@
-import { defineColumn, FontDataView } from '../../utils'
+import { defineColumn, Readable } from '../../utils'
 import { createSegments } from './utils'
 
-export class CmapSubtableFormat12 extends FontDataView {
+export class CmapSubtableFormat12 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 12
   @defineColumn({ type: 'uint16' }) declare reserved: number
   @defineColumn({ type: 'uint32' }) declare length: number
@@ -10,12 +10,12 @@ export class CmapSubtableFormat12 extends FontDataView {
 
   get groups(): { startCharCode: number, endCharCode: number, startGlyphCode: number }[] {
     const nGroups = this.nGroups
-    this.seek(16)
+    this.view.seek(16)
     return Array.from({ length: nGroups }, () => {
       return {
-        startCharCode: this.readUint32(),
-        endCharCode: this.readUint32(),
-        startGlyphCode: this.readUint32(),
+        startCharCode: this.view.readUint32(),
+        endCharCode: this.view.readUint32(),
+        startGlyphCode: this.view.readUint32(),
       }
     })
   }
@@ -25,13 +25,13 @@ export class CmapSubtableFormat12 extends FontDataView {
     const table = new CmapSubtableFormat12(new ArrayBuffer(16 + segments.length * 12))
     table.format = 12
     table.reserved = 0
-    table.length = table.byteLength
+    table.length = table.view.byteLength
     table.language = 0
     table.nGroups = segments.length
     segments.forEach((segment) => {
-      table.writeUint32(segment.start)
-      table.writeUint32(segment.end)
-      table.writeUint32(segment.startId)
+      table.view.writeUint32(segment.start)
+      table.view.writeUint32(segment.end)
+      table.view.writeUint32(segment.startId)
     })
     return table
   }

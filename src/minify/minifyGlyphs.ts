@@ -44,8 +44,8 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string): MinimizedGlyph[] {
       glyphIndex: glyphs.length,
       unicodes: Array.from(glyphIndexUnicodesMap.get(glyphIndex) ?? []),
       view: new DataView(
-        glyf.buffer,
-        glyf.byteOffset + start,
+        glyf.view.buffer,
+        glyf.view.byteOffset + start,
         end - start,
       ),
     }

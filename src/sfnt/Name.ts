@@ -70,22 +70,22 @@ export class Name extends SfntTable {
 
   getNames(): Record<string, any> {
     const count = this.count
-    this.seek(6)
+    this.view.seek(6)
     const nameRecords: Array<Record<string, any>> = []
     for (let i = 0; i < count; ++i) {
       nameRecords.push({
-        platform: this.readUint16(),
-        encoding: this.readUint16(),
-        language: this.readUint16(),
-        nameId: this.readUint16(),
-        length: this.readUint16(),
-        offset: this.readUint16(),
+        platform: this.view.readUint16(),
+        encoding: this.view.readUint16(),
+        language: this.view.readUint16(),
+        nameId: this.view.readUint16(),
+        length: this.view.readUint16(),
+        offset: this.view.readUint16(),
       })
     }
     const offset = this.stringOffset
     for (let i = 0; i < count; ++i) {
       const nameRecord = nameRecords[i]
-      nameRecord.name = this.readBytes(
+      nameRecord.name = this.view.readBytes(
         offset + nameRecord.offset,
         nameRecord.length,
       )

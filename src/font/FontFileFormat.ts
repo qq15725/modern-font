@@ -1,16 +1,16 @@
-import { FontDataView } from '../utils'
+import { Readable } from '../utils'
 
-export abstract class FontFileFormat extends FontDataView {
+export abstract class FontFileFormat extends Readable {
   readonly abstract mimeType: string
 
   toBlob(): Blob {
     return new Blob(
-      [new Uint8Array(this.buffer, this.byteOffset, this.byteLength)],
+      [new Uint8Array(this.view.buffer, this.view.byteOffset, this.view.byteLength)],
       { type: this.mimeType },
     )
   }
 
   toFontFace(family: string): FontFace {
-    return new FontFace(family, this.buffer)
+    return new FontFace(family, this.view.buffer)
   }
 }

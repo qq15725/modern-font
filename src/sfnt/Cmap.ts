@@ -29,8 +29,8 @@ export class Cmap extends SfntTable {
     const table0 = CmapSubtableFormat0.from(unicodeGlyphIndexMap)
     const table12 = has2Byte ? CmapSubtableFormat12.from(unicodeGlyphIndexMap) : undefined
     const offset4 = 4 + (table12 ? 32 : 24)
-    const offset0 = offset4 + table4.byteLength
-    const offset12 = offset0 + table0.byteLength
+    const offset0 = offset4 + table4.view.byteLength
+    const offset12 = offset0 + table0.view.byteLength
     const subtables = [
       { platformID: 0, platformSpecificID: 3, offset: offset4 }, // subtable 4, unicode
       { platformID: 1, platformSpecificID: 0, offset: offset0 }, // subtable 0, mac standard
@@ -41,56 +41,56 @@ export class Cmap extends SfntTable {
       new ArrayBuffer(
         4 // head
         + 8 * subtables.length // subtables
-        + table4.byteLength // format 4
-        + table0.byteLength // format 0
-        + (table12?.byteLength ?? 0), // format 12
+        + table4.view.byteLength // format 4
+        + table0.view.byteLength // format 0
+        + (table12?.view.byteLength ?? 0), // format 12
       ),
     )
     cmap.numberSubtables = subtables.length
-    cmap.seek(4)
+    cmap.view.seek(4)
     subtables.forEach((subtable) => {
-      cmap.writeUint16(subtable.platformID)
-      cmap.writeUint16(subtable.platformSpecificID)
-      cmap.writeUint32(subtable.offset)
+      cmap.view.writeUint16(subtable.platformID)
+      cmap.view.writeUint16(subtable.platformSpecificID)
+      cmap.view.writeUint32(subtable.offset)
     })
-    cmap.writeBytes(table4, offset4)
-    cmap.writeBytes(table0, offset0)
-    table12 && cmap.writeBytes(table12, offset12)
+    cmap.view.writeBytes(table4.view, offset4)
+    cmap.view.writeBytes(table0.view, offset0)
+    table12 && cmap.view.writeBytes(table12.view, offset12)
     return cmap
   }
 
   getSubtables(): (CmapSubtable & { format: number, view: any })[] {
     const numberSubtables = this.numberSubtables
-    this.seek(4)
+    this.view.seek(4)
     return Array.from({ length: numberSubtables }, () => {
       return {
-        platformID: this.readUint16(),
-        platformSpecificID: this.readUint16(),
-        offset: this.readUint32(),
+        platformID: this.view.readUint16(),
+        platformSpecificID: this.view.readUint16(),
+        offset: this.view.readUint32(),
       } as CmapSubtable
     }).map((table) => {
-      this.seek(table.offset)
-      const format = this.readUint16()
+      this.view.seek(table.offset)
+      const format = this.view.readUint16()
       let view
       switch (format) {
         case 0:
-          view = new CmapSubtableFormat0(this.buffer, table.offset)
+          view = new CmapSubtableFormat0(this.view.buffer, table.offset)
           break
         case 2:
-          view = new CmapSubtableFormat2(this.buffer, table.offset, this.readUint16())
+          view = new CmapSubtableFormat2(this.view.buffer, table.offset, this.view.readUint16())
           break
         case 4:
-          view = new CmapSubtableFormat4(this.buffer, table.offset, this.readUint16())
+          view = new CmapSubtableFormat4(this.view.buffer, table.offset, this.view.readUint16())
           break
         case 6:
-          view = new CmapSubtableFormat6(this.buffer, table.offset, this.readUint16())
+          view = new CmapSubtableFormat6(this.view.buffer, table.offset, this.view.readUint16())
           break
         case 12:
-          view = new CmapSubtableFormat12(this.buffer, table.offset, this.readUint32(table.offset + 4))
+          view = new CmapSubtableFormat12(this.view.buffer, table.offset, this.view.readUint32(table.offset + 4))
           break
         case 14:
         default:
-          view = new CmapSubtableFormat14(this.buffer, table.offset, this.readUint32())
+          view = new CmapSubtableFormat14(this.view.buffer, table.offset, this.view.readUint32())
           break
       }
       return {

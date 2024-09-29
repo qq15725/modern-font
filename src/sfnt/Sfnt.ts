@@ -4,7 +4,7 @@ export type SfntTableTag =
   // required
   | 'cmap' | 'glyf' | 'head' | 'hhea' | 'hmtx' | 'loca' | 'maxp' | 'name' | 'post'
   // optional
-  | 'cvt' | 'fpgm' | 'hdmx' | 'kern' | 'OS/2' | 'prep'
+  | 'cvt' | 'fpgm' | 'hdmx' | 'kern' | 'os2' | 'prep'
   | 'vhea' | 'vmtx'
   | string
 
@@ -25,8 +25,32 @@ export class Sfnt {
 
   tableViews = new Map<string, SfntTable>()
 
+  get names(): Record<string, any> {
+    return this.name.getNames()
+  }
+
+  get unitsPerEm(): number {
+    return this.head.unitsPerEm
+  }
+
+  get ascender(): number {
+    return this.hhea.ascent
+  }
+
+  get descender(): number {
+    return this.hhea.descent
+  }
+
+  get createdTimestamp(): Date {
+    return this.head.created
+  }
+
+  get modifiedTimestamp(): Date {
+    return this.head.modified
+  }
+
   constructor(
-    public tables: Array<{ tag: SfntTableTag, view: DataView }>,
+    public tables: { tag: SfntTableTag, view: DataView }[],
   ) {
     //
   }
@@ -57,7 +81,7 @@ export class Sfnt {
     this.tableViews.set(tag, view)
     const table = this.tables.find(table => table.tag === tag)
     if (table)
-      table.view = view
+      table.view = view.view
     return this
   }
 

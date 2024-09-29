@@ -1,4 +1,4 @@
-import { defineColumn, FontDataView } from '../../utils'
+import { defineColumn, Readable } from '../../utils'
 
 export interface VarSelectorRecord {
   varSelector: number
@@ -18,39 +18,39 @@ export interface VSMappings {
   glyphID: number
 }
 
-export class CmapSubtableFormat14 extends FontDataView {
+export class CmapSubtableFormat14 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 14
   @defineColumn({ type: 'uint32' }) declare length: number
   @defineColumn({ type: 'uint32' }) declare numVarSelectorRecords: number
 
   get varSelectorRecords(): VarSelectorRecord[] {
     const numVarSelectorRecords = this.numVarSelectorRecords
-    this.seek(10)
+    this.view.seek(10)
     return Array.from({ length: numVarSelectorRecords }, () => {
       const varSelectorRecord: VarSelectorRecord = {
-        varSelector: this.readUint24(),
-        defaultUVSOffset: this.readUint32(),
+        varSelector: this.view.readUint24(),
+        defaultUVSOffset: this.view.readUint32(),
         unicodeValueRanges: [],
-        nonDefaultUVSOffset: this.readUint32(),
+        nonDefaultUVSOffset: this.view.readUint32(),
         uVSMappings: [],
       }
       if (varSelectorRecord.defaultUVSOffset) {
-        this.seek(varSelectorRecord.defaultUVSOffset)
-        const numUnicodeValueRanges = this.readUint32()
+        this.view.seek(varSelectorRecord.defaultUVSOffset)
+        const numUnicodeValueRanges = this.view.readUint32()
         varSelectorRecord.unicodeValueRanges = Array.from({ length: numUnicodeValueRanges }, () => {
           return {
-            startUnicodeValue: this.readUint24(),
-            additionalCount: this.readUint8(),
+            startUnicodeValue: this.view.readUint24(),
+            additionalCount: this.view.readUint8(),
           }
         })
       }
       if (varSelectorRecord.nonDefaultUVSOffset) {
-        this.seek(varSelectorRecord.nonDefaultUVSOffset)
-        const numUVSMappings = this.readUint32()
+        this.view.seek(varSelectorRecord.nonDefaultUVSOffset)
+        const numUVSMappings = this.view.readUint32()
         varSelectorRecord.uVSMappings = Array.from({ length: numUVSMappings }, () => {
           return {
-            unicodeValue: this.readUint24(),
-            glyphID: this.readUint16(),
+            unicodeValue: this.view.readUint24(),
+            glyphID: this.view.readUint16(),
           }
         })
       }

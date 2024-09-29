@@ -1,3 +1,4 @@
 export * from './buffer'
-export * from './FontDataView'
+export * from './IDataView'
+export * from './Readable'
 export * from './string'

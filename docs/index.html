@@ -11,27 +11,6 @@
 <div style="font-family: eot">eot</div>
 <div style="font-family: minifyWoff">minifyWoff</div>
 
-<script type="module" async>
-  import { Ttf, Woff, Eot, minify } from '../src'
-
-  const buffer = await fetch('1.woff').then(rep => rep.arrayBuffer())
-  const view = new DataView(buffer)
-  let woff, ttf, eot
-  if (Woff.is(view)) {
-    woff = new Woff(view)
-    ttf = Ttf.from(woff.sfnt)
-    eot = Eot.from(ttf)
-  } else if (Ttf.is(view)) {
-    ttf = new Ttf(view)
-    woff = Woff.from(ttf.sfnt)
-    eot = Eot.from(ttf)
-  }
-  const minifyWoff = minify(woff, 'minify')
-  document.fonts.add(woff.toFontFace('woff'))
-  document.fonts.add(ttf.toFontFace('ttf'))
-  document.fonts.add(eot.toFontFace('eot'))
-  document.fonts.add(minifyWoff.toFontFace('minifyWoff'))
-  console.log(woff, ttf, eot, minifyWoff)
-</script>
+<script type="module" src="./main.ts"></script>
 </body>
 </html>

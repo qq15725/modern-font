@@ -1,7 +1,7 @@
-import { defineColumn, FontDataView } from '../../utils'
+import { defineColumn, Readable } from '../../utils'
 import { createSegments } from './utils'
 
-export class CmapSubtableFormat4 extends FontDataView {
+export class CmapSubtableFormat4 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 4
   @defineColumn({ type: 'uint16' }) declare length: number
   @defineColumn({ type: 'uint16' }) declare language: number
@@ -12,44 +12,44 @@ export class CmapSubtableFormat4 extends FontDataView {
 
   get endCode(): number[] {
     const segCountX2 = this.segCountX2
-    this.seek(14)
-    return Array.from({ length: segCountX2 / 2 }, () => this.readUint16())
+    this.view.seek(14)
+    return Array.from({ length: segCountX2 / 2 }, () => this.view.readUint16())
   }
 
   set endCode(value) {
-    this.seek(14)
-    value.forEach(val => this.writeUint16(val))
+    this.view.seek(14)
+    value.forEach(val => this.view.writeUint16(val))
   }
 
   get reservedPad(): number {
-    return this.readUint16(14 + this.segCountX2)
+    return this.view.readUint16(14 + this.segCountX2)
   }
 
   set reservedPad(value) {
-    this.writeUint16(value, 14 + this.segCountX2)
+    this.view.writeUint16(value, 14 + this.segCountX2)
   }
 
   get startCode(): number[] {
     const segCountX2 = this.segCountX2
-    this.seek(14 + segCountX2 + 2)
-    return Array.from({ length: segCountX2 / 2 }, () => this.readUint16())
+    this.view.seek(14 + segCountX2 + 2)
+    return Array.from({ length: segCountX2 / 2 }, () => this.view.readUint16())
   }
 
   set startCode(value) {
-    this.seek(14 + this.segCountX2 + 2)
-    value.forEach(val => this.writeUint16(val))
+    this.view.seek(14 + this.segCountX2 + 2)
+    value.forEach(val => this.view.writeUint16(val))
   }
 
   get idDelta(): number[] {
     const segCountX2 = this.segCountX2
-    this.seek(14 + segCountX2 + 2 + segCountX2)
-    return Array.from({ length: segCountX2 / 2 }, () => this.readUint16())
+    this.view.seek(14 + segCountX2 + 2 + segCountX2)
+    return Array.from({ length: segCountX2 / 2 }, () => this.view.readUint16())
   }
 
   set idDelta(value) {
     const segCountX2 = this.segCountX2
-    this.seek(14 + segCountX2 + 2 + segCountX2)
-    value.forEach(val => this.writeUint16(val))
+    this.view.seek(14 + segCountX2 + 2 + segCountX2)
+    value.forEach(val => this.view.writeUint16(val))
   }
 
   get idRangeOffsetCursor(): number {
@@ -59,13 +59,13 @@ export class CmapSubtableFormat4 extends FontDataView {
 
   get idRangeOffset(): number[] {
     const segCountX2 = this.segCountX2
-    this.seek(this.idRangeOffsetCursor)
-    return Array.from({ length: segCountX2 / 2 }, () => this.readUint16())
+    this.view.seek(this.idRangeOffsetCursor)
+    return Array.from({ length: segCountX2 / 2 }, () => this.view.readUint16())
   }
 
   set idRangeOffset(value) {
-    this.seek(this.idRangeOffsetCursor)
-    value.forEach(val => this.writeUint16(val))
+    this.view.seek(this.idRangeOffsetCursor)
+    value.forEach(val => this.view.writeUint16(val))
   }
 
   get glyphIndexArrayCursor(): number {
@@ -75,9 +75,9 @@ export class CmapSubtableFormat4 extends FontDataView {
 
   get glyphIndexArray(): number[] {
     const cursor = this.glyphIndexArrayCursor
-    this.seek(cursor)
-    const length = (this.byteLength - cursor) / 2
-    return Array.from({ length }, () => this.readUint16())
+    this.view.seek(cursor)
+    const length = (this.view.byteLength - cursor) / 2
+    return Array.from({ length }, () => this.view.readUint16())
   }
 
   static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat4 {
@@ -87,7 +87,7 @@ export class CmapSubtableFormat4 extends FontDataView {
     const searchRange = 2 * 2 ** entrySelector
     const table = new CmapSubtableFormat4(new ArrayBuffer(24 + segments.length * 8))
     table.format = 4
-    table.length = table.byteLength
+    table.length = table.view.byteLength
     table.language = 0
     table.segCountX2 = segCount * 2
     table.searchRange = searchRange
