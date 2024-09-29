@@ -1,4 +1,4 @@
-import { Sfnt } from './Sfnt'
+import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
 declare module './Sfnt' {
@@ -15,7 +15,7 @@ export interface VMetric {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6vmtx.html
  */
-@Sfnt.table('vmtx')
+@defineSfntTable('vmtx')
 export class Vmtx extends SfntTable {
   static from(metrics: VMetric[]): Vmtx {
     const byteLength = metrics.length * 4

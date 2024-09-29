@@ -1,4 +1,4 @@
-import { Sfnt } from './Sfnt'
+import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
 declare module './Sfnt' {
@@ -10,7 +10,7 @@ declare module './Sfnt' {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6loca.html
  */
-@Sfnt.table('loca')
+@defineSfntTable('loca')
 export class Loca extends SfntTable {
   static from(locations: Array<number>, indexToLocFormat = 1): Loca {
     const byteLength = locations.length * (indexToLocFormat ? 4 : 2)

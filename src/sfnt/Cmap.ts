@@ -1,6 +1,6 @@
 import { defineProp } from '../utils'
 import { CmapSubtableFormat0, CmapSubtableFormat2, CmapSubtableFormat4, CmapSubtableFormat6, CmapSubtableFormat12, CmapSubtableFormat14 } from './cmap-subtables'
-import { Sfnt } from './Sfnt'
+import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
 declare module './Sfnt' {
@@ -18,7 +18,7 @@ export interface CmapSubtable {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6cmap.html
  */
-@Sfnt.table('cmap')
+@defineSfntTable('cmap')
 export class Cmap extends SfntTable {
   @defineProp({ type: 'uint16' }) declare version: number
   @defineProp({ type: 'uint16' }) declare numberSubtables: number

@@ -1,4 +1,4 @@
-import { Sfnt } from './Sfnt'
+import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
 declare module './Sfnt' {
@@ -15,7 +15,7 @@ export interface HMetric {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hmtx.html
  */
-@Sfnt.table('hmtx')
+@defineSfntTable('hmtx')
 export class Hmtx extends SfntTable {
   static from(metrics: Array<HMetric>): Hmtx {
     const byteLength = metrics.length * 4

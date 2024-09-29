@@ -1,5 +1,5 @@
 import { defineProp } from '../utils'
-import { Sfnt } from './Sfnt'
+import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
 declare module './Sfnt' {
@@ -11,7 +11,7 @@ declare module './Sfnt' {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6post.html
  */
-@Sfnt.table('post')
+@defineSfntTable('post')
 export class Post extends SfntTable {
   @defineProp({ type: 'fixed' }) declare format: number
   @defineProp({ type: 'fixed' }) declare italicAngle: number

@@ -8,20 +8,20 @@ export type SfntTableTag =
   | 'vhea' | 'vmtx'
   | string
 
+export function defineSfntTable(tag: SfntTableTag) {
+  return (constructor: any) => {
+    Sfnt.registeredTableViews.set(tag, constructor)
+    Object.defineProperty(Sfnt.prototype, tag, {
+      get() { return this.get(tag) },
+      set(table) { return this.set(tag, table) },
+      configurable: true,
+      enumerable: true,
+    })
+  }
+}
+
 export class Sfnt {
   static registeredTableViews = new Map<string, new () => SfntTable>()
-
-  static table(tag: SfntTableTag) {
-    return (constructor: any) => {
-      this.registeredTableViews.set(tag, constructor)
-      Object.defineProperty(this.prototype, tag, {
-        get() { return this.get(tag) },
-        set(table) { return this.set(tag, table) },
-        configurable: true,
-        enumerable: true,
-      })
-    }
-  }
 
   tableViews = new Map<string, SfntTable>()
 

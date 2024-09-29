@@ -1,5 +1,5 @@
 import { defineProp, getUCS2String, getUTF8String } from '../utils'
-import { Sfnt } from './Sfnt'
+import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
 const nameId = {
@@ -62,7 +62,7 @@ declare module './Sfnt' {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
  */
-@Sfnt.table('name')
+@defineSfntTable('name')
 export class Name extends SfntTable {
   @defineProp({ type: 'uint16' }) declare format: number
   @defineProp({ type: 'uint16' }) declare count: number
