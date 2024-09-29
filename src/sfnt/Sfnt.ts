@@ -1,4 +1,4 @@
-import type { SfntTable } from './sfnt-table'
+import type { SfntTable } from './SfntTable'
 
 export type SfntTableTag =
   // required

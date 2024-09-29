@@ -1,6 +1,6 @@
 import type { Ttf } from '../ttf'
 import { Entity, toUCS2Bytes } from '../../utils'
-import { FontFileFormat } from '../font-file-format'
+import { FontFileFormat } from '../FontFileFormat'
 
 // http://www.w3.org/Submission/EOT
 export class Eot extends FontFileFormat {

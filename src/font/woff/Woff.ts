@@ -1,8 +1,8 @@
 import { unzlibSync, zlibSync } from 'fflate'
 import { Sfnt } from '../../sfnt'
 import { Entity, toDataView } from '../../utils'
-import { FontFileFormat } from '../font-file-format'
-import { WoffTableDirectoryEntry } from './woff-table-directory-entry'
+import { FontFileFormat } from '../FontFileFormat'
+import { WoffTableDirectoryEntry } from './WoffTableDirectoryEntry'
 
 // https://www.w3.org/submissions/WOFF
 export class Woff extends FontFileFormat {

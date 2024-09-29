@@ -1,7 +1,7 @@
 import type { Sfnt } from '../sfnt'
 import { Ttf, Woff } from '../font'
 import { toDataView } from '../utils'
-import { minifySfnt } from './minify-sfnt'
+import { minifySfnt } from './minifySfnt'
 
 export function minify<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: string): T {
   let sfnt: Sfnt

@@ -1,6 +1,6 @@
 import { Entity, getUCS2String, getUTF8String } from '../utils'
-import { Sfnt } from './sfnt'
-import { SfntTable } from './sfnt-table'
+import { Sfnt } from './Sfnt'
+import { SfntTable } from './SfntTable'
 
 const nameId = {
   0: 'copyright',
@@ -53,7 +53,7 @@ const win = {
   UCS4: 6,
 }
 
-declare module './sfnt' {
+declare module './Sfnt' {
   interface Sfnt {
     name: Name
   }

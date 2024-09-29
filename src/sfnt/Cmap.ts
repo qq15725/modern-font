@@ -1,9 +1,9 @@
 import { Entity } from '../utils'
 import { CmapSubtableFormat0, CmapSubtableFormat2, CmapSubtableFormat4, CmapSubtableFormat6, CmapSubtableFormat12, CmapSubtableFormat14 } from './cmap-subtables'
-import { Sfnt } from './sfnt'
-import { SfntTable } from './sfnt-table'
+import { Sfnt } from './Sfnt'
+import { SfntTable } from './SfntTable'
 
-declare module './sfnt' {
+declare module './Sfnt' {
   interface Sfnt {
     cmap: Cmap
   }

@@ -1,4 +1,4 @@
-import type { Sfnt } from './sfnt'
+import type { Sfnt } from './Sfnt'
 import { Entity } from '../utils'
 
 export class SfntTable extends Entity {

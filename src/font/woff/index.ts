@@ -1,2 +1,2 @@
-export * from './woff'
-export * from './woff-table-directory-entry'
+export * from './Woff'
+export * from './WoffTableDirectoryEntry'

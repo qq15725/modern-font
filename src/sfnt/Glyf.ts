@@ -1,7 +1,7 @@
-import { Sfnt } from './sfnt'
-import { SfntTable } from './sfnt-table'
+import { Sfnt } from './Sfnt'
+import { SfntTable } from './SfntTable'
 
-declare module './sfnt' {
+declare module './Sfnt' {
   interface Sfnt {
     glyf: Glyf
   }

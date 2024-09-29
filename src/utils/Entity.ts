@@ -1,6 +1,6 @@
-import type { DataType } from './data-type'
+import type { DataType } from './DataType'
 import { toBuffer, toDataView } from './buffer'
-import { dataTypeToByteLength } from './data-type'
+import { dataTypeToByteLength } from './DataType'
 
 export interface Column {
   name: string

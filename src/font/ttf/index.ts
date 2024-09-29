@@ -1,2 +1,2 @@
-export * from './table-directory'
-export * from './ttf'
+export * from './TableDirectory'
+export * from './Ttf'

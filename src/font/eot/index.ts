@@ -1,1 +1,1 @@
-export * from './eot'
+export * from './Eot'

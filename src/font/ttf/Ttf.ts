@@ -1,7 +1,7 @@
 import { Sfnt } from '../../sfnt'
 import { Entity, toDataView } from '../../utils'
-import { FontFileFormat } from '../font-file-format'
-import { TableDirectory } from './table-directory'
+import { FontFileFormat } from '../FontFileFormat'
+import { TableDirectory } from './TableDirectory'
 
 // TrueType
 // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
