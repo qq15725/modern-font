@@ -1,4 +1,4 @@
-import { Entity } from '../utils'
+import { defineProp } from '../utils'
 import { Sfnt } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
@@ -13,20 +13,20 @@ declare module './Sfnt' {
  */
 @Sfnt.table('vhea')
 export class Vhea extends SfntTable {
-  @Entity.column({ type: 'fixed' }) declare version: number
-  @Entity.column({ type: 'int16' }) declare vertTypoAscender: number
-  @Entity.column({ type: 'int16' }) declare vertTypoDescender: number
-  @Entity.column({ type: 'int16' }) declare vertTypoLineGap: number
-  @Entity.column({ type: 'int16' }) declare advanceHeightMax: number
-  @Entity.column({ type: 'int16' }) declare minTopSideBearing: number
-  @Entity.column({ type: 'int16' }) declare minBottomSideBearing: number
-  @Entity.column({ type: 'int16' }) declare yMaxExtent: number
-  @Entity.column({ type: 'int16' }) declare caretSlopeRise: number
-  @Entity.column({ type: 'int16' }) declare caretSlopeRun: number
-  @Entity.column({ type: 'int16' }) declare caretOffset: number
-  @Entity.column({ type: 'int16', size: 4 }) declare reserved: Array<number>
-  @Entity.column({ type: 'int16' }) declare metricDataFormat: number
-  @Entity.column({ type: 'int16' }) declare numOfLongVerMetrics: number
+  @defineProp({ type: 'fixed' }) declare version: number
+  @defineProp({ type: 'int16' }) declare vertTypoAscender: number
+  @defineProp({ type: 'int16' }) declare vertTypoDescender: number
+  @defineProp({ type: 'int16' }) declare vertTypoLineGap: number
+  @defineProp({ type: 'int16' }) declare advanceHeightMax: number
+  @defineProp({ type: 'int16' }) declare minTopSideBearing: number
+  @defineProp({ type: 'int16' }) declare minBottomSideBearing: number
+  @defineProp({ type: 'int16' }) declare yMaxExtent: number
+  @defineProp({ type: 'int16' }) declare caretSlopeRise: number
+  @defineProp({ type: 'int16' }) declare caretSlopeRun: number
+  @defineProp({ type: 'int16' }) declare caretOffset: number
+  @defineProp({ type: 'int16', size: 4 }) declare reserved: Array<number>
+  @defineProp({ type: 'int16' }) declare metricDataFormat: number
+  @defineProp({ type: 'int16' }) declare numOfLongVerMetrics: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(36), byteOffset?: number) {
     super(buffer, byteOffset, 36)

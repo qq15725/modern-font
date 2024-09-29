@@ -1,14 +1,14 @@
-import { Entity } from '../../utils'
+import { defineProp, Entity } from '../../utils'
 import { createSegments } from './utils'
 
 export class CmapSubtableFormat4 extends Entity {
-  @Entity.column({ type: 'uint16' }) declare format: 4
-  @Entity.column({ type: 'uint16' }) declare length: number
-  @Entity.column({ type: 'uint16' }) declare language: number
-  @Entity.column({ type: 'uint16' }) declare segCountX2: number
-  @Entity.column({ type: 'uint16' }) declare searchRange: number
-  @Entity.column({ type: 'uint16' }) declare entrySelector: number
-  @Entity.column({ type: 'uint16' }) declare rangeShift: number
+  @defineProp({ type: 'uint16' }) declare format: 4
+  @defineProp({ type: 'uint16' }) declare length: number
+  @defineProp({ type: 'uint16' }) declare language: number
+  @defineProp({ type: 'uint16' }) declare segCountX2: number
+  @defineProp({ type: 'uint16' }) declare searchRange: number
+  @defineProp({ type: 'uint16' }) declare entrySelector: number
+  @defineProp({ type: 'uint16' }) declare rangeShift: number
 
   get endCode(): number[] {
     const segCountX2 = this.segCountX2

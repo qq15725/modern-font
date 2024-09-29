@@ -20,75 +20,75 @@ export interface EntityDefinition {
 
 const entityDefinitions = new WeakMap<any, EntityDefinition>()
 
-export class Entity extends DataView {
-  @Entity.method() declare readInt8: (byteOffset?: number) => number
-  @Entity.method() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
-  @Entity.method() declare readInt32: (byteOffset?: number, littleEndian?: boolean) => number
-  @Entity.method() declare readUint8: (byteOffset?: number) => number
-  @Entity.method() declare readUint16: (byteOffset?: number, littleEndian?: boolean) => number
-  @Entity.method() declare readUint32: (byteOffset?: number, littleEndian?: boolean) => number
-  @Entity.method() declare readFloat32: (byteOffset?: number, littleEndian?: boolean) => number
-  @Entity.method() declare readFloat64: (byteOffset?: number, littleEndian?: boolean) => number
-  @Entity.method() declare writeInt8: (value: number, byteOffset?: number) => this
-  @Entity.method() declare writeInt16: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @Entity.method() declare writeInt32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @Entity.method() declare writeUint8: (value: number, byteOffset?: number) => this
-  @Entity.method() declare writeUint16: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @Entity.method() declare writeUint32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @Entity.method() declare writeFloat32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @Entity.method() declare writeFloat64: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-
-  static column(options: ColumnOptions) {
-    const { size = 1, type } = options
-    return (target: any, name: PropertyKey) => {
-      if (typeof name !== 'string')
-        return
-      let definition = entityDefinitions.get(target)
-      if (!definition) {
-        definition = {
-          columns: [],
-          byteLength: 0,
-        }
-        entityDefinitions.set(target, definition)
-      }
-      const column = {
-        ...options,
-        name,
-        byteLength: size * dataTypeToByteLength[type],
-        offset: options.offset ?? definition.columns.reduce((offset, column) => offset + column.byteLength, 0),
-      }
-      definition.columns.push(column)
-      definition.byteLength = definition.columns.reduce((byteLength, column) => {
-        return byteLength + dataTypeToByteLength[column.type] * (column.size ?? 1)
-      }, 0)
-      Object.defineProperty(target.constructor.prototype, name, {
-        get() { return this.getColumn(column) },
-        set(value) { this.setColumn(column, value) },
-        configurable: true,
-        enumerable: true,
-      })
-    }
-  }
-
-  static method() {
-    return function (target: any, name: PropertyKey) {
-      Object.defineProperty(target.constructor.prototype, name, {
-        get() {
-          if (typeof name === 'string') {
-            if (name.startsWith('read')) {
-              return (...args: Array<any>) => this.read(name.substring('read'.length).toLowerCase(), ...args)
-            }
-            else if (name.startsWith('write')) {
-              return (...args: Array<any>) => this.write(name.substring('write'.length).toLowerCase(), ...args)
-            }
+export function defineMethod() {
+  return function (target: any, name: PropertyKey) {
+    Object.defineProperty(target.constructor.prototype, name, {
+      get() {
+        if (typeof name === 'string') {
+          if (name.startsWith('read')) {
+            return (...args: Array<any>) => this.read(name.substring('read'.length).toLowerCase(), ...args)
           }
-          return undefined
-        },
-        configurable: true,
-        enumerable: true,
-      })
-    }
+          else if (name.startsWith('write')) {
+            return (...args: Array<any>) => this.write(name.substring('write'.length).toLowerCase(), ...args)
+          }
+        }
+        return undefined
+      },
+      configurable: true,
+      enumerable: true,
+    })
   }
+}
+
+export function defineProp(options: ColumnOptions) {
+  const { size = 1, type } = options
+  return (target: any, name: PropertyKey) => {
+    if (typeof name !== 'string')
+      return
+    let definition = entityDefinitions.get(target)
+    if (!definition) {
+      definition = {
+        columns: [],
+        byteLength: 0,
+      }
+      entityDefinitions.set(target, definition)
+    }
+    const column = {
+      ...options,
+      name,
+      byteLength: size * dataTypeToByteLength[type],
+      offset: options.offset ?? definition.columns.reduce((offset, column) => offset + column.byteLength, 0),
+    }
+    definition.columns.push(column)
+    definition.byteLength = definition.columns.reduce((byteLength, column) => {
+      return byteLength + dataTypeToByteLength[column.type] * (column.size ?? 1)
+    }, 0)
+    Object.defineProperty(target.constructor.prototype, name, {
+      get() { return this.getColumn(column) },
+      set(value) { this.setColumn(column, value) },
+      configurable: true,
+      enumerable: true,
+    })
+  }
+}
+
+export class Entity extends DataView {
+  @defineMethod() declare readInt8: (byteOffset?: number) => number
+  @defineMethod() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
+  @defineMethod() declare readInt32: (byteOffset?: number, littleEndian?: boolean) => number
+  @defineMethod() declare readUint8: (byteOffset?: number) => number
+  @defineMethod() declare readUint16: (byteOffset?: number, littleEndian?: boolean) => number
+  @defineMethod() declare readUint32: (byteOffset?: number, littleEndian?: boolean) => number
+  @defineMethod() declare readFloat32: (byteOffset?: number, littleEndian?: boolean) => number
+  @defineMethod() declare readFloat64: (byteOffset?: number, littleEndian?: boolean) => number
+  @defineMethod() declare writeInt8: (value: number, byteOffset?: number) => this
+  @defineMethod() declare writeInt16: (value: number, byteOffset?: number, littleEndian?: boolean) => this
+  @defineMethod() declare writeInt32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
+  @defineMethod() declare writeUint8: (value: number, byteOffset?: number) => this
+  @defineMethod() declare writeUint16: (value: number, byteOffset?: number, littleEndian?: boolean) => this
+  @defineMethod() declare writeUint32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
+  @defineMethod() declare writeFloat32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
+  @defineMethod() declare writeFloat64: (value: number, byteOffset?: number, littleEndian?: boolean) => this
 
   cursor = 0
 

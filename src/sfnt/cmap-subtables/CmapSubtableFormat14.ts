@@ -1,4 +1,4 @@
-import { Entity } from '../../utils'
+import { defineProp, Entity } from '../../utils'
 
 export interface VarSelectorRecord {
   varSelector: number
@@ -19,9 +19,9 @@ export interface VSMappings {
 }
 
 export class CmapSubtableFormat14 extends Entity {
-  @Entity.column({ type: 'uint16' }) declare format: 14
-  @Entity.column({ type: 'uint32' }) declare length: number
-  @Entity.column({ type: 'uint32' }) declare numVarSelectorRecords: number
+  @defineProp({ type: 'uint16' }) declare format: 14
+  @defineProp({ type: 'uint32' }) declare length: number
+  @defineProp({ type: 'uint32' }) declare numVarSelectorRecords: number
 
   get varSelectorRecords(): VarSelectorRecord[] {
     const numVarSelectorRecords = this.numVarSelectorRecords

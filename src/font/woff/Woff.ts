@@ -1,25 +1,25 @@
 import { unzlibSync, zlibSync } from 'fflate'
 import { Sfnt } from '../../sfnt'
-import { Entity, toDataView } from '../../utils'
+import { defineProp, toDataView } from '../../utils'
 import { FontFileFormat } from '../FontFileFormat'
 import { WoffTableDirectoryEntry } from './WoffTableDirectoryEntry'
 
 // https://www.w3.org/submissions/WOFF
 export class Woff extends FontFileFormat {
   readonly mimeType = 'font/woff'
-  @Entity.column({ type: 'uint32' }) declare signature: number
-  @Entity.column({ type: 'uint32' }) declare flavor: number
-  @Entity.column({ type: 'uint32' }) declare length: number
-  @Entity.column({ type: 'uint16' }) declare numTables: number
-  @Entity.column({ type: 'uint16' }) declare reserved: number
-  @Entity.column({ type: 'uint32' }) declare totalSfntSize: number
-  @Entity.column({ type: 'uint16' }) declare majorVersion: number
-  @Entity.column({ type: 'uint16' }) declare minorVersion: number
-  @Entity.column({ type: 'uint32' }) declare metaOffset: number
-  @Entity.column({ type: 'uint32' }) declare metaLength: number
-  @Entity.column({ type: 'uint32' }) declare metaOrigLength: number
-  @Entity.column({ type: 'uint32' }) declare privOffset: number
-  @Entity.column({ type: 'uint32' }) declare privLength: number
+  @defineProp({ type: 'uint32' }) declare signature: number
+  @defineProp({ type: 'uint32' }) declare flavor: number
+  @defineProp({ type: 'uint32' }) declare length: number
+  @defineProp({ type: 'uint16' }) declare numTables: number
+  @defineProp({ type: 'uint16' }) declare reserved: number
+  @defineProp({ type: 'uint32' }) declare totalSfntSize: number
+  @defineProp({ type: 'uint16' }) declare majorVersion: number
+  @defineProp({ type: 'uint16' }) declare minorVersion: number
+  @defineProp({ type: 'uint32' }) declare metaOffset: number
+  @defineProp({ type: 'uint32' }) declare metaLength: number
+  @defineProp({ type: 'uint32' }) declare metaOrigLength: number
+  @defineProp({ type: 'uint32' }) declare privOffset: number
+  @defineProp({ type: 'uint32' }) declare privLength: number
 
   directories: Array<WoffTableDirectoryEntry> = []
 

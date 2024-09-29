@@ -1,11 +1,11 @@
-import { Entity } from '../../utils'
+import { defineProp, Entity } from '../../utils'
 
 export class WoffTableDirectoryEntry extends Entity {
-  @Entity.column({ type: 'char', size: 4 }) declare tag: string
-  @Entity.column({ type: 'uint32' }) declare offset: number
-  @Entity.column({ type: 'uint32' }) declare compLength: number
-  @Entity.column({ type: 'uint32' }) declare origLength: number
-  @Entity.column({ type: 'uint32' }) declare origChecksum: number
+  @defineProp({ type: 'char', size: 4 }) declare tag: string
+  @defineProp({ type: 'uint32' }) declare offset: number
+  @defineProp({ type: 'uint32' }) declare compLength: number
+  @defineProp({ type: 'uint32' }) declare origLength: number
+  @defineProp({ type: 'uint32' }) declare origChecksum: number
 
   constructor(buffer: BufferSource, byteOffset?: number) {
     super(buffer, byteOffset, 20)

@@ -1,9 +1,9 @@
-import { Entity } from '../../utils'
+import { defineProp, Entity } from '../../utils'
 
 export class CmapSubtableFormat2 extends Entity {
-  @Entity.column({ type: 'uint16' }) declare format: 2
-  @Entity.column({ type: 'uint16' }) declare length: number
-  @Entity.column({ type: 'uint16' }) declare language: number
+  @defineProp({ type: 'uint16' }) declare format: 2
+  @defineProp({ type: 'uint16' }) declare length: number
+  @defineProp({ type: 'uint16' }) declare language: number
 
   get subHeaderKeys(): number[] {
     this.seek(6)

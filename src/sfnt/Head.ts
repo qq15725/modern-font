@@ -1,4 +1,4 @@
-import { Entity } from '../utils'
+import { defineProp } from '../utils'
 import { Sfnt } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
@@ -13,23 +13,23 @@ declare module './Sfnt' {
  */
 @Sfnt.table('head')
 export class Head extends SfntTable {
-  @Entity.column({ type: 'fixed' }) declare version: number
-  @Entity.column({ type: 'fixed' }) declare fontRevision: number
-  @Entity.column({ type: 'uint32' }) declare checkSumAdjustment: number
-  @Entity.column({ type: 'uint32' }) declare magickNumber: number
-  @Entity.column({ type: 'uint16' }) declare flags: number
-  @Entity.column({ type: 'uint16' }) declare unitsPerEm: number
-  @Entity.column({ type: 'longDateTime' }) declare created: Date
-  @Entity.column({ type: 'longDateTime' }) declare modified: Date
-  @Entity.column({ type: 'int16' }) declare xMin: number
-  @Entity.column({ type: 'int16' }) declare yMin: number
-  @Entity.column({ type: 'int16' }) declare xMax: number
-  @Entity.column({ type: 'int16' }) declare yMax: number
-  @Entity.column({ type: 'uint16' }) declare macStyle: number
-  @Entity.column({ type: 'uint16' }) declare lowestRecPPEM: number
-  @Entity.column({ type: 'int16' }) declare fontDirectionHint: number
-  @Entity.column({ type: 'int16' }) declare indexToLocFormat: number
-  @Entity.column({ type: 'int16' }) declare glyphDataFormat: number
+  @defineProp({ type: 'fixed' }) declare version: number
+  @defineProp({ type: 'fixed' }) declare fontRevision: number
+  @defineProp({ type: 'uint32' }) declare checkSumAdjustment: number
+  @defineProp({ type: 'uint32' }) declare magickNumber: number
+  @defineProp({ type: 'uint16' }) declare flags: number
+  @defineProp({ type: 'uint16' }) declare unitsPerEm: number
+  @defineProp({ type: 'longDateTime' }) declare created: Date
+  @defineProp({ type: 'longDateTime' }) declare modified: Date
+  @defineProp({ type: 'int16' }) declare xMin: number
+  @defineProp({ type: 'int16' }) declare yMin: number
+  @defineProp({ type: 'int16' }) declare xMax: number
+  @defineProp({ type: 'int16' }) declare yMax: number
+  @defineProp({ type: 'uint16' }) declare macStyle: number
+  @defineProp({ type: 'uint16' }) declare lowestRecPPEM: number
+  @defineProp({ type: 'int16' }) declare fontDirectionHint: number
+  @defineProp({ type: 'int16' }) declare indexToLocFormat: number
+  @defineProp({ type: 'int16' }) declare glyphDataFormat: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(54), byteOffset?: number) {
     super(buffer, byteOffset, 54)

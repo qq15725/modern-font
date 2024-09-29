@@ -1,10 +1,10 @@
-import { Entity } from '../../utils'
+import { defineProp, Entity } from '../../utils'
 
 export class CmapSubtableFormat0 extends Entity {
-  @Entity.column({ type: 'uint16' }) declare format: 0
-  @Entity.column({ type: 'uint16' }) declare length: number
-  @Entity.column({ type: 'uint16' }) declare language: number
-  @Entity.column({ type: 'uint8', size: 256 }) declare glyphIndexArray: Array<number>
+  @defineProp({ type: 'uint16' }) declare format: 0
+  @defineProp({ type: 'uint16' }) declare length: number
+  @defineProp({ type: 'uint16' }) declare language: number
+  @defineProp({ type: 'uint8', size: 256 }) declare glyphIndexArray: Array<number>
 
   constructor(buffer: BufferSource = new ArrayBuffer(262), byteOffset?: number) {
     super(buffer, byteOffset, 262)

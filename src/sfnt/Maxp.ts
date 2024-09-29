@@ -1,4 +1,4 @@
-import { Entity } from '../utils'
+import { defineProp } from '../utils'
 import { Sfnt } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
@@ -13,21 +13,21 @@ declare module './Sfnt' {
  */
 @Sfnt.table('maxp')
 export class Maxp extends SfntTable {
-  @Entity.column({ type: 'fixed' }) declare version: number
-  @Entity.column({ type: 'uint16' }) declare numGlyphs: number
-  @Entity.column({ type: 'uint16' }) declare maxPoints: number
-  @Entity.column({ type: 'uint16' }) declare maxContours: number
-  @Entity.column({ type: 'uint16' }) declare maxComponentPoints: number
-  @Entity.column({ type: 'uint16' }) declare maxComponentContours: number
-  @Entity.column({ type: 'uint16' }) declare maxZones: number
-  @Entity.column({ type: 'uint16' }) declare maxTwilightPoints: number
-  @Entity.column({ type: 'uint16' }) declare maxStorage: number
-  @Entity.column({ type: 'uint16' }) declare maxFunctionDefs: number
-  @Entity.column({ type: 'uint16' }) declare maxInstructionDefs: number
-  @Entity.column({ type: 'uint16' }) declare maxStackElements: number
-  @Entity.column({ type: 'uint16' }) declare maxSizeOfInstructions: number
-  @Entity.column({ type: 'uint16' }) declare maxComponentElements: number
-  @Entity.column({ type: 'uint16' }) declare maxComponentDepth: number
+  @defineProp({ type: 'fixed' }) declare version: number
+  @defineProp({ type: 'uint16' }) declare numGlyphs: number
+  @defineProp({ type: 'uint16' }) declare maxPoints: number
+  @defineProp({ type: 'uint16' }) declare maxContours: number
+  @defineProp({ type: 'uint16' }) declare maxComponentPoints: number
+  @defineProp({ type: 'uint16' }) declare maxComponentContours: number
+  @defineProp({ type: 'uint16' }) declare maxZones: number
+  @defineProp({ type: 'uint16' }) declare maxTwilightPoints: number
+  @defineProp({ type: 'uint16' }) declare maxStorage: number
+  @defineProp({ type: 'uint16' }) declare maxFunctionDefs: number
+  @defineProp({ type: 'uint16' }) declare maxInstructionDefs: number
+  @defineProp({ type: 'uint16' }) declare maxStackElements: number
+  @defineProp({ type: 'uint16' }) declare maxSizeOfInstructions: number
+  @defineProp({ type: 'uint16' }) declare maxComponentElements: number
+  @defineProp({ type: 'uint16' }) declare maxComponentDepth: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(32), byteOffset?: number) {
     super(buffer, byteOffset, 32)
