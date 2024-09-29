@@ -1,5 +1,5 @@
 import { Sfnt } from '../../sfnt'
-import { defineProp, toDataView } from '../../utils'
+import { defineColumn, toDataView } from '../../utils'
 import { FontFileFormat } from '../FontFileFormat'
 import { TableDirectory } from './TableDirectory'
 
@@ -7,11 +7,11 @@ import { TableDirectory } from './TableDirectory'
 // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
 export class Ttf extends FontFileFormat {
   readonly mimeType = 'font/ttf'
-  @defineProp({ type: 'uint32' }) declare scalerType: number
-  @defineProp({ type: 'uint16' }) declare numTables: number
-  @defineProp({ type: 'uint16' }) declare searchRange: number
-  @defineProp({ type: 'uint16' }) declare entrySelector: number
-  @defineProp({ type: 'uint16' }) declare rangeShift: number
+  @defineColumn({ type: 'uint32' }) declare scalerType: number
+  @defineColumn({ type: 'uint16' }) declare numTables: number
+  @defineColumn({ type: 'uint16' }) declare searchRange: number
+  @defineColumn({ type: 'uint16' }) declare entrySelector: number
+  @defineColumn({ type: 'uint16' }) declare rangeShift: number
 
   directories: Array<TableDirectory> = []
 

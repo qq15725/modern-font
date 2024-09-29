@@ -1,6 +1,31 @@
-import type { DataType } from './DataType'
 import { toBuffer, toDataView } from './buffer'
-import { dataTypeToByteLength } from './DataType'
+
+export type DataType =
+  | 'int8'
+  | 'int16'
+  | 'int32'
+  | 'uint8'
+  | 'uint16'
+  | 'uint32'
+  | 'float32'
+  | 'float64'
+  | 'fixed'
+  | 'longDateTime'
+  | 'char'
+
+export const dataTypeToByteLength: Record<DataType, number> = {
+  int8: 1,
+  int16: 2,
+  int32: 4,
+  uint8: 1,
+  uint16: 2,
+  uint32: 4,
+  float32: 4,
+  float64: 8,
+  fixed: 4,
+  longDateTime: 8,
+  char: 1,
+}
 
 export interface Column {
   name: string
@@ -13,12 +38,12 @@ export interface Column {
 
 export type ColumnOptions = Partial<Column> & { type: DataType }
 
-export interface EntityDefinition {
-  columns: Array<Column>
+export interface FontDataViewDefinition {
+  columns: Column[]
   byteLength: number
 }
 
-const entityDefinitions = new WeakMap<any, EntityDefinition>()
+const definitions = new WeakMap<any, FontDataViewDefinition>()
 
 export function defineMethod() {
   return function (target: any, name: PropertyKey) {
@@ -26,10 +51,12 @@ export function defineMethod() {
       get() {
         if (typeof name === 'string') {
           if (name.startsWith('read')) {
-            return (...args: Array<any>) => this.read(name.substring('read'.length).toLowerCase(), ...args)
+            // @ts-expect-error ...args
+            return (...args: any[]) => (this as FontDataView).read(name.substring('read'.length).toLowerCase(), ...args)
           }
           else if (name.startsWith('write')) {
-            return (...args: Array<any>) => this.write(name.substring('write'.length).toLowerCase(), ...args)
+            // @ts-expect-error ...args
+            return (...args: any[]) => (this as FontDataView).write(name.substring('write'.length).toLowerCase(), ...args)
           }
         }
         return undefined
@@ -40,18 +67,18 @@ export function defineMethod() {
   }
 }
 
-export function defineProp(options: ColumnOptions) {
+export function defineColumn(options: ColumnOptions) {
   const { size = 1, type } = options
   return (target: any, name: PropertyKey) => {
     if (typeof name !== 'string')
       return
-    let definition = entityDefinitions.get(target)
+    let definition = definitions.get(target)
     if (!definition) {
       definition = {
         columns: [],
         byteLength: 0,
       }
-      entityDefinitions.set(target, definition)
+      definitions.set(target, definition)
     }
     const column = {
       ...options,
@@ -64,15 +91,15 @@ export function defineProp(options: ColumnOptions) {
       return byteLength + dataTypeToByteLength[column.type] * (column.size ?? 1)
     }, 0)
     Object.defineProperty(target.constructor.prototype, name, {
-      get() { return this.getColumn(column) },
-      set(value) { this.setColumn(column, value) },
+      get() { return (this as FontDataView).getColumn(column) },
+      set(value) { (this as FontDataView).setColumn(column, value) },
       configurable: true,
       enumerable: true,
     })
   }
 }
 
-export class Entity extends DataView {
+export class FontDataView extends DataView {
   @defineMethod() declare readInt8: (byteOffset?: number) => number
   @defineMethod() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
   @defineMethod() declare readInt32: (byteOffset?: number, littleEndian?: boolean) => number

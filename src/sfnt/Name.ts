@@ -1,4 +1,4 @@
-import { defineProp, getUCS2String, getUTF8String } from '../utils'
+import { defineColumn, getUCS2String, getUTF8String } from '../utils'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
@@ -64,9 +64,9 @@ declare module './Sfnt' {
  */
 @defineSfntTable('name')
 export class Name extends SfntTable {
-  @defineProp({ type: 'uint16' }) declare format: number
-  @defineProp({ type: 'uint16' }) declare count: number
-  @defineProp({ type: 'uint16' }) declare stringOffset: number
+  @defineColumn({ type: 'uint16' }) declare format: number
+  @defineColumn({ type: 'uint16' }) declare count: number
+  @defineColumn({ type: 'uint16' }) declare stringOffset: number
 
   getNames(): Record<string, any> {
     const count = this.count

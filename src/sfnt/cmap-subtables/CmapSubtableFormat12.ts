@@ -1,12 +1,12 @@
-import { defineProp, Entity } from '../../utils'
+import { defineColumn, FontDataView } from '../../utils'
 import { createSegments } from './utils'
 
-export class CmapSubtableFormat12 extends Entity {
-  @defineProp({ type: 'uint16' }) declare format: 12
-  @defineProp({ type: 'uint16' }) declare reserved: number
-  @defineProp({ type: 'uint32' }) declare length: number
-  @defineProp({ type: 'uint32' }) declare language: number
-  @defineProp({ type: 'uint32' }) declare nGroups: number
+export class CmapSubtableFormat12 extends FontDataView {
+  @defineColumn({ type: 'uint16' }) declare format: 12
+  @defineColumn({ type: 'uint16' }) declare reserved: number
+  @defineColumn({ type: 'uint32' }) declare length: number
+  @defineColumn({ type: 'uint32' }) declare language: number
+  @defineColumn({ type: 'uint32' }) declare nGroups: number
 
   get groups(): { startCharCode: number, endCharCode: number, startGlyphCode: number }[] {
     const nGroups = this.nGroups

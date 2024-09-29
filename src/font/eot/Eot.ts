@@ -1,25 +1,25 @@
 import type { Ttf } from '../ttf'
-import { defineProp, toUCS2Bytes } from '../../utils'
+import { defineColumn, toUCS2Bytes } from '../../utils'
 import { FontFileFormat } from '../FontFileFormat'
 
 // http://www.w3.org/Submission/EOT
 export class Eot extends FontFileFormat {
   readonly mimeType = 'application/vnd.ms-fontobject'
-  @defineProp({ type: 'uint32' }) declare EOTSize: number
-  @defineProp({ type: 'uint32' }) declare FontDataSize: number
-  @defineProp({ type: 'uint32' }) declare Version: number
-  @defineProp({ type: 'uint32' }) declare Flags: number
-  @defineProp({ type: 'uint8', size: 10 }) declare FontPANOSE: Array<number>
-  @defineProp({ type: 'uint8' }) declare Charset: number
-  @defineProp({ type: 'uint8' }) declare Italic: number
-  @defineProp({ type: 'uint32' }) declare Weight: number
-  @defineProp({ type: 'uint16' }) declare fsType: number
-  @defineProp({ type: 'uint16' }) declare MagicNumber: number
-  @defineProp({ type: 'uint8', size: 16 }) declare UnicodeRange: Array<number>
-  @defineProp({ type: 'uint8', size: 8 }) declare CodePageRange: Array<number>
-  @defineProp({ type: 'uint32' }) declare CheckSumAdjustment: number
-  @defineProp({ type: 'uint8', size: 16 }) declare Reserved: Array<number>
-  @defineProp({ type: 'uint16' }) declare Padding1: number
+  @defineColumn({ type: 'uint32' }) declare EOTSize: number
+  @defineColumn({ type: 'uint32' }) declare FontDataSize: number
+  @defineColumn({ type: 'uint32' }) declare Version: number
+  @defineColumn({ type: 'uint32' }) declare Flags: number
+  @defineColumn({ type: 'uint8', size: 10 }) declare FontPANOSE: Array<number>
+  @defineColumn({ type: 'uint8' }) declare Charset: number
+  @defineColumn({ type: 'uint8' }) declare Italic: number
+  @defineColumn({ type: 'uint32' }) declare Weight: number
+  @defineColumn({ type: 'uint16' }) declare fsType: number
+  @defineColumn({ type: 'uint16' }) declare MagicNumber: number
+  @defineColumn({ type: 'uint8', size: 16 }) declare UnicodeRange: Array<number>
+  @defineColumn({ type: 'uint8', size: 8 }) declare CodePageRange: Array<number>
+  @defineColumn({ type: 'uint32' }) declare CheckSumAdjustment: number
+  @defineColumn({ type: 'uint8', size: 16 }) declare Reserved: Array<number>
+  @defineColumn({ type: 'uint16' }) declare Padding1: number
   // FamilyNameSize
   // FamilyName
   // Padding2

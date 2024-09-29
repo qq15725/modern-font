@@ -1,4 +1,4 @@
-import { defineProp, Entity } from '../../utils'
+import { defineColumn, FontDataView } from '../../utils'
 
 export interface VarSelectorRecord {
   varSelector: number
@@ -18,10 +18,10 @@ export interface VSMappings {
   glyphID: number
 }
 
-export class CmapSubtableFormat14 extends Entity {
-  @defineProp({ type: 'uint16' }) declare format: 14
-  @defineProp({ type: 'uint32' }) declare length: number
-  @defineProp({ type: 'uint32' }) declare numVarSelectorRecords: number
+export class CmapSubtableFormat14 extends FontDataView {
+  @defineColumn({ type: 'uint16' }) declare format: 14
+  @defineColumn({ type: 'uint32' }) declare length: number
+  @defineColumn({ type: 'uint32' }) declare numVarSelectorRecords: number
 
   get varSelectorRecords(): VarSelectorRecord[] {
     const numVarSelectorRecords = this.numVarSelectorRecords

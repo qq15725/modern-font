@@ -1,4 +1,4 @@
-import { defineProp } from '../utils'
+import { defineColumn } from '../utils'
 import { CmapSubtableFormat0, CmapSubtableFormat2, CmapSubtableFormat4, CmapSubtableFormat6, CmapSubtableFormat12, CmapSubtableFormat14 } from './cmap-subtables'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
@@ -20,8 +20,8 @@ export interface CmapSubtable {
  */
 @defineSfntTable('cmap')
 export class Cmap extends SfntTable {
-  @defineProp({ type: 'uint16' }) declare version: number
-  @defineProp({ type: 'uint16' }) declare numberSubtables: number
+  @defineColumn({ type: 'uint16' }) declare version: number
+  @defineColumn({ type: 'uint16' }) declare numberSubtables: number
 
   static from(unicodeGlyphIndexMap: Map<number, number>): Cmap {
     const has2Byte = Array.from(unicodeGlyphIndexMap.keys()).some(unicode => unicode > 0xFFFF)

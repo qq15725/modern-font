@@ -1,11 +1,11 @@
-import { defineProp, Entity } from '../../utils'
+import { defineColumn, FontDataView } from '../../utils'
 
-export class CmapSubtableFormat6 extends Entity {
-  @defineProp({ type: 'uint16' }) declare format: 6
-  @defineProp({ type: 'uint16' }) declare length: number
-  @defineProp({ type: 'uint16' }) declare language: number
-  @defineProp({ type: 'uint16' }) declare firstCode: number
-  @defineProp({ type: 'uint16' }) declare entryCount: number
+export class CmapSubtableFormat6 extends FontDataView {
+  @defineColumn({ type: 'uint16' }) declare format: 6
+  @defineColumn({ type: 'uint16' }) declare length: number
+  @defineColumn({ type: 'uint16' }) declare language: number
+  @defineColumn({ type: 'uint16' }) declare firstCode: number
+  @defineColumn({ type: 'uint16' }) declare entryCount: number
 
   get glyphIndexArray(): number[] {
     this.seek(12)

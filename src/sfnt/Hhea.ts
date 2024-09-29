@@ -1,4 +1,4 @@
-import { defineProp } from '../utils'
+import { defineColumn } from '../utils'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
@@ -13,20 +13,20 @@ declare module './Sfnt' {
  */
 @defineSfntTable('hhea')
 export class Hhea extends SfntTable {
-  @defineProp({ type: 'fixed' }) declare version: number
-  @defineProp({ type: 'int16' }) declare ascent: number
-  @defineProp({ type: 'int16' }) declare descent: number
-  @defineProp({ type: 'int16' }) declare lineGap: number
-  @defineProp({ type: 'uint16' }) declare advanceWidthMax: number
-  @defineProp({ type: 'int16' }) declare minLeftSideBearing: number
-  @defineProp({ type: 'int16' }) declare minRightSideBearing: number
-  @defineProp({ type: 'int16' }) declare xMaxExtent: number
-  @defineProp({ type: 'int16' }) declare caretSlopeRise: number
-  @defineProp({ type: 'int16' }) declare caretSlopeRun: number
-  @defineProp({ type: 'int16' }) declare caretOffset: number
-  @defineProp({ type: 'int16', size: 4 }) declare reserved: Array<number>
-  @defineProp({ type: 'int16' }) declare metricDataFormat: number
-  @defineProp({ type: 'uint16' }) declare numOfLongHorMetrics: number
+  @defineColumn({ type: 'fixed' }) declare version: number
+  @defineColumn({ type: 'int16' }) declare ascent: number
+  @defineColumn({ type: 'int16' }) declare descent: number
+  @defineColumn({ type: 'int16' }) declare lineGap: number
+  @defineColumn({ type: 'uint16' }) declare advanceWidthMax: number
+  @defineColumn({ type: 'int16' }) declare minLeftSideBearing: number
+  @defineColumn({ type: 'int16' }) declare minRightSideBearing: number
+  @defineColumn({ type: 'int16' }) declare xMaxExtent: number
+  @defineColumn({ type: 'int16' }) declare caretSlopeRise: number
+  @defineColumn({ type: 'int16' }) declare caretSlopeRun: number
+  @defineColumn({ type: 'int16' }) declare caretOffset: number
+  @defineColumn({ type: 'int16', size: 4 }) declare reserved: Array<number>
+  @defineColumn({ type: 'int16' }) declare metricDataFormat: number
+  @defineColumn({ type: 'uint16' }) declare numOfLongHorMetrics: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(36), byteOffset?: number) {
     super(buffer, byteOffset, 36)

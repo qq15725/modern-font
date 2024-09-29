@@ -1,4 +1,4 @@
-import { defineProp } from '../utils'
+import { defineColumn } from '../utils'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
@@ -13,15 +13,15 @@ declare module './Sfnt' {
  */
 @defineSfntTable('post')
 export class Post extends SfntTable {
-  @defineProp({ type: 'fixed' }) declare format: number
-  @defineProp({ type: 'fixed' }) declare italicAngle: number
-  @defineProp({ type: 'int16' }) declare underlinePosition: number
-  @defineProp({ type: 'int16' }) declare underlineThickness: number
-  @defineProp({ type: 'uint32' }) declare isFixedPitch: number
-  @defineProp({ type: 'uint32' }) declare minMemType42: number
-  @defineProp({ type: 'uint32' }) declare maxMemType42: number
-  @defineProp({ type: 'uint32' }) declare minMemType1: number
-  @defineProp({ type: 'uint32' }) declare maxMemType1: number
+  @defineColumn({ type: 'fixed' }) declare format: number
+  @defineColumn({ type: 'fixed' }) declare italicAngle: number
+  @defineColumn({ type: 'int16' }) declare underlinePosition: number
+  @defineColumn({ type: 'int16' }) declare underlineThickness: number
+  @defineColumn({ type: 'uint32' }) declare isFixedPitch: number
+  @defineColumn({ type: 'uint32' }) declare minMemType42: number
+  @defineColumn({ type: 'uint32' }) declare maxMemType42: number
+  @defineColumn({ type: 'uint32' }) declare minMemType1: number
+  @defineColumn({ type: 'uint32' }) declare maxMemType1: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(32), byteOffset?: number, byteLength?: number) {
     super(buffer, byteLength, byteOffset)
