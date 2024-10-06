@@ -152,7 +152,7 @@ export class Glyph {
     return p
   }
 
-  protected _transformPoints(points: GlyphPoint[], transform: Exclude<GlyphComponent, 'glyphIndex'>): GlyphPoint[] {
+  protected _transformPoints(points: GlyphPoint[], transform: Omit<GlyphComponent, 'glyphIndex'>): GlyphPoint[] {
     const newPoints = []
     for (let i = 0; i < points.length; i += 1) {
       const pt = points[i]
@@ -205,7 +205,7 @@ export class Glyph {
     return this._getPath(glyph.points)
   }
 
-  getPath(x = 0, y = 0, fontSize = 72, options: any, font: any): Path2D {
+  getPath(x = 0, y = 0, fontSize = 72, options: any = {}, font: any = {}): Path2D {
     options = Object.assign({}, font && font.defaultRenderOptions, options)
     let xScale = options.xScale
     let yScale = options.yScale
