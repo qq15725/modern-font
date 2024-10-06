@@ -49,8 +49,8 @@ export class Readable {
     source: BufferSource,
     byteOffset?: number,
     byteLength?: number,
-    public littleEndian?: boolean,
+    littleEndian?: boolean,
   ) {
-    this.view = new IDataView(source, byteOffset, byteLength)
+    this.view = new IDataView(source, byteOffset, byteLength, littleEndian)
   }
 }

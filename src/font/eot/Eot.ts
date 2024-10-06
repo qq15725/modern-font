@@ -1,10 +1,10 @@
 import type { Ttf } from '../ttf'
 import { defineColumn, toUCS2Bytes } from '../../utils'
-import { FontFileFormat } from '../FontFileFormat'
+import { Font } from '../Font'
 
 // http://www.w3.org/Submission/EOT
-export class Eot extends FontFileFormat {
-  readonly mimeType = 'application/vnd.ms-fontobject'
+export class Eot extends Font {
+  override mimeType = 'application/vnd.ms-fontobject'
   @defineColumn({ type: 'uint32' }) declare EOTSize: number
   @defineColumn({ type: 'uint32' }) declare FontDataSize: number
   @defineColumn({ type: 'uint32' }) declare Version: number

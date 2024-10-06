@@ -24,7 +24,7 @@ export class Hhea extends SfntTable {
   @defineColumn({ type: 'int16' }) declare caretSlopeRise: number
   @defineColumn({ type: 'int16' }) declare caretSlopeRun: number
   @defineColumn({ type: 'int16' }) declare caretOffset: number
-  @defineColumn({ type: 'int16', size: 4 }) declare reserved: Array<number>
+  @defineColumn({ type: 'int16', size: 4 }) declare reserved: number[]
   @defineColumn({ type: 'int16' }) declare metricDataFormat: number
   @defineColumn({ type: 'uint16' }) declare numOfLongHorMetrics: number
 

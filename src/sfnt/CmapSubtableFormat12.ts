@@ -1,5 +1,5 @@
-import { defineColumn, Readable } from '../../utils'
-import { createSegments } from './utils'
+import { defineColumn, Readable } from '../utils'
+import { createCmapSegments } from './CmapSegment'
 
 export class CmapSubtableFormat12 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 12
@@ -21,7 +21,7 @@ export class CmapSubtableFormat12 extends Readable {
   }
 
   static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat12 {
-    const segments = createSegments(unicodeGlyphIndexMap)
+    const segments = createCmapSegments(unicodeGlyphIndexMap)
     const table = new CmapSubtableFormat12(new ArrayBuffer(16 + segments.length * 12))
     table.format = 12
     table.reserved = 0

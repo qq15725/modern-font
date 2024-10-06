@@ -1,5 +1,5 @@
-import { defineColumn, Readable } from '../../utils'
-import { createSegments } from './utils'
+import { defineColumn, Readable } from '../utils'
+import { createCmapSegments } from './CmapSegment'
 
 export class CmapSubtableFormat4 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 4
@@ -81,7 +81,7 @@ export class CmapSubtableFormat4 extends Readable {
   }
 
   static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat4 {
-    const segments = createSegments(unicodeGlyphIndexMap, 0xFFFF)
+    const segments = createCmapSegments(unicodeGlyphIndexMap, 0xFFFF)
     const segCount = segments.length + 1
     const entrySelector = Math.floor(Math.log(segCount) / Math.LN2)
     const searchRange = 2 * 2 ** entrySelector

@@ -1,12 +1,12 @@
 import { unzlibSync, zlibSync } from 'fflate'
 import { Sfnt } from '../../sfnt'
 import { defineColumn, toDataView } from '../../utils'
-import { FontFileFormat } from '../FontFileFormat'
+import { Font } from '../Font'
 import { WoffTableDirectoryEntry } from './WoffTableDirectoryEntry'
 
 // https://www.w3.org/submissions/WOFF
-export class Woff extends FontFileFormat {
-  readonly mimeType = 'font/woff'
+export class Woff extends Font {
+  override mimeType = 'font/woff'
   @defineColumn({ type: 'uint32' }) declare signature: number
   @defineColumn({ type: 'uint32' }) declare flavor: number
   @defineColumn({ type: 'uint32' }) declare length: number

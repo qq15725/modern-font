@@ -1,7 +1,11 @@
 import { Readable } from '../utils'
 
-export abstract class FontFileFormat extends Readable {
-  readonly abstract mimeType: string
+export class Font extends Readable {
+  mimeType = 'font/opentype'
+
+  toArrayBuffer(): ArrayBuffer {
+    return this.view.buffer.slice(this.view.byteOffset, this.view.byteOffset + this.view.byteLength)
+  }
 
   toBlob(): Blob {
     return new Blob(

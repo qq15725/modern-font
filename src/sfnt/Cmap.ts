@@ -1,5 +1,10 @@
 import { defineColumn } from '../utils'
-import { CmapSubtableFormat0, CmapSubtableFormat2, CmapSubtableFormat4, CmapSubtableFormat6, CmapSubtableFormat12, CmapSubtableFormat14 } from './cmap-subtables'
+import { CmapSubtableFormat0 } from './CmapSubtableFormat0'
+import { CmapSubtableFormat2 } from './CmapSubtableFormat2'
+import { CmapSubtableFormat4 } from './CmapSubtableFormat4'
+import { CmapSubtableFormat6 } from './CmapSubtableFormat6'
+import { CmapSubtableFormat12 } from './CmapSubtableFormat12'
+import { CmapSubtableFormat14 } from './CmapSubtableFormat14'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
@@ -110,7 +115,7 @@ export class Cmap extends SfntTable {
     const table14 = tables.find(item => item.platformID === 0 && item.platformSpecificID === 5 && item.format === 14)?.view as CmapSubtableFormat14 | undefined
     return new Map([
       ...(table0?.getUnicodeGlyphIndexMap() ?? []),
-      ...(table2?.getUnicodeGlyphIndexMap(this.sfnt.maxp.numGlyphs) ?? []),
+      ...(table2?.getUnicodeGlyphIndexMap(this._sfnt.maxp.numGlyphs) ?? []),
       ...(table4?.getUnicodeGlyphIndexMap() ?? []),
       ...(table12?.getUnicodeGlyphIndexMap() ?? []),
       ...(table14?.getUnicodeGlyphIndexMap() ?? []),

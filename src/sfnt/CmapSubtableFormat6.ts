@@ -1,4 +1,4 @@
-import { defineColumn, Readable } from '../../utils'
+import { defineColumn, Readable } from '../utils'
 
 export class CmapSubtableFormat6 extends Readable {
   @defineColumn({ type: 'uint16' }) declare format: 6

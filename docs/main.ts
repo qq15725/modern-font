@@ -28,6 +28,7 @@ async function init(): Promise<void> {
   if (eot) {
     document.fonts.add(eot.toFontFace('eot'))
   }
+  console.warn(woff, ttf, eot, minifyWoff)
 }
 
 init()

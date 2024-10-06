@@ -12,7 +12,7 @@ declare module './Sfnt' {
  */
 @defineSfntTable('loca')
 export class Loca extends SfntTable {
-  static from(locations: Array<number>, indexToLocFormat = 1): Loca {
+  static from(locations: number[], indexToLocFormat = 1): Loca {
     const byteLength = locations.length * (indexToLocFormat ? 4 : 2)
     const loca = new Loca(new ArrayBuffer(byteLength))
     locations.forEach((location) => {
@@ -26,9 +26,9 @@ export class Loca extends SfntTable {
     return loca
   }
 
-  getLocations(): Array<number> {
-    const numGlyphs = this.sfnt.maxp.numGlyphs
-    const indexToLocFormat = this.sfnt.head.indexToLocFormat
+  getLocations(): number[] {
+    const numGlyphs = this._sfnt.maxp.numGlyphs
+    const indexToLocFormat = this._sfnt.head.indexToLocFormat
     this.view.seek(0)
     return Array.from({ length: numGlyphs }).map(() => {
       return indexToLocFormat

@@ -17,7 +17,7 @@ export interface HMetric {
  */
 @defineSfntTable('hmtx')
 export class Hmtx extends SfntTable {
-  static from(metrics: Array<HMetric>): Hmtx {
+  static from(metrics: HMetric[]): Hmtx {
     const byteLength = metrics.length * 4
     const hmtx = new Hmtx(new ArrayBuffer(byteLength))
     metrics.forEach((metric) => {
@@ -27,9 +27,9 @@ export class Hmtx extends SfntTable {
     return hmtx
   }
 
-  getMetrics(): Array<HMetric> {
-    const numGlyphs = this.sfnt.maxp.numGlyphs
-    const numOfLongHorMetrics = this.sfnt.hhea.numOfLongHorMetrics
+  getMetrics(): HMetric[] {
+    const numGlyphs = this._sfnt.maxp.numGlyphs
+    const numOfLongHorMetrics = this._sfnt.hhea.numOfLongHorMetrics
     let advanceWidth = 0
     this.view.seek(0)
     return Array.from({ length: numGlyphs }).map((_, i) => {

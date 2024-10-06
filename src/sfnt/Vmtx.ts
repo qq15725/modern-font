@@ -28,8 +28,8 @@ export class Vmtx extends SfntTable {
   }
 
   getMetrics(): VMetric[] {
-    const numGlyphs = this.sfnt.maxp.numGlyphs
-    const numOfLongVerMetrics = this.sfnt.vhea?.numOfLongVerMetrics ?? 0
+    const numGlyphs = this._sfnt.maxp.numGlyphs
+    const numOfLongVerMetrics = this._sfnt.vhea?.numOfLongVerMetrics ?? 0
     this.view.seek(0)
     let advanceHeight = 0
     return Array.from({ length: numGlyphs }).map((_, i) => {

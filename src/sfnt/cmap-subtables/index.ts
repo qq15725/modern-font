@@ -1,6 +1,0 @@
-export * from './CmapSubtableFormat0'
-export * from './CmapSubtableFormat2'
-export * from './CmapSubtableFormat4'
-export * from './CmapSubtableFormat6'
-export * from './CmapSubtableFormat12'
-export * from './CmapSubtableFormat14'

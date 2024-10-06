@@ -1,4 +1,4 @@
-import { defineColumn, Readable } from '../../utils'
+import { defineColumn, Readable } from '../utils'
 
 export interface VarSelectorRecord {
   varSelector: number

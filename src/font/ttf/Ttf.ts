@@ -1,12 +1,12 @@
 import { Sfnt } from '../../sfnt'
 import { defineColumn, toDataView } from '../../utils'
-import { FontFileFormat } from '../FontFileFormat'
+import { Font } from '../Font'
 import { TableDirectory } from './TableDirectory'
 
 // TrueType
 // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
-export class Ttf extends FontFileFormat {
-  readonly mimeType = 'font/ttf'
+export class Ttf extends Font {
+  override mimeType = 'font/ttf'
   @defineColumn({ type: 'uint32' }) declare scalerType: number
   @defineColumn({ type: 'uint16' }) declare numTables: number
   @defineColumn({ type: 'uint16' }) declare searchRange: number

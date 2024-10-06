@@ -71,7 +71,7 @@ export class Name extends SfntTable {
   getNames(): Record<string, any> {
     const count = this.count
     this.view.seek(6)
-    const nameRecords: Array<Record<string, any>> = []
+    const nameRecords: Record<string, any>[] = []
     for (let i = 0; i < count; ++i) {
       nameRecords.push({
         platform: this.view.readUint16(),
