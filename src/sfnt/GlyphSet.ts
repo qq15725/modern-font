@@ -18,6 +18,7 @@ export class GlyphSet {
     let glyph: Glyph
     if (typeof _glyph === 'function') {
       glyph = _glyph()
+      glyph.path = glyph.buildPath(this)
     }
     else {
       glyph = _glyph

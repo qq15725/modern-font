@@ -81,7 +81,7 @@ export class Glyf extends SfntTable {
 
       const instructionLength = glyph.instructionLength = this.view.readUint16()
 
-      assert(instructionLength > 5000, `Bad instructionLength:${instructionLength}`)
+      assert(instructionLength < 5000, `Bad instructionLength:${instructionLength}`)
 
       const instructions = glyph.instructions = [] as number[]
       for (let i = 0; i < instructionLength; ++i) {
@@ -91,7 +91,7 @@ export class Glyf extends SfntTable {
       const offset = this.view.byteOffset
       const numberOfCoordinates = endPointIndices[endPointIndices.length - 1] + 1
 
-      assert(numberOfCoordinates > 20000, `Bad numberOfCoordinates:${offset}`)
+      assert(numberOfCoordinates < 20000, `Bad numberOfCoordinates:${offset}`)
 
       const flags: number[] = []
       let flag
@@ -109,7 +109,7 @@ export class Glyf extends SfntTable {
         }
       }
 
-      assert(flags.length === numberOfCoordinates, 'Bad flags')
+      assert(flags.length === numberOfCoordinates, `Bad flags length: ${flags.length}, numberOfCoordinates: ${numberOfCoordinates}`)
 
       if (endPointIndices.length > 0) {
         const points: GlyphPoint[] = []

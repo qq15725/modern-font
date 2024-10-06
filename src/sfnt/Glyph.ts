@@ -167,10 +167,10 @@ export class Glyph {
     return newPoints
   }
 
-  protected _buildPath(glyph: Glyph, glyphs: GlyphSet): Path2D {
-    if (glyph.isComposite) {
-      for (let j = 0; j < glyph.components.length; j += 1) {
-        const component = glyph.components[j]
+  buildPath(glyphs: GlyphSet): Path2D {
+    if (this.isComposite) {
+      for (let j = 0; j < this.components.length; j += 1) {
+        const component = this.components[j]
         const componentGlyph = glyphs.get(component.glyphIndex)
         componentGlyph.getPath()
         if (componentGlyph.points) {
@@ -180,10 +180,10 @@ export class Glyph {
           }
           else {
             assert(
-              (component.matchedPoints[0] > glyph.points.length - 1) || (component.matchedPoints[1] > componentGlyph.points.length - 1),
-              `Matched points out of range in ${glyph.name}`,
+              (component.matchedPoints[0] > this.points.length - 1) || (component.matchedPoints[1] > componentGlyph.points.length - 1),
+              `Matched points out of range in ${this.name}`,
             )
-            const firstPt = glyph.points[component.matchedPoints[0]]
+            const firstPt = this.points[component.matchedPoints[0]]
             let secondPt = componentGlyph.points[component.matchedPoints[1]]
             const transform: Omit<GlyphComponent, 'glyphIndex'> = {
               xScale: component.xScale,
@@ -198,11 +198,11 @@ export class Glyph {
             transform.dy = firstPt.y - secondPt.y
             transformedPoints = this._transformPoints(componentGlyph.points, transform)
           }
-          glyph.points = glyph.points.concat(transformedPoints)
+          this.points = this.points.concat(transformedPoints)
         }
       }
     }
-    return this._getPath(glyph.points)
+    return this._getPath(this.points)
   }
 
   getPath(x = 0, y = 0, fontSize = 72, options: any = {}, font: any = {}): Path2D {
