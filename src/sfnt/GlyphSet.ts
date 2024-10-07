@@ -1,14 +1,18 @@
-import type { Glyph } from './Glyph'
-import type { Sfnt } from './Sfnt'
+import type { Glyf } from './Glyf'
+import { Glyph } from './Glyph'
 
-export type GlyphOrLoader = Glyph | (() => Glyph)
+export type GlyphOrLoader = Glyph | undefined
 
 export class GlyphSet {
-  length = 0
   glyphs: GlyphOrLoader[] = []
 
+  get length(): number {
+    return this._locations.length
+  }
+
   constructor(
-    protected _sfnt: Sfnt,
+    protected _glyf: Glyf,
+    protected _locations: number[],
   ) {
     //
   }
@@ -16,18 +20,17 @@ export class GlyphSet {
   get(index: number): Glyph {
     const _glyph = this.glyphs[index]
     let glyph: Glyph
-    if (typeof _glyph === 'function') {
-      glyph = _glyph()
-      glyph.path = glyph.buildPath(this)
-    }
-    else {
+    if (_glyph) {
       glyph = _glyph
     }
+    else {
+      glyph = new Glyph({ index })
+      const locations = this._locations
+      if (locations[index] !== locations[index + 1]) {
+        glyph._parse(this._glyf, locations[index], this)
+      }
+      this.glyphs[index] = glyph
+    }
     return glyph
-  }
-
-  push(index: number, glyph: GlyphOrLoader): void {
-    this.glyphs[index] = glyph
-    this.length++
   }
 }

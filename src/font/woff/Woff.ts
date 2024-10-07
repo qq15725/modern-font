@@ -21,7 +21,7 @@ export class Woff extends Font {
   @defineColumn({ type: 'uint32' }) declare privOffset: number
   @defineColumn({ type: 'uint32' }) declare privLength: number
 
-  directories: Array<WoffTableDirectoryEntry> = []
+  directories: WoffTableDirectoryEntry[] = []
 
   static is(source: BufferSource): boolean {
     const view = toDataView(source)

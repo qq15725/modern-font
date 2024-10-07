@@ -10,6 +10,11 @@ async function init(): Promise<void> {
     woff = new Woff(view)
     ttf = Ttf.from(woff.sfnt)
     eot = Eot.from(ttf)
+    const path = woff.sfnt.charToGlyph('好').getPath(100, 100)
+    const ctx = document.querySelector('canvas')!.getContext('2d')!
+    ctx.strokeStyle = '#000'
+    ctx.lineWidth = 2
+    path.strokeTo(ctx)
   }
   else if (Ttf.is(view)) {
     ttf = new Ttf(view)

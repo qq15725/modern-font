@@ -1,3 +1,4 @@
+import type { Glyph } from './Glyph'
 import type { SfntTable } from './SfntTable'
 
 export type SfntTableTag =
@@ -10,7 +11,7 @@ export type SfntTableTag =
 
 export function defineSfntTable(tag: SfntTableTag) {
   return (constructor: any) => {
-    Sfnt.registeredTableViews.set(tag, constructor)
+    Sfnt.registered.set(tag, constructor)
     Object.defineProperty(Sfnt.prototype, tag, {
       get() { return this.get(tag) },
       set(table) { return this.set(tag, table) },
@@ -21,7 +22,7 @@ export function defineSfntTable(tag: SfntTableTag) {
 }
 
 export class Sfnt {
-  static registeredTableViews = new Map<string, new () => SfntTable>()
+  static registered = new Map<string, new () => SfntTable>()
 
   tableViews = new Map<string, SfntTable>()
 
@@ -47,6 +48,16 @@ export class Sfnt {
 
   get modifiedTimestamp(): Date {
     return this.head.modified
+  }
+
+  charToGlyphIndex(char: string): number {
+    const unicodeGlyphIndexMap = this.cmap.getUnicodeGlyphIndexMap()
+    const unicode = char.codePointAt(0)!
+    return unicodeGlyphIndexMap.get(unicode) ?? 0
+  }
+
+  charToGlyph(char: string): Glyph {
+    return this.glyf.getGlyphs().get(this.charToGlyphIndex(char))
   }
 
   constructor(
@@ -88,7 +99,7 @@ export class Sfnt {
   get(tag: SfntTableTag): SfntTable | undefined {
     let view = this.tableViews.get(tag)
     if (!view) {
-      const Table = Sfnt.registeredTableViews.get(tag) as any
+      const Table = Sfnt.registered.get(tag) as any
       if (Table) {
         const rawView = this.tables.find(table => table.tag === tag)?.view
         if (rawView) {
