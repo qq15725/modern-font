@@ -1,4 +1,5 @@
 export * from './eot'
 export * from './Font'
+export * from './FontLoader'
 export * from './ttf'
 export * from './woff'

@@ -24,32 +24,13 @@ export function defineSfntTable(tag: SfntTableTag) {
 
 export class Sfnt {
   static registered = new Map<string, new () => SfntTable>()
-
   tableViews = new Map<string, SfntTable>()
-
-  get names(): Record<string, any> {
-    return this.name.getNames()
-  }
-
-  get unitsPerEm(): number {
-    return this.head.unitsPerEm
-  }
-
-  get ascender(): number {
-    return this.hhea.ascent
-  }
-
-  get descender(): number {
-    return this.hhea.descent
-  }
-
-  get createdTimestamp(): Date {
-    return this.head.created
-  }
-
-  get modifiedTimestamp(): Date {
-    return this.head.modified
-  }
+  get names(): Record<string, any> { return this.name.getNames() }
+  get unitsPerEm(): number { return this.head.unitsPerEm }
+  get ascender(): number { return this.hhea.ascent }
+  get descender(): number { return this.hhea.descent }
+  get createdTimestamp(): Date { return this.head.created }
+  get modifiedTimestamp(): Date { return this.head.modified }
 
   charToGlyphIndex(char: string): number {
     const unicodeGlyphIndexMap = this.cmap.getUnicodeGlyphIndexMap()
@@ -61,8 +42,53 @@ export class Sfnt {
     return this.glyf.getGlyphs().get(this.charToGlyphIndex(char))
   }
 
-  getPath(text: string, x: number, y: number, fontSize: number, options?: any): Path2D | undefined {
+  textToGlyphIndexes(text: string): number[] {
+    const unicodeGlyphIndexMap = this.cmap.getUnicodeGlyphIndexMap()
+    const indexes: number[] = []
+    for (const char of text) {
+      const unicode = char.codePointAt(0)!
+      indexes.push(unicodeGlyphIndexMap.get(unicode) ?? 0)
+    }
+    return indexes
+  }
+
+  textToGlyphs(text: string): Glyph[] {
+    const _glyphs = this.glyf.getGlyphs()
+    const indexes = this.textToGlyphIndexes(text)
+    const length = indexes.length
+    const glyphs: Glyph[] = Array.from({ length })
+    const notdef = _glyphs.get(0)
+    for (let i = 0; i < length; i += 1) {
+      glyphs[i] = _glyphs.get(indexes[i]) || notdef
+    }
+    return glyphs
+  }
+
+  getPath(text: string, x: number, y: number, fontSize?: number, options?: Record<string, any>): Path2D | undefined {
     return this.charToGlyph(text)?.getPath(x, y, fontSize, options, this)
+  }
+
+  getAdvanceWidth(text: string, fontSize?: number, options?: Record<string, any>): number {
+    return this.forEachGlyph(text, 0, 0, fontSize, options, () => {})
+  }
+
+  forEachGlyph(text: string, x = 0, y = 0, fontSize = 72, options: Record<string, any> = {}, callback: any): number {
+    const fontScale = 1 / this.unitsPerEm * fontSize
+    const glyphs = this.textToGlyphs(text)
+    for (let i = 0; i < glyphs.length; i += 1) {
+      const glyph = glyphs[i]
+      callback.call(this, glyph, x, y, fontSize, options)
+      if (glyph.advanceWidth) {
+        x += glyph.advanceWidth * fontScale
+      }
+      if (options.letterSpacing) {
+        x += options.letterSpacing * fontSize
+      }
+      else if (options.tracking) {
+        x += (options.tracking / 1000) * fontSize
+      }
+    }
+    return x
   }
 
   constructor(

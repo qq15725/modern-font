@@ -375,16 +375,11 @@ export class Glyph {
   }
 
   getPath(x = 0, y = 0, fontSize = 72, options: Record<string, any> = {}, sfnt?: Sfnt): Path2D {
-    let xScale = options.xScale
-    let yScale = options.yScale
     const scale = 1 / (sfnt?.unitsPerEm ?? 1000) * fontSize
+    const { xScale = scale, yScale = scale } = options
     const commands = this.path.getPathCommands()
-    if (xScale === undefined)
-      xScale = scale
-    if (yScale === undefined)
-      yScale = scale
     const p = new Path2D()
-    for (let i = 0; i < commands.length; i += 1) {
+    for (let i = 0, len = commands.length; i < len; i += 1) {
       const cmd = commands[i]
       if (cmd.type === 'M') {
         p.moveTo(x + (cmd.x * xScale), y + (-cmd.y * yScale))
