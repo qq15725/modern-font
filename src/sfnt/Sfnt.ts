@@ -27,7 +27,7 @@ export class Sfnt {
   static tableDefinitions = new Map<string, {
     tag: string
     prop: string
-    class: new () => SfntTable
+    class: new (...args: any[]) => SfntTable
   }>()
 
   tables = new Map<string, SfntTable>()
@@ -100,35 +100,25 @@ export class Sfnt {
   constructor(
     tableViews: Record<SfntTableTag, DataView> | Map<SfntTableTag, DataView>,
   ) {
-    tableViews = tableViews instanceof Map ? Object.entries(tableViews) : tableViews
-    for (const key in tableViews) {
-      const view = tableViews[key]
+    const _tableViews = tableViews instanceof Map ? tableViews : new Map(Object.entries(tableViews))
+    _tableViews.forEach((view, key) => {
       this.tableViews.set(key, new DataView(
         view.buffer.slice(
           view.byteOffset,
           view.byteOffset + view.byteLength,
         ),
       ))
-    }
+    })
   }
 
   clone(): Sfnt {
-    const tableViews: Record<SfntTableTag, DataView> = {}
-    this.tableViews.forEach((view, key) => {
-      tableViews[key] = new DataView(
-        view.buffer.slice(
-          view.byteOffset,
-          view.byteOffset + view.byteLength,
-        ),
-      )
-    })
-    return new Sfnt(tableViews)
+    return new Sfnt(this.tableViews)
   }
 
   delete(tag: SfntTableTag): this {
     const definition = Sfnt.tableDefinitions.get(tag)
     if (!definition)
-      return undefined
+      return this
     this.tableViews.delete(tag)
     this.tables.delete(definition.prop)
     return this
@@ -158,7 +148,7 @@ export class Sfnt {
         else {
           table = new Class().setSfnt(this) as any
         }
-        this.tables.set(definition.prop, table)
+        this.tables.set(definition.prop, table!)
       }
     }
     return table
