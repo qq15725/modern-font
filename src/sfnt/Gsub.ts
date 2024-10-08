@@ -13,6 +13,11 @@ declare module './Sfnt' {
  */
 @defineSfntTable('GSUB', 'gsub')
 export class Gsub extends SfntTable {
-  @defineColumn('fixed') declare version: number
+  @defineColumn('uint16') declare majorVersion: number
+  @defineColumn('uint16') declare minorVersion: number
+  @defineColumn('uint16') declare scriptListOffset: number
+  @defineColumn('uint16') declare featureListOffset: number
+  @defineColumn('uint16') declare lookupListOffset: number
+  @defineColumn('uint16') declare featureVariationsOffset: number
   // TODO
 }

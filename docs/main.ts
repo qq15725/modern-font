@@ -18,6 +18,7 @@ async function init(): Promise<void> {
     ctx.lineWidth = 2
     sfnt.getPath('你', 100, 100)?.strokeTo(ctx)
     sfnt.getPath('好', 200, 200)?.strokeTo(ctx)
+    console.warn(sfnt)
   }
   else if (Ttf.is(view)) {
     ttf = new Ttf(view)
