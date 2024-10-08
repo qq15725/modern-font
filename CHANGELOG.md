@@ -1,3 +1,24 @@
+# [0.1.0](https://github.com/qq15725/modern-font/compare/v0.0.4...v0.1.0) (2024-10-08)
+
+
+### Features
+
+* fontLoader ([77299b2](https://github.com/qq15725/modern-font/commit/77299b279c0b02be44da31edf2bb6f7be3178152))
+* fontLoader ([8a9c699](https://github.com/qq15725/modern-font/commit/8a9c699a43dc3c1290d1c4f165ab52d816e46626))
+* GSUB ([657a7a8](https://github.com/qq15725/modern-font/commit/657a7a89964678b4fa10ec959cd3b60ced1606aa))
+* GSUB ([7d7ac0f](https://github.com/qq15725/modern-font/commit/7d7ac0f7867fd44953ff622356c7fc763cecdeb2))
+* support glyph ([6dcb1c2](https://github.com/qq15725/modern-font/commit/6dcb1c20017741c6408864d9328084d47673f4db))
+* up path2d ([6505d1b](https://github.com/qq15725/modern-font/commit/6505d1b93b913cc2d7c7c3ca54581f34611e872b))
+* update ([6ad24fe](https://github.com/qq15725/modern-font/commit/6ad24fe9a02648313070609a6e742d85fb327cad))
+* update ([4a16959](https://github.com/qq15725/modern-font/commit/4a1695903eda03ce75ccd07c6e28685d3ce63988))
+* update ([08fa6a9](https://github.com/qq15725/modern-font/commit/08fa6a914eb580d306be947044444c484087dc44))
+* update ([895dcbf](https://github.com/qq15725/modern-font/commit/895dcbf854142f443a74e6dcd0d85a5d214db455))
+* update ([1679bf2](https://github.com/qq15725/modern-font/commit/1679bf20777fd71f392dc86c5b6a1090f613eece))
+* update ([25a2065](https://github.com/qq15725/modern-font/commit/25a20651a151f3b4ed12e233c72fc468208eb14e))
+* update deps ([b9a8818](https://github.com/qq15725/modern-font/commit/b9a8818af7c890c54f72ea2a66045b98d9699a2a))
+
+
+
 ## [0.0.4](https://github.com/qq15725/modern-font/compare/v0.0.3...v0.0.4) (2024-03-12)
 
 
