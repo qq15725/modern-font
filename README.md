@@ -18,6 +18,18 @@
   </a>
 </p>
 
+## Features
+
+- Encode, Decode
+
+- Get glyph path
+
+- Format conversion
+
+- Minify
+
+- TypeScript
+
 ## 📦 Install
 
 ```shell

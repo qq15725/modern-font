@@ -374,8 +374,7 @@ export class Glyph {
     this.path = p
   }
 
-  getPath(x = 0, y = 0, fontSize = 72, options: any = {}, sfnt?: Sfnt): Path2D {
-    options = Object.assign({}, sfnt?.defaultRenderOptions ?? {}, options)
+  getPath(x = 0, y = 0, fontSize = 72, options: Record<string, any> = {}, sfnt?: Sfnt): Path2D {
     let xScale = options.xScale
     let yScale = options.yScale
     const scale = 1 / (sfnt?.unitsPerEm ?? 1000) * fontSize
