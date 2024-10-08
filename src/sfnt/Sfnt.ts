@@ -1,3 +1,4 @@
+import type { Path2D } from '../path'
 import type { Glyph } from './Glyph'
 import type { SfntTable } from './SfntTable'
 
@@ -58,6 +59,10 @@ export class Sfnt {
 
   charToGlyph(char: string): Glyph {
     return this.glyf.getGlyphs().get(this.charToGlyphIndex(char))
+  }
+
+  getPath(text: string, x: number, y: number, fontSize: number, options?: any): Path2D | undefined {
+    return this.charToGlyph(text)?.getPath(x, y, fontSize, options, this)
   }
 
   constructor(

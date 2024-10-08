@@ -13,22 +13,22 @@ declare module './Sfnt' {
  */
 @defineSfntTable('os2')
 export class Os2 extends SfntTable {
-  @defineColumn({ type: 'uint16' }) declare version: number
-  @defineColumn({ type: 'int16' }) declare xAvgCharWidth: number
-  @defineColumn({ type: 'uint16' }) declare usWeightClass: number
-  @defineColumn({ type: 'uint16' }) declare usWidthClass: number
-  @defineColumn({ type: 'uint16' }) declare fsType: number
-  @defineColumn({ type: 'uint16' }) declare ySubscriptXSize: number
-  @defineColumn({ type: 'uint16' }) declare ySubscriptYSize: number
-  @defineColumn({ type: 'uint16' }) declare ySubscriptXOffset: number
-  @defineColumn({ type: 'uint16' }) declare ySubscriptYOffset: number
-  @defineColumn({ type: 'uint16' }) declare ySuperscriptXSize: number
-  @defineColumn({ type: 'uint16' }) declare ySuperscriptYSize: number
-  @defineColumn({ type: 'uint16' }) declare ySuperscriptXOffset: number
-  @defineColumn({ type: 'uint16' }) declare ySuperscriptYOffset: number
-  @defineColumn({ type: 'uint16' }) declare yStrikeoutSize: number
-  @defineColumn({ type: 'uint16' }) declare yStrikeoutPosition: number
-  @defineColumn({ type: 'uint16' }) declare sFamilyClass: number
+  @defineColumn('uint16') declare version: number
+  @defineColumn('int16') declare xAvgCharWidth: number
+  @defineColumn('uint16') declare usWeightClass: number
+  @defineColumn('uint16') declare usWidthClass: number
+  @defineColumn('uint16') declare fsType: number
+  @defineColumn('uint16') declare ySubscriptXSize: number
+  @defineColumn('uint16') declare ySubscriptYSize: number
+  @defineColumn('uint16') declare ySubscriptXOffset: number
+  @defineColumn('uint16') declare ySubscriptYOffset: number
+  @defineColumn('uint16') declare ySuperscriptXSize: number
+  @defineColumn('uint16') declare ySuperscriptYSize: number
+  @defineColumn('uint16') declare ySuperscriptXOffset: number
+  @defineColumn('uint16') declare ySuperscriptYOffset: number
+  @defineColumn('uint16') declare yStrikeoutSize: number
+  @defineColumn('uint16') declare yStrikeoutPosition: number
+  @defineColumn('uint16') declare sFamilyClass: number
   // panose
   @defineColumn({ type: 'uint8' }) declare bFamilyType: number
   @defineColumn({ type: 'uint8' }) declare bSerifStyle: number
@@ -43,23 +43,23 @@ export class Os2 extends SfntTable {
   // unicode range
   @defineColumn({ type: 'uint8', size: 16 }) declare ulUnicodeRange: Array<number>
   @defineColumn({ type: 'char', size: 4 }) declare achVendID: string
-  @defineColumn({ type: 'uint16' }) declare fsSelection: number
-  @defineColumn({ type: 'uint16' }) declare usFirstCharIndex: number
-  @defineColumn({ type: 'uint16' }) declare usLastCharIndex: number
+  @defineColumn('uint16') declare fsSelection: number
+  @defineColumn('uint16') declare usFirstCharIndex: number
+  @defineColumn('uint16') declare usLastCharIndex: number
   // additional Fields
-  @defineColumn({ type: 'int16' }) declare sTypoAscender: number
-  @defineColumn({ type: 'int16' }) declare sTypoDescender: number
-  @defineColumn({ type: 'int16' }) declare sTypoLineGap: number
-  @defineColumn({ type: 'uint16' }) declare usWinAscent: number
-  @defineColumn({ type: 'uint16' }) declare usWinDescent: number
+  @defineColumn('int16') declare sTypoAscender: number
+  @defineColumn('int16') declare sTypoDescender: number
+  @defineColumn('int16') declare sTypoLineGap: number
+  @defineColumn('uint16') declare usWinAscent: number
+  @defineColumn('uint16') declare usWinDescent: number
   // version 0 above 39
   @defineColumn({ offset: 72, type: 'uint8', size: 8 }) declare ulCodePageRange: Array<number>
   // version 1 above 41
   @defineColumn({ offset: 72, type: 'int16' }) declare sxHeight: number
-  @defineColumn({ type: 'int16' }) declare sCapHeight: number
-  @defineColumn({ type: 'uint16' }) declare usDefaultChar: number
-  @defineColumn({ type: 'uint16' }) declare usBreakChar: number
-  @defineColumn({ type: 'uint16' }) declare usMaxContext: number
+  @defineColumn('int16') declare sCapHeight: number
+  @defineColumn('uint16') declare usDefaultChar: number
+  @defineColumn('uint16') declare usBreakChar: number
+  @defineColumn('uint16') declare usMaxContext: number
 
   get fontPANOSE(): number[] {
     return [

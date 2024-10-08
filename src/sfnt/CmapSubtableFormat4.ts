@@ -2,13 +2,13 @@ import { defineColumn, Readable } from '../utils'
 import { createCmapSegments } from './CmapSegment'
 
 export class CmapSubtableFormat4 extends Readable {
-  @defineColumn({ type: 'uint16' }) declare format: 4
-  @defineColumn({ type: 'uint16' }) declare length: number
-  @defineColumn({ type: 'uint16' }) declare language: number
-  @defineColumn({ type: 'uint16' }) declare segCountX2: number
-  @defineColumn({ type: 'uint16' }) declare searchRange: number
-  @defineColumn({ type: 'uint16' }) declare entrySelector: number
-  @defineColumn({ type: 'uint16' }) declare rangeShift: number
+  @defineColumn('uint16') declare format: 4
+  @defineColumn('uint16') declare length: number
+  @defineColumn('uint16') declare language: number
+  @defineColumn('uint16') declare segCountX2: number
+  @defineColumn('uint16') declare searchRange: number
+  @defineColumn('uint16') declare entrySelector: number
+  @defineColumn('uint16') declare rangeShift: number
 
   get endCode(): number[] {
     const segCountX2 = this.segCountX2

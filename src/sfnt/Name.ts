@@ -64,9 +64,9 @@ declare module './Sfnt' {
  */
 @defineSfntTable('name')
 export class Name extends SfntTable {
-  @defineColumn({ type: 'uint16' }) declare format: number
-  @defineColumn({ type: 'uint16' }) declare count: number
-  @defineColumn({ type: 'uint16' }) declare stringOffset: number
+  @defineColumn('uint16') declare format: number
+  @defineColumn('uint16') declare count: number
+  @defineColumn('uint16') declare stringOffset: number
 
   getNames(): Record<string, any> {
     const count = this.count

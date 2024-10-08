@@ -2,11 +2,11 @@ import { defineColumn, Readable } from '../utils'
 import { createCmapSegments } from './CmapSegment'
 
 export class CmapSubtableFormat12 extends Readable {
-  @defineColumn({ type: 'uint16' }) declare format: 12
-  @defineColumn({ type: 'uint16' }) declare reserved: number
-  @defineColumn({ type: 'uint32' }) declare length: number
-  @defineColumn({ type: 'uint32' }) declare language: number
-  @defineColumn({ type: 'uint32' }) declare nGroups: number
+  @defineColumn('uint16') declare format: 12
+  @defineColumn('uint16') declare reserved: number
+  @defineColumn('uint32') declare length: number
+  @defineColumn('uint32') declare language: number
+  @defineColumn('uint32') declare nGroups: number
 
   get groups(): { startCharCode: number, endCharCode: number, startGlyphCode: number }[] {
     const nGroups = this.nGroups

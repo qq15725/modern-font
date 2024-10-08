@@ -1,9 +1,9 @@
 import { defineColumn, Readable } from '../utils'
 
 export class CmapSubtableFormat0 extends Readable {
-  @defineColumn({ type: 'uint16' }) declare format: 0
-  @defineColumn({ type: 'uint16' }) declare length: number
-  @defineColumn({ type: 'uint16' }) declare language: number
+  @defineColumn('uint16') declare format: 0
+  @defineColumn('uint16') declare length: number
+  @defineColumn('uint16') declare language: number
   @defineColumn({ type: 'uint8', size: 256 }) declare glyphIndexArray: Array<number>
 
   constructor(buffer: BufferSource = new ArrayBuffer(262), byteOffset?: number) {

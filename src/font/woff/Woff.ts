@@ -7,19 +7,19 @@ import { WoffTableDirectoryEntry } from './WoffTableDirectoryEntry'
 // https://www.w3.org/submissions/WOFF
 export class Woff extends Font {
   override mimeType = 'font/woff'
-  @defineColumn({ type: 'uint32' }) declare signature: number
-  @defineColumn({ type: 'uint32' }) declare flavor: number
-  @defineColumn({ type: 'uint32' }) declare length: number
-  @defineColumn({ type: 'uint16' }) declare numTables: number
-  @defineColumn({ type: 'uint16' }) declare reserved: number
-  @defineColumn({ type: 'uint32' }) declare totalSfntSize: number
-  @defineColumn({ type: 'uint16' }) declare majorVersion: number
-  @defineColumn({ type: 'uint16' }) declare minorVersion: number
-  @defineColumn({ type: 'uint32' }) declare metaOffset: number
-  @defineColumn({ type: 'uint32' }) declare metaLength: number
-  @defineColumn({ type: 'uint32' }) declare metaOrigLength: number
-  @defineColumn({ type: 'uint32' }) declare privOffset: number
-  @defineColumn({ type: 'uint32' }) declare privLength: number
+  @defineColumn('uint32') declare signature: number
+  @defineColumn('uint32') declare flavor: number
+  @defineColumn('uint32') declare length: number
+  @defineColumn('uint16') declare numTables: number
+  @defineColumn('uint16') declare reserved: number
+  @defineColumn('uint32') declare totalSfntSize: number
+  @defineColumn('uint16') declare majorVersion: number
+  @defineColumn('uint16') declare minorVersion: number
+  @defineColumn('uint32') declare metaOffset: number
+  @defineColumn('uint32') declare metaLength: number
+  @defineColumn('uint32') declare metaOrigLength: number
+  @defineColumn('uint32') declare privOffset: number
+  @defineColumn('uint32') declare privLength: number
 
   directories: WoffTableDirectoryEntry[] = []
 
@@ -109,10 +109,9 @@ export class Woff extends Font {
     return this
   }
 
-  get sfnt(): Sfnt {
-    this.updateDirectories()
+  getSfnt(): Sfnt {
     return new Sfnt(
-      this.directories.map((dir) => {
+      this.updateDirectories().directories.map((dir) => {
         const tag = dir.tag
         const start = this.view.byteOffset + dir.offset
         const compLength = dir.compLength

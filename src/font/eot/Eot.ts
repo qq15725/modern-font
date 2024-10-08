@@ -5,21 +5,21 @@ import { Font } from '../Font'
 // http://www.w3.org/Submission/EOT
 export class Eot extends Font {
   override mimeType = 'application/vnd.ms-fontobject'
-  @defineColumn({ type: 'uint32' }) declare EOTSize: number
-  @defineColumn({ type: 'uint32' }) declare FontDataSize: number
-  @defineColumn({ type: 'uint32' }) declare Version: number
-  @defineColumn({ type: 'uint32' }) declare Flags: number
+  @defineColumn('uint32') declare EOTSize: number
+  @defineColumn('uint32') declare FontDataSize: number
+  @defineColumn('uint32') declare Version: number
+  @defineColumn('uint32') declare Flags: number
   @defineColumn({ type: 'uint8', size: 10 }) declare FontPANOSE: Array<number>
-  @defineColumn({ type: 'uint8' }) declare Charset: number
-  @defineColumn({ type: 'uint8' }) declare Italic: number
-  @defineColumn({ type: 'uint32' }) declare Weight: number
-  @defineColumn({ type: 'uint16' }) declare fsType: number
-  @defineColumn({ type: 'uint16' }) declare MagicNumber: number
+  @defineColumn('uint8') declare Charset: number
+  @defineColumn('uint8') declare Italic: number
+  @defineColumn('uint32') declare Weight: number
+  @defineColumn('uint16') declare fsType: number
+  @defineColumn('uint16') declare MagicNumber: number
   @defineColumn({ type: 'uint8', size: 16 }) declare UnicodeRange: Array<number>
   @defineColumn({ type: 'uint8', size: 8 }) declare CodePageRange: Array<number>
-  @defineColumn({ type: 'uint32' }) declare CheckSumAdjustment: number
+  @defineColumn('uint32') declare CheckSumAdjustment: number
   @defineColumn({ type: 'uint8', size: 16 }) declare Reserved: Array<number>
-  @defineColumn({ type: 'uint16' }) declare Padding1: number
+  @defineColumn('uint16') declare Padding1: number
   // FamilyNameSize
   // FamilyName
   // Padding2
@@ -34,7 +34,7 @@ export class Eot extends Font {
   // FontData
 
   static from(ttf: Ttf): Eot {
-    const sfnt = ttf.sfnt
+    const sfnt = ttf.getSfnt()
     const name = sfnt.name
     const names = name.getNames()
     const FamilyName = toUCS2Bytes(names.fontFamily || '')

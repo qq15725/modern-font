@@ -1,5 +1,6 @@
 import type { Glyf } from './Glyf'
 import type { GlyphSet } from './GlyphSet'
+import type { Sfnt } from './Sfnt'
 import { Path2D } from '../path'
 import { assert } from '../utils'
 
@@ -373,11 +374,11 @@ export class Glyph {
     this.path = p
   }
 
-  getPath(x = 0, y = 0, fontSize = 72, options: any = {}, font: any = {}): Path2D {
-    options = Object.assign({}, font && font.defaultRenderOptions, options)
+  getPath(x = 0, y = 0, fontSize = 72, options: any = {}, sfnt?: Sfnt): Path2D {
+    options = Object.assign({}, sfnt?.defaultRenderOptions ?? {}, options)
     let xScale = options.xScale
     let yScale = options.yScale
-    const scale = 1 / (font.unitsPerEm || 1000) * fontSize
+    const scale = 1 / (sfnt?.unitsPerEm ?? 1000) * fontSize
     const commands = this.path.getPathCommands()
     if (xScale === undefined)
       xScale = scale

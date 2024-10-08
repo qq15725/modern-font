@@ -25,8 +25,8 @@ export interface CmapSubtable {
  */
 @defineSfntTable('cmap')
 export class Cmap extends SfntTable {
-  @defineColumn({ type: 'uint16' }) declare version: number
-  @defineColumn({ type: 'uint16' }) declare numberSubtables: number
+  @defineColumn('uint16') declare version: number
+  @defineColumn('uint16') declare numberSubtables: number
 
   static from(unicodeGlyphIndexMap: Map<number, number>): Cmap {
     const has2Byte = Array.from(unicodeGlyphIndexMap.keys()).some(unicode => unicode > 0xFFFF)

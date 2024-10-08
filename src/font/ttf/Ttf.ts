@@ -7,11 +7,11 @@ import { TableDirectory } from './TableDirectory'
 // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
 export class Ttf extends Font {
   override mimeType = 'font/ttf'
-  @defineColumn({ type: 'uint32' }) declare scalerType: number
-  @defineColumn({ type: 'uint16' }) declare numTables: number
-  @defineColumn({ type: 'uint16' }) declare searchRange: number
-  @defineColumn({ type: 'uint16' }) declare entrySelector: number
-  @defineColumn({ type: 'uint16' }) declare rangeShift: number
+  @defineColumn('uint32') declare scalerType: number
+  @defineColumn('uint16') declare numTables: number
+  @defineColumn('uint16') declare searchRange: number
+  @defineColumn('uint16') declare entrySelector: number
+  @defineColumn('uint16') declare rangeShift: number
 
   directories: TableDirectory[] = []
 
@@ -67,7 +67,7 @@ export class Ttf extends Font {
       ttf.view.writeBytes(table.view, dataOffset)
       dataOffset += round4(dir.length)
     })
-    const head = ttf.sfnt.head
+    const head = ttf.getSfnt().head
     head.checkSumAdjustment = 0
     head.checkSumAdjustment = 0xB1B0AFBA - Ttf.checksum(ttf.view)
     return ttf
@@ -83,7 +83,7 @@ export class Ttf extends Font {
     return this
   }
 
-  get sfnt(): Sfnt {
+  getSfnt(): Sfnt {
     return new Sfnt(
       this.updateDirectories().directories.map((dir) => {
         return {

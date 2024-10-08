@@ -8,9 +8,9 @@ async function init(): Promise<void> {
   let eot: Eot | undefined
   if (Woff.is(view)) {
     woff = new Woff(view)
-    ttf = Ttf.from(woff.sfnt)
+    ttf = Ttf.from(woff.getSfnt())
     eot = Eot.from(ttf)
-    const path = woff.sfnt.charToGlyph('好').getPath(100, 100)
+    const path = woff.getSfnt().getPath('好', 100, 100)
     const ctx = document.querySelector('canvas')!.getContext('2d')!
     ctx.strokeStyle = '#000'
     ctx.lineWidth = 2
@@ -18,7 +18,7 @@ async function init(): Promise<void> {
   }
   else if (Ttf.is(view)) {
     ttf = new Ttf(view)
-    woff = Woff.from(ttf.sfnt)
+    woff = Woff.from(ttf.getSfnt())
     eot = Eot.from(ttf)
   }
   let minifyWoff

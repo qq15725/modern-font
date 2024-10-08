@@ -19,11 +19,11 @@ export interface VSMappings {
 }
 
 export class CmapSubtableFormat14 extends Readable {
-  @defineColumn({ type: 'uint16' }) declare format: 14
-  @defineColumn({ type: 'uint32' }) declare length: number
-  @defineColumn({ type: 'uint32' }) declare numVarSelectorRecords: number
+  @defineColumn('uint16') declare format: 14
+  @defineColumn('uint32') declare length: number
+  @defineColumn('uint32') declare numVarSelectorRecords: number
 
-  get varSelectorRecords(): VarSelectorRecord[] {
+  getVarSelectorRecords(): VarSelectorRecord[] {
     const numVarSelectorRecords = this.numVarSelectorRecords
     this.view.seek(10)
     return Array.from({ length: numVarSelectorRecords }, () => {
@@ -60,7 +60,7 @@ export class CmapSubtableFormat14 extends Readable {
 
   getUnicodeGlyphIndexMap(): Map<number, number> {
     const unicodeGlyphIndexMap = new Map<number, number>()
-    const varSelectorRecords = this.varSelectorRecords
+    const varSelectorRecords = this.getVarSelectorRecords()
     for (let i = 0, l = varSelectorRecords.length; i < l; i++) {
       const { uVSMappings } = varSelectorRecords[i]
       uVSMappings.forEach((uVSMapping) => {

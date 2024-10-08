@@ -1,7 +1,7 @@
 import type { Column, DataType } from './IDataView'
 import { dataTypeToByteLength, IDataView } from './IDataView'
 
-export type ColumnOptions = Partial<Column> & { type: DataType }
+export type ColumnOptions = DataType | (Partial<Column> & { type: DataType })
 
 export interface IDataViewDefinition {
   columns: Column[]
@@ -11,7 +11,8 @@ export interface IDataViewDefinition {
 const definitions = new WeakMap<any, IDataViewDefinition>()
 
 export function defineColumn(options: ColumnOptions) {
-  const { size = 1, type } = options
+  const config = typeof options === 'object' ? options : { type: options }
+  const { size = 1, type } = config
   return (target: any, name: PropertyKey) => {
     if (typeof name !== 'string')
       return
@@ -24,10 +25,10 @@ export function defineColumn(options: ColumnOptions) {
       definitions.set(target, definition)
     }
     const column = {
-      ...options,
+      ...config,
       name,
       byteLength: size * dataTypeToByteLength[type],
-      offset: options.offset ?? definition.columns.reduce((offset, column) => offset + column.byteLength, 0),
+      offset: config.offset ?? definition.columns.reduce((offset, column) => offset + column.byteLength, 0),
     }
     definition.columns.push(column)
     definition.byteLength = definition.columns.reduce((byteLength, column) => {

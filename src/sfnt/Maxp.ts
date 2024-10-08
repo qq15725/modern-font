@@ -13,21 +13,21 @@ declare module './Sfnt' {
  */
 @defineSfntTable('maxp')
 export class Maxp extends SfntTable {
-  @defineColumn({ type: 'fixed' }) declare version: number
-  @defineColumn({ type: 'uint16' }) declare numGlyphs: number
-  @defineColumn({ type: 'uint16' }) declare maxPoints: number
-  @defineColumn({ type: 'uint16' }) declare maxContours: number
-  @defineColumn({ type: 'uint16' }) declare maxComponentPoints: number
-  @defineColumn({ type: 'uint16' }) declare maxComponentContours: number
-  @defineColumn({ type: 'uint16' }) declare maxZones: number
-  @defineColumn({ type: 'uint16' }) declare maxTwilightPoints: number
-  @defineColumn({ type: 'uint16' }) declare maxStorage: number
-  @defineColumn({ type: 'uint16' }) declare maxFunctionDefs: number
-  @defineColumn({ type: 'uint16' }) declare maxInstructionDefs: number
-  @defineColumn({ type: 'uint16' }) declare maxStackElements: number
-  @defineColumn({ type: 'uint16' }) declare maxSizeOfInstructions: number
-  @defineColumn({ type: 'uint16' }) declare maxComponentElements: number
-  @defineColumn({ type: 'uint16' }) declare maxComponentDepth: number
+  @defineColumn('fixed') declare version: number
+  @defineColumn('uint16') declare numGlyphs: number
+  @defineColumn('uint16') declare maxPoints: number
+  @defineColumn('uint16') declare maxContours: number
+  @defineColumn('uint16') declare maxComponentPoints: number
+  @defineColumn('uint16') declare maxComponentContours: number
+  @defineColumn('uint16') declare maxZones: number
+  @defineColumn('uint16') declare maxTwilightPoints: number
+  @defineColumn('uint16') declare maxStorage: number
+  @defineColumn('uint16') declare maxFunctionDefs: number
+  @defineColumn('uint16') declare maxInstructionDefs: number
+  @defineColumn('uint16') declare maxStackElements: number
+  @defineColumn('uint16') declare maxSizeOfInstructions: number
+  @defineColumn('uint16') declare maxComponentElements: number
+  @defineColumn('uint16') declare maxComponentDepth: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(32), byteOffset?: number) {
     super(buffer, byteOffset, 32)
