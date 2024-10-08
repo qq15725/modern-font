@@ -24,6 +24,6 @@ export class Post extends SfntTable {
   @defineColumn('uint32') declare maxMemType1: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(32), byteOffset?: number, byteLength?: number) {
-    super(buffer, byteLength, byteOffset)
+    super(buffer, byteOffset, byteLength)
   }
 }

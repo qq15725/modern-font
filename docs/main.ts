@@ -1,6 +1,7 @@
 import { Eot, fontLoader, minify, Ttf, Woff } from '../src'
 
 async function init(): Promise<void> {
+  // await fontLoader.load({ family: 'source', url: 'https://opentype.js.org/fonts/FiraSansMedium.woff' })
   await fontLoader.load({ family: 'source', url: '1.woff' })
 
   const view = new DataView(fontLoader.get('source')!.data)
@@ -9,13 +10,14 @@ async function init(): Promise<void> {
   let eot: Eot | undefined
   if (Woff.is(view)) {
     woff = new Woff(view)
-    ttf = Ttf.from(woff.getSfnt())
+    const sfnt = woff.getSfnt()
+    ttf = Ttf.from(sfnt)
     eot = Eot.from(ttf)
-    const path = woff.getSfnt().getPath('好', 100, 100)
     const ctx = document.querySelector('canvas')!.getContext('2d')!
     ctx.strokeStyle = '#000'
     ctx.lineWidth = 2
-    path?.strokeTo(ctx)
+    sfnt.getPath('你', 100, 100)?.strokeTo(ctx)
+    sfnt.getPath('好', 200, 200)?.strokeTo(ctx)
   }
   else if (Ttf.is(view)) {
     ttf = new Ttf(view)

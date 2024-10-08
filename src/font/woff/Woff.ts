@@ -1,3 +1,4 @@
+import type { SfntTableTag } from '../../sfnt'
 import { unzlibSync, zlibSync } from 'fflate'
 import { Sfnt } from '../../sfnt'
 import { defineColumn, toDataView } from '../../utils'
@@ -54,21 +55,22 @@ export class Woff extends Font {
 
   static from(sfnt: Sfnt, rest = new ArrayBuffer(0)): Woff {
     const round4 = (value: number): number => (value + 3) & ~3
-    const numTables = sfnt.tables.length
-    const tables = sfnt.tables.map((table) => {
-      const view = toDataView(zlibSync(
+    const tables: { tag: string, view: DataView, rawView: DataView }[] = []
+    sfnt.tableViews.forEach((view, tag) => {
+      const newView = toDataView(zlibSync(
         new Uint8Array(
-          table.view.buffer,
-          table.view.byteOffset,
-          table.view.byteLength,
+          view.buffer,
+          view.byteOffset,
+          view.byteLength,
         ),
       ))
-      return {
-        tag: table.tag,
-        view: view.byteLength < table.view.byteLength ? view : table.view,
-        rawView: table.view,
-      }
+      tables.push({
+        tag,
+        view: newView.byteLength < view.byteLength ? newView : view,
+        rawView: view,
+      })
     })
+    const numTables = tables.length
     const sfntSize = tables.reduce((total, table) => total + round4(table.view.byteLength), 0)
     const woff = new Woff(
       new ArrayBuffer(
@@ -112,19 +114,17 @@ export class Woff extends Font {
 
   getSfnt(): Sfnt {
     return new Sfnt(
-      this.updateDirectories().directories.map((dir) => {
+      this.updateDirectories().directories.reduce((views, dir) => {
         const tag = dir.tag
         const start = this.view.byteOffset + dir.offset
         const compLength = dir.compLength
         const origLength = dir.origLength
         const end = start + compLength
-        return {
-          tag,
-          view: compLength >= origLength
-            ? new DataView(this.view.buffer, start, compLength)
-            : new DataView(unzlibSync(new Uint8Array(this.view.buffer.slice(start, end))).buffer),
-        }
-      }),
+        views[tag] = compLength >= origLength
+          ? new DataView(this.view.buffer, start, compLength)
+          : new DataView(unzlibSync(new Uint8Array(this.view.buffer.slice(start, end))).buffer)
+        return views
+      }, {} as Record<SfntTableTag, DataView>),
     )
   }
 }

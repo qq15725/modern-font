@@ -1,3 +1,4 @@
+import type { SfntTableTag } from '../../sfnt'
 import { Sfnt } from '../../sfnt'
 import { defineColumn, toDataView } from '../../utils'
 import { Font } from '../Font'
@@ -41,8 +42,8 @@ export class Ttf extends Font {
 
   static from(sfnt: Sfnt): Ttf {
     const round4 = (value: number): number => (value + 3) & ~3
-    const numTables = sfnt.tables.length
-    const sfntSize = sfnt.tables.reduce((total, table) => total + round4(table.view.byteLength), 0)
+    const numTables = sfnt.tableViews.size
+    const sfntSize = sfnt.tableViews.values().reduce((total, view) => total + round4(view.byteLength), 0)
     const ttf = new Ttf(
       new ArrayBuffer(
         12 // head
@@ -59,13 +60,13 @@ export class Ttf extends Font {
     let dataOffset = 12 + numTables * 16
     let i = 0
     ttf.updateDirectories()
-    sfnt.tables.forEach((table) => {
+    sfnt.tableViews.forEach((view, tag) => {
       const dir = ttf.directories[i++]
-      dir.tag = table.tag
-      dir.checkSum = Ttf.checksum(table.view)
+      dir.tag = tag
+      dir.checkSum = Ttf.checksum(view)
       dir.offset = dataOffset
-      dir.length = table.view.byteLength
-      ttf.view.writeBytes(table.view, dataOffset)
+      dir.length = view.byteLength
+      ttf.view.writeBytes(view, dataOffset)
       dataOffset += round4(dir.length)
     })
     const head = ttf.getSfnt().head
@@ -86,12 +87,10 @@ export class Ttf extends Font {
 
   getSfnt(): Sfnt {
     return new Sfnt(
-      this.updateDirectories().directories.map((dir) => {
-        return {
-          tag: dir.tag,
-          view: new DataView(this.view.buffer, this.view.byteOffset + dir.offset, dir.length),
-        }
-      }),
+      this.updateDirectories().directories.reduce((views, dir) => {
+        views[dir.tag] = new DataView(this.view.buffer, this.view.byteOffset + dir.offset, dir.length)
+        return views
+      }, {} as Record<SfntTableTag, DataView>),
     )
   }
 }

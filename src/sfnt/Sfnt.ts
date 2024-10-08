@@ -3,17 +3,18 @@ import type { Glyph } from './Glyph'
 import type { SfntTable } from './SfntTable'
 
 export type SfntTableTag =
-  // required
+// required
   | 'cmap' | 'glyf' | 'head' | 'hhea' | 'hmtx' | 'loca' | 'maxp' | 'name' | 'post'
   // optional
-  | 'cvt' | 'fpgm' | 'hdmx' | 'kern' | 'os2' | 'prep'
+  | 'cvt' | 'fpgm' | 'hdmx' | 'kern' | 'OS/2' | 'prep'
   | 'vhea' | 'vmtx'
+  | 'GSUB' | 'GPOS' | 'VORG'
   | string
 
-export function defineSfntTable(tag: SfntTableTag) {
+export function defineSfntTable(tag: SfntTableTag, prop: string = tag) {
   return (constructor: any) => {
-    Sfnt.registered.set(tag, constructor)
-    Object.defineProperty(Sfnt.prototype, tag, {
+    Sfnt.tableDefinitions.set(tag, { tag, prop, class: constructor })
+    Object.defineProperty(Sfnt.prototype, prop, {
       get() { return this.get(tag) },
       set(table) { return this.set(tag, table) },
       configurable: true,
@@ -23,8 +24,15 @@ export function defineSfntTable(tag: SfntTableTag) {
 }
 
 export class Sfnt {
-  static registered = new Map<string, new () => SfntTable>()
-  tableViews = new Map<string, SfntTable>()
+  static tableDefinitions = new Map<string, {
+    tag: string
+    prop: string
+    class: new () => SfntTable
+  }>()
+
+  tables = new Map<string, SfntTable>()
+  tableViews = new Map<SfntTableTag, DataView>()
+
   get names(): Record<string, any> { return this.name.getNames() }
   get unitsPerEm(): number { return this.head.unitsPerEm }
   get ascender(): number { return this.hhea.ascent }
@@ -90,53 +98,69 @@ export class Sfnt {
   }
 
   constructor(
-    public tables: { tag: SfntTableTag, view: DataView }[],
+    tableViews: Record<SfntTableTag, DataView> | Map<SfntTableTag, DataView>,
   ) {
-    //
+    tableViews = tableViews instanceof Map ? Object.entries(tableViews) : tableViews
+    for (const key in tableViews) {
+      const view = tableViews[key]
+      this.tableViews.set(key, new DataView(
+        view.buffer.slice(
+          view.byteOffset,
+          view.byteOffset + view.byteLength,
+        ),
+      ))
+    }
   }
 
   clone(): Sfnt {
-    return new Sfnt(this.tables.map(({ tag, view }) => {
-      return {
-        tag,
-        view: new DataView(
-          view.buffer.slice(
-            view.byteOffset,
-            view.byteOffset + view.byteLength,
-          ),
+    const tableViews: Record<SfntTableTag, DataView> = {}
+    this.tableViews.forEach((view, key) => {
+      tableViews[key] = new DataView(
+        view.buffer.slice(
+          view.byteOffset,
+          view.byteOffset + view.byteLength,
         ),
-      }
-    }))
+      )
+    })
+    return new Sfnt(tableViews)
   }
 
   delete(tag: SfntTableTag): this {
+    const definition = Sfnt.tableDefinitions.get(tag)
+    if (!definition)
+      return undefined
     this.tableViews.delete(tag)
-    const index = this.tables.findIndex(table => table.tag === tag)
-    if (index > -1)
-      this.tables.splice(index, 1)
+    this.tables.delete(definition.prop)
     return this
   }
 
-  set(tag: SfntTableTag, view: SfntTable): this {
-    this.tableViews.set(tag, view)
-    const table = this.tables.find(table => table.tag === tag)
-    if (table)
-      table.view = view.view
+  set(tag: SfntTableTag, table: SfntTable): this {
+    const definition = Sfnt.tableDefinitions.get(tag)
+    if (definition) {
+      this.tables.set(definition.prop, table)
+    }
+    this.tableViews.set(tag, table.view)
     return this
   }
 
   get(tag: SfntTableTag): SfntTable | undefined {
-    let view = this.tableViews.get(tag)
-    if (!view) {
-      const Table = Sfnt.registered.get(tag) as any
-      if (Table) {
-        const rawView = this.tables.find(table => table.tag === tag)?.view
-        if (rawView) {
-          view = new Table(rawView.buffer, rawView.byteOffset, rawView.byteLength).setSfnt(this) as any
-          this.set(tag, view!)
+    const definition = Sfnt.tableDefinitions.get(tag)
+    if (!definition)
+      return undefined
+    let table = this.tables.get(definition.prop)
+    if (!table) {
+      const Class = definition.class
+      if (Class) {
+        const view = this.tableViews.get(tag)
+        if (view) {
+          table = new Class(view.buffer, view.byteOffset, view.byteLength).setSfnt(this) as any
         }
+        else {
+          table = new Class().setSfnt(this) as any
+        }
+        this.tables.set(definition.prop, table)
       }
     }
-    return view
+    return table
   }
 }
