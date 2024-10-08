@@ -1,8 +1,9 @@
-import { Eot, minify, Ttf, Woff } from '../src'
+import { Eot, fontLoader, minify, Ttf, Woff } from '../src'
 
 async function init(): Promise<void> {
-  const buffer = await fetch('1.woff').then(rep => rep.arrayBuffer())
-  const view = new DataView(buffer)
+  await fontLoader.load({ family: 'source', url: '1.woff' })
+
+  const view = new DataView(fontLoader.get('source')!.data)
   let woff: Woff | undefined
   let ttf: Ttf | undefined
   let eot: Eot | undefined
@@ -24,14 +25,14 @@ async function init(): Promise<void> {
   let minifyWoff
   if (woff) {
     minifyWoff = minify(woff, 'minify')
-    document.fonts.add(woff.toFontFace('woff'))
-    document.fonts.add(minifyWoff.toFontFace('minifyWoff'))
+    fontLoader.injectFontFace('woff', woff.toArrayBuffer())
+    fontLoader.injectFontFace('minifyWoff', minifyWoff.toArrayBuffer())
   }
   if (ttf) {
-    document.fonts.add(ttf.toFontFace('ttf'))
+    fontLoader.injectFontFace('ttf', ttf.toArrayBuffer())
   }
   if (eot) {
-    document.fonts.add(eot.toFontFace('eot'))
+    fontLoader.injectFontFace('eot', eot.toArrayBuffer())
   }
   console.warn(woff, ttf, eot, minifyWoff)
 }

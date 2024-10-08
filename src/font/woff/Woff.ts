@@ -23,11 +23,12 @@ export class Woff extends Font {
 
   directories: WoffTableDirectoryEntry[] = []
 
+  static FLAGS = new Set([
+    0x774F4646, // wOFF
+  ])
+
   static is(source: BufferSource): boolean {
-    const view = toDataView(source)
-    return [
-      0x774F4646, // wOFF
-    ].includes(view.getUint32(0))
+    return this.FLAGS.has(toDataView(source).getUint32(0))
   }
 
   static checkSum(source: BufferSource): number {

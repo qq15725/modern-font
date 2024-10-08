@@ -15,14 +15,15 @@ export class Ttf extends Font {
 
   directories: TableDirectory[] = []
 
+  static FLAGS = new Set([
+    0x00010000,
+    0x74727565, // true
+    0x74797031, // typ1
+    0x4F54544F, // OTTO
+  ])
+
   static is(source: BufferSource): boolean {
-    const view = toDataView(source)
-    return [
-      0x00010000,
-      0x74727565, // true
-      0x74797031, // typ1
-      0x4F54544F, // OTTO
-    ].includes(view.getUint32(0))
+    return this.FLAGS.has(toDataView(source).getUint32(0))
   }
 
   static checksum(source: BufferSource): number {

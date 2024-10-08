@@ -1,5 +1,3 @@
-import { PKG_NAME } from '../utils'
-
 export interface FontLoaderRequest {
   url: string
   when: Promise<ArrayBuffer>
@@ -8,7 +6,7 @@ export interface FontLoaderRequest {
 
 export interface FontLoaderFont {
   [key: string]: any
-  name: string | string[]
+  family: string | string[]
   url: string
 }
 
@@ -16,56 +14,44 @@ export interface FontLoaderLoadedFont extends FontLoaderFont {
   data: ArrayBuffer
 }
 
-export interface FontLoaderOptions extends RequestInit {
+export interface FontLoaderLoadOptions extends RequestInit {
+  injectFontFace?: boolean
   injectStyleTag?: boolean
-}
-
-export interface FontLoaderLoadOptions {
   cancelOther?: boolean
 }
 
 export class FontLoader {
-  static defaultRequestInit: Partial<RequestInit> = {
+  static defaultRequestInit: Partial<FontLoaderLoadOptions> = {
     cache: 'force-cache',
   }
-
-  injectStyleTag?: boolean
-  requestInit: RequestInit
 
   protected _loading = new Map<string, FontLoaderRequest>()
   protected _loaded = new Map<string, FontLoaderLoadedFont>()
   protected _namesUrls = new Map<string, string>()
 
-  constructor(options: FontLoaderOptions = {}) {
-    const {
-      injectStyleTag = true,
-      ...requestInit
-    } = options
-
-    this.injectStyleTag = injectStyleTag
-
-    this.requestInit = {
-      ...FontLoader.defaultRequestInit,
-      ...requestInit,
-    }
-  }
-
-  protected _createRequest(url: string): FontLoaderRequest {
+  protected _createRequest(url: string, requestInit: RequestInit): FontLoaderRequest {
     const controller = new AbortController()
     return {
       url,
-      when: fetch(url, { ...this.requestInit, signal: controller.signal }).then(rep => rep.arrayBuffer()),
+      when: fetch(url, {
+        ...FontLoader.defaultRequestInit,
+        ...requestInit,
+        signal: controller.signal,
+      }).then(rep => rep.arrayBuffer()),
       cancel: () => controller.abort(),
     }
   }
 
-  protected _appendStyleTagToHead(name: string, url: string): this {
+  injectFontFace(family: string, data: ArrayBuffer): this {
+    document.fonts.add(new FontFace(family, data))
+    return this
+  }
+
+  injectStyleTag(family: string, url: string): this {
     const style = document.createElement('style')
-    style.dataset.name = name.replace(/"/g, '')
-    style.dataset.from = PKG_NAME
     style.appendChild(
       document.createTextNode(`@font-face {
-  font-family: "${name}";
+  font-family: "${family}";
   src: url(${url});
 }`),
     )
@@ -73,21 +59,27 @@ export class FontLoader {
     return this
   }
 
-  get(name: string): FontLoaderLoadedFont | undefined {
-    const url = this._namesUrls.get(name) ?? name
+  get(family: string): FontLoaderLoadedFont | undefined {
+    const url = this._namesUrls.get(family) ?? family
     return this._loaded.get(url)
   }
 
-  set(name: string, font: FontLoaderLoadedFont): this {
-    this._namesUrls.set(name, font.url)
+  set(family: string, font: FontLoaderLoadedFont): this {
+    this._namesUrls.set(family, font.url)
     this._loaded.set(font.url, font)
     return this
   }
 
-  delete(name: string): this {
-    const url = this._namesUrls.get(name) ?? name
-    this._namesUrls.delete(name)
+  delete(family: string): this {
+    const url = this._namesUrls.get(family) ?? family
+    this._namesUrls.delete(family)
     this._loaded.delete(url)
+    return this
+  }
+
+  clear(): this {
+    this._namesUrls.clear()
+    this._loaded.clear()
     return this
   }
 
@@ -101,9 +93,12 @@ export class FontLoader {
   ): Promise<FontLoaderLoadedFont> {
     const {
       cancelOther,
+      injectFontFace = true,
+      injectStyleTag = true,
+      ...requestInit
     } = options
 
-    const { name, url } = font
+    const { family, url } = font
 
     if (this._loaded.has(url)) {
       if (cancelOther) {
@@ -115,7 +110,7 @@ export class FontLoader {
 
     let request = this._loading.get(url)
     if (!request) {
-      request = this._createRequest(url)
+      request = this._createRequest(url, requestInit)
       this._loading.set(url, request)
     }
 
@@ -134,11 +129,17 @@ export class FontLoader {
         const result = { ...font, data } as any
         if (!this._loaded.has(url)) {
           this._loaded.set(url, result)
-          new Set(Array.isArray(name) ? name : [name]).forEach((name) => {
-            this._namesUrls.set(name, url)
-            document.fonts.add(new FontFace(name, data))
-            if (this.injectStyleTag) {
-              this._appendStyleTagToHead(name, url)
+          new Set(Array.isArray(family) ? family : [family]).forEach((family) => {
+            this._namesUrls.set(family, url)
+
+            if (typeof document !== 'undefined') {
+              if (injectFontFace) {
+                this.injectFontFace(family, data)
+              }
+
+              if (injectStyleTag) {
+                this.injectStyleTag(family, url)
+              }
             }
           })
         }

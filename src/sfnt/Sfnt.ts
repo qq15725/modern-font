@@ -33,9 +33,7 @@ export class Sfnt {
   get modifiedTimestamp(): Date { return this.head.modified }
 
   charToGlyphIndex(char: string): number {
-    const unicodeGlyphIndexMap = this.cmap.getUnicodeGlyphIndexMap()
-    const unicode = char.codePointAt(0)!
-    return unicodeGlyphIndexMap.get(unicode) ?? 0
+    return this.cmap.getUnicodeGlyphIndexMap().get(char.codePointAt(0)!) ?? 0
   }
 
   charToGlyph(char: string): Glyph {
