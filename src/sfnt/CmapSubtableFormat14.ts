@@ -3,9 +3,9 @@ import { defineColumn, Readable } from '../utils'
 export interface VarSelectorRecord {
   varSelector: number
   defaultUVSOffset: number
-  unicodeValueRanges: Array<UnicodeValueRange>
+  unicodeValueRanges: UnicodeValueRange[]
   nonDefaultUVSOffset: number
-  uVSMappings: Array<VSMappings>
+  uVSMappings: VSMappings[]
 }
 
 export interface UnicodeValueRange {

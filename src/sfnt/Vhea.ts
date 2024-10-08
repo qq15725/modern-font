@@ -24,7 +24,7 @@ export class Vhea extends SfntTable {
   @defineColumn('int16') declare caretSlopeRise: number
   @defineColumn('int16') declare caretSlopeRun: number
   @defineColumn('int16') declare caretOffset: number
-  @defineColumn({ type: 'int16', size: 4 }) declare reserved: Array<number>
+  @defineColumn({ type: 'int16', size: 4 }) declare reserved: number[]
   @defineColumn('int16') declare metricDataFormat: number
   @defineColumn('int16') declare numOfLongVerMetrics: number
 
