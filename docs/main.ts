@@ -16,8 +16,8 @@ async function init(): Promise<void> {
     const ctx = document.querySelector('canvas')!.getContext('2d')!
     ctx.strokeStyle = '#000'
     ctx.lineWidth = 2
-    sfnt.getPath('你', 100, 100)?.strokeTo(ctx)
-    sfnt.getPath('好', 200, 200)?.strokeTo(ctx)
+    console.warn(sfnt.getPathCommands('你', 100, 100))
+    console.warn(sfnt.getPathCommands('好', 200, 200))
     console.warn(sfnt)
   }
   else if (Ttf.is(view)) {

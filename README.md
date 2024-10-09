@@ -22,7 +22,7 @@
 
 - Encode, Decode
 
-- Get glyph path
+- Get glyph path commands
 
 - Format conversion
 

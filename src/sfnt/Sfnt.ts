@@ -1,5 +1,4 @@
-import type { Path2D } from '../path'
-import type { Glyph } from './Glyph'
+import type { Glyph, GlyphPathCommand } from './Glyph'
 import type { SfntTable } from './SfntTable'
 
 export type SfntTableTag =
@@ -70,8 +69,8 @@ export class Sfnt {
     return glyphs
   }
 
-  getPath(text: string, x: number, y: number, fontSize?: number, options?: Record<string, any>): Path2D | undefined {
-    return this.charToGlyph(text)?.getPath(x, y, fontSize, options, this)
+  getPathCommands(text: string, x: number, y: number, fontSize?: number, options?: Record<string, any>): GlyphPathCommand[] | undefined {
+    return this.charToGlyph(text)?.getPathCommands(x, y, fontSize, options, this)
   }
 
   getAdvanceWidth(text: string, fontSize?: number, options?: Record<string, any>): number {

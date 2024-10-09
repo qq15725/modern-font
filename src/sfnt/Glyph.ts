@@ -1,7 +1,6 @@
 import type { Glyf } from './Glyf'
 import type { GlyphSet } from './GlyphSet'
 import type { Sfnt } from './Sfnt'
-import { Path2D } from '../path'
 import { assert } from '../utils'
 
 export interface GlyphPoint {
@@ -36,6 +35,12 @@ export interface GlyphOptions {
   points?: GlyphPoint[]
 }
 
+export type GlyphPathCommand =
+  | { type: 'M', x: number, y: number }
+  | { type: 'L', x: number, y: number }
+  | { type: 'Q', x1: number, y1: number, x: number, y: number }
+  | { type: 'Z' }
+
 export class Glyph {
   declare index: number
   declare name: string | null
@@ -54,7 +59,7 @@ export class Glyph {
   declare points: GlyphPoint[]
   declare isComposite: boolean
   declare components: GlyphComponent[]
-  declare path: Path2D
+  pathCommands: GlyphPathCommand[] = []
 
   constructor(
     options: GlyphOptions,
@@ -302,7 +307,7 @@ export class Glyph {
       for (let j = 0; j < this.components.length; j += 1) {
         const component = this.components[j]
         const componentGlyph = glyphs.get(component.glyphIndex)
-        componentGlyph.getPath()
+        componentGlyph.getPathCommands()
         if (componentGlyph.points) {
           let transformedPoints
           if (component.matchedPoints === undefined) {
@@ -332,31 +337,28 @@ export class Glyph {
         }
       }
     }
-    const p = new Path2D()
+    const pathCommands: GlyphPathCommand[] = []
     const contours = this._parseContours(this.points)
     for (let i = 0, len = contours.length; i < len; ++i) {
       const contour = contours[i]
       let curr = contour[contour.length - 1]
       let next = contour[0]
+
       if (curr.onCurve) {
-        p.moveTo(curr.x, curr.y)
+        pathCommands.push({ type: 'M', x: curr.x, y: curr.y })
+      }
+      else if (next.onCurve) {
+        pathCommands.push({ type: 'M', x: next.x, y: next.y })
       }
       else {
-        if (next.onCurve) {
-          p.moveTo(next.x, next.y)
-        }
-        else {
-          p.moveTo(
-            (curr.x + next.x) * 0.5,
-            (curr.y + next.y) * 0.5,
-          )
-        }
+        pathCommands.push({ type: 'M', x: (curr.x + next.x) * 0.5, y: (curr.y + next.y) * 0.5 })
       }
+
       for (let j = 0, len = contour.length; j < len; ++j) {
         curr = next
         next = contour[(j + 1) % len]
         if (curr.onCurve) {
-          p.lineTo(curr.x, curr.y)
+          pathCommands.push({ type: 'L', x: curr.x, y: curr.y })
         }
         else {
           let next2 = next
@@ -366,37 +368,34 @@ export class Glyph {
               y: (curr.y + next.y) * 0.5,
             }
           }
-          p.quadraticCurveTo(curr.x, curr.y, next2.x, next2.y)
+          pathCommands.push({ type: 'Q', x1: curr.x, y1: curr.y, x: next2.x, y: next2.y })
         }
       }
-      p.closePath()
+      pathCommands.push({ type: 'Z' })
     }
-    this.path = p
+    this.pathCommands = pathCommands
   }
 
-  getPath(x = 0, y = 0, fontSize = 72, options: Record<string, any> = {}, sfnt?: Sfnt): Path2D {
+  getPathCommands(x = 0, y = 0, fontSize = 72, options: Record<string, any> = {}, sfnt?: Sfnt): GlyphPathCommand[] {
     const scale = 1 / (sfnt?.unitsPerEm ?? 1000) * fontSize
     const { xScale = scale, yScale = scale } = options
-    const commands = this.path.getCommands()
-    const p = new Path2D()
-    for (let i = 0, len = commands.length; i < len; i += 1) {
-      const cmd = commands[i]
+    const pathCommands = this.pathCommands
+    const commands: GlyphPathCommand[] = []
+    for (let i = 0, len = pathCommands.length; i < len; i += 1) {
+      const cmd = pathCommands[i]
       if (cmd.type === 'M') {
-        p.moveTo(x + (cmd.x * xScale), y + (-cmd.y * yScale))
+        commands.push({ type: 'M', x: x + (cmd.x * xScale), y: y + (-cmd.y * yScale) })
       }
       else if (cmd.type === 'L') {
-        p.lineTo(x + (cmd.x * xScale), y + (-cmd.y * yScale))
+        commands.push({ type: 'L', x: x + (cmd.x * xScale), y: y + (-cmd.y * yScale) })
       }
       else if (cmd.type === 'Q') {
-        p.quadraticCurveTo(x + (cmd.x1 * xScale), y + (-cmd.y1 * yScale), x + (cmd.x * xScale), y + (-cmd.y * yScale))
-      }
-      else if (cmd.type === 'C') {
-        p.bezierCurveTo(x + (cmd.x1 * xScale), y + (-cmd.y1 * yScale), x + (cmd.x2 * xScale), y + (-cmd.y2 * yScale), x + (cmd.x * xScale), y + (-cmd.y * yScale))
+        commands.push({ type: 'Q', x1: x + (cmd.x1 * xScale), y1: y + (-cmd.y1 * yScale), x: x + (cmd.x * xScale), y: y + (-cmd.y * yScale) })
       }
       else if (cmd.type === 'Z') {
-        p.closePath()
+        commands.push({ type: 'Z' })
       }
     }
-    return p
+    return commands
   }
 }

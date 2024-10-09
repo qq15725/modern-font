@@ -11,9 +11,6 @@ importers:
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
-      modern-path2d:
-        specifier: ^0.0.4
-        version: 0.0.4
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^3.7.3
@@ -2316,9 +2313,6 @@ packages:
 
   mlly@1.7.1:
     resolution: {integrity: sha512-rrVRZRELyQzrIUAVMHxP97kv+G786pHmOKzuFII8zDYahFBS7qnHh2AlYSl1GAHhaMPCz6/oHjVMcfFYgFYHgA==}
-
-  modern-path2d@0.0.4:
-    resolution: {integrity: sha512-X8f06pblZyNkvEXALuLWLLhIBeic/QwwhD/TjdhOTM+6MuodbavXB9yXrWjJbxy0obRhBM8mSOUeK61MEZeUgw==}
 
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
@@ -5628,8 +5622,6 @@ snapshots:
       pathe: 1.1.2
       pkg-types: 1.2.0
       ufo: 1.5.4
-
-  modern-path2d@0.0.4: {}
 
   mri@1.2.0: {}
 
