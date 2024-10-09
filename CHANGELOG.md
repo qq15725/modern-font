@@ -1,3 +1,12 @@
+## [0.1.1](https://github.com/qq15725/modern-font/compare/v0.1.0...v0.1.1) (2024-10-09)
+
+
+### Features
+
+* glyph getPath method replace to getPathCommand, remove modern-path2d dep ([8f31eb3](https://github.com/qq15725/modern-font/commit/8f31eb323f7cf7cb90402cdb7eab6323ae514cdb))
+
+
+
 # [0.1.0](https://github.com/qq15725/modern-font/compare/v0.0.4...v0.1.0) (2024-10-08)
 
 
