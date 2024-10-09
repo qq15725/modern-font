@@ -1,12 +1,6 @@
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
-declare module './Sfnt' {
-  interface Sfnt {
-    loca: Loca
-  }
-}
-
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6loca.html
  */

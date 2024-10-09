@@ -8,12 +8,6 @@ import { CmapSubtableFormat14 } from './CmapSubtableFormat14'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
-declare module './Sfnt' {
-  interface Sfnt {
-    cmap: Cmap
-  }
-}
-
 export interface CmapSubtable {
   platformID: number
   platformSpecificID: number

@@ -2,12 +2,6 @@ import { defineColumn } from '../utils'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
-declare module './Sfnt' {
-  interface Sfnt {
-    head: Head
-  }
-}
-
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6head.html
  */

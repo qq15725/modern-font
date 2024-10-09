@@ -1,12 +1,6 @@
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
-declare module './Sfnt' {
-  interface Sfnt {
-    vmtx?: Vmtx
-  }
-}
-
 export interface VMetric {
   advanceHeight: number
   topSideBearing: number

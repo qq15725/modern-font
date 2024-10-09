@@ -53,12 +53,6 @@ const win = {
   UCS4: 6,
 }
 
-declare module './Sfnt' {
-  interface Sfnt {
-    name: Name
-  }
-}
-
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
  */

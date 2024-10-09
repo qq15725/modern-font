@@ -1,12 +1,6 @@
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
-declare module './Sfnt' {
-  interface Sfnt {
-    hmtx: Hmtx
-  }
-}
-
 export interface HMetric {
   advanceWidth: number
   leftSideBearing: number

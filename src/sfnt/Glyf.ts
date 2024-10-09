@@ -2,12 +2,6 @@ import { GlyphSet } from './GlyphSet'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
-declare module './Sfnt' {
-  interface Sfnt {
-    glyf: Glyf
-  }
-}
-
 export const componentFlags = {
   ARG_1_AND_2_ARE_WORDS: 0x01,
   ARGS_ARE_XY_VALUES: 0x02,

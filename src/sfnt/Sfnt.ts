@@ -1,5 +1,20 @@
+import type { Cmap } from './Cmap'
+import type { Glyf } from './Glyf'
 import type { Glyph, GlyphPathCommand } from './Glyph'
+import type { Gpos } from './Gpos'
+import type { Gsub } from './Gsub'
+import type { Head } from './Head'
+import type { Hhea } from './Hhea'
+import type { Hmtx } from './Hmtx'
+import type { Kern } from './Kern'
+import type { Loca } from './Loca'
+import type { Maxp } from './Maxp'
+import type { Name } from './Name'
+import type { Os2 } from './Os2'
+import type { Post } from './Post'
 import type { SfntTable } from './SfntTable'
+import type { Vhea } from './Vhea'
+import type { Vmtx } from './Vmtx'
 
 export type SfntTableTag =
 // required
@@ -23,6 +38,22 @@ export function defineSfntTable(tag: SfntTableTag, prop: string = tag) {
 }
 
 export class Sfnt {
+  declare glyf: Glyf
+  declare cmap: Cmap
+  declare gpos: Gpos
+  declare gsub: Gsub
+  declare head: Head
+  declare hhea: Hhea
+  declare hmtx: Hmtx
+  declare kern: Kern
+  declare loca: Loca
+  declare maxp: Maxp
+  declare name: Name
+  declare os2: Os2
+  declare post: Post
+  declare vhea: Vhea
+  declare vmtx: Vmtx
+
   static tableDefinitions = new Map<string, {
     tag: string
     prop: string

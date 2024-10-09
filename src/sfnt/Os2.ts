@@ -2,12 +2,6 @@ import { defineColumn } from '../utils'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
-declare module './Sfnt' {
-  interface Sfnt {
-    os2: Os2
-  }
-}
-
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
  */
