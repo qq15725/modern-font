@@ -1,3 +1,12 @@
+## [0.1.3](https://github.com/qq15725/modern-font/compare/v0.1.2...v0.1.3) (2024-10-12)
+
+
+### Features
+
+* rename FontLoader to Fonts, add fallbackFont prop to Fonts ([697b9d4](https://github.com/qq15725/modern-font/commit/697b9d481f7d5a08cef4f34b428745e434892b86))
+
+
+
 ## [0.1.2](https://github.com/qq15725/modern-font/compare/v0.1.1...v0.1.2) (2024-10-09)
 
 
