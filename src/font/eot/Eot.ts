@@ -34,7 +34,7 @@ export class Eot extends Font {
   // FontData
 
   static from(ttf: Ttf): Eot {
-    const sfnt = ttf.getSfnt()
+    const sfnt = ttf.sfnt
     const name = sfnt.name
     const names = name.getNames()
     const FamilyName = toUCS2Bytes(names.fontFamily || '')

@@ -10,10 +10,10 @@ export interface MinimizedGlyph extends HMetric, VMetric {
 
 export function minifyGlyphs(sfnt: Sfnt, subset: string): MinimizedGlyph[] {
   const { cmap, loca, hmtx, vmtx, glyf } = sfnt
-  const unicodeGlyphIndexMap = cmap.getUnicodeGlyphIndexMap()
-  const locations = loca.getLocations()
-  const hMetrics = hmtx.getMetrics()
-  const vMetrics = vmtx?.getMetrics()
+  const unicodeGlyphIndexMap = cmap.unicodeGlyphIndexMap
+  const locations = loca.locations
+  const hMetrics = hmtx.metrics
+  const vMetrics = vmtx?.metrics
   const unicodes = Array.from(
     new Set(
       subset.split('')

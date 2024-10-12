@@ -14,7 +14,13 @@ export class Ttf extends Font {
   @defineColumn('uint16') declare entrySelector: number
   @defineColumn('uint16') declare rangeShift: number
 
-  directories: TableDirectory[] = []
+  protected _sfnt?: Sfnt
+  get sfnt(): Sfnt {
+    if (!this._sfnt) {
+      this._sfnt = this.createSfnt()
+    }
+    return this._sfnt
+  }
 
   static FLAGS = new Set([
     0x00010000,
@@ -59,9 +65,9 @@ export class Ttf extends Font {
     ttf.rangeShift = numTables * 16 - ttf.searchRange
     let dataOffset = 12 + numTables * 16
     let i = 0
-    ttf.updateDirectories()
+    const directories = ttf.getDirectories()
     sfnt.tableViews.forEach((view, tag) => {
-      const dir = ttf.directories[i++]
+      const dir = directories[i++]
       dir.tag = tag
       dir.checkSum = Ttf.checksum(view)
       dir.offset = dataOffset
@@ -69,25 +75,24 @@ export class Ttf extends Font {
       ttf.view.writeBytes(view, dataOffset)
       dataOffset += round4(dir.length)
     })
-    const head = ttf.getSfnt().head
+    const head = ttf.createSfnt().head
     head.checkSumAdjustment = 0
     head.checkSumAdjustment = 0xB1B0AFBA - Ttf.checksum(ttf.view)
     return ttf
   }
 
-  updateDirectories(): this {
+  getDirectories(): TableDirectory[] {
     let offset = this.view.byteOffset + 12
-    this.directories = Array.from({ length: this.numTables }, () => {
+    return Array.from({ length: this.numTables }, () => {
       const dir = new TableDirectory(this.view.buffer, offset)
       offset += dir.view.byteLength
       return dir
     })
-    return this
   }
 
-  getSfnt(): Sfnt {
+  createSfnt(): Sfnt {
     return new Sfnt(
-      this.updateDirectories().directories.reduce((views, dir) => {
+      this.getDirectories().reduce((views, dir) => {
         views[dir.tag] = new DataView(this.view.buffer, this.view.byteOffset + dir.offset, dir.length)
         return views
       }, {} as Record<SfntTableTag, DataView>),

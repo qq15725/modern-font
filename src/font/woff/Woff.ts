@@ -22,7 +22,13 @@ export class Woff extends Font {
   @defineColumn('uint32') declare privOffset: number
   @defineColumn('uint32') declare privLength: number
 
-  directories: WoffTableDirectoryEntry[] = []
+  protected _sfnt?: Sfnt
+  get sfnt(): Sfnt {
+    if (!this._sfnt) {
+      this._sfnt = this.createSfnt()
+    }
+    return this._sfnt
+  }
 
   static FLAGS = new Set([
     0x774F4646, // wOFF
@@ -87,9 +93,9 @@ export class Woff extends Font {
     woff.totalSfntSize = 12 + 16 * numTables + tables.reduce((total, table) => total + round4(table.rawView.byteLength), 0)
     let dataOffset = 44 + numTables * 20
     let i = 0
-    woff.updateDirectories()
+    const directories = woff.getDirectories()
     tables.forEach((table) => {
-      const dir = woff.directories[i++]
+      const dir = directories[i++]
       dir.tag = table.tag
       dir.offset = dataOffset
       dir.compLength = table.view.byteLength
@@ -102,19 +108,18 @@ export class Woff extends Font {
     return woff
   }
 
-  updateDirectories(): this {
+  getDirectories(): WoffTableDirectoryEntry[] {
     let offset = 44
-    this.directories = Array.from({ length: this.numTables }, () => {
+    return Array.from({ length: this.numTables }, () => {
       const dir = new WoffTableDirectoryEntry(this.view.buffer, offset)
       offset += dir.view.byteLength
       return dir
     })
-    return this
   }
 
-  getSfnt(): Sfnt {
+  createSfnt(): Sfnt {
     return new Sfnt(
-      this.updateDirectories().directories.reduce((views, dir) => {
+      this.getDirectories().reduce((views, dir) => {
         const tag = dir.tag
         const start = this.view.byteOffset + dir.offset
         const compLength = dir.compLength

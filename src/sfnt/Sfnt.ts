@@ -71,15 +71,15 @@ export class Sfnt {
   get modifiedTimestamp(): Date { return this.head.modified }
 
   charToGlyphIndex(char: string): number {
-    return this.cmap.getUnicodeGlyphIndexMap().get(char.codePointAt(0)!) ?? 0
+    return this.cmap.unicodeGlyphIndexMap.get(char.codePointAt(0)!) ?? 0
   }
 
   charToGlyph(char: string): Glyph {
-    return this.glyf.getGlyphs().get(this.charToGlyphIndex(char))
+    return this.glyf.glyphs.get(this.charToGlyphIndex(char))
   }
 
   textToGlyphIndexes(text: string): number[] {
-    const unicodeGlyphIndexMap = this.cmap.getUnicodeGlyphIndexMap()
+    const unicodeGlyphIndexMap = this.cmap.unicodeGlyphIndexMap
     const indexes: number[] = []
     for (const char of text) {
       const unicode = char.codePointAt(0)!
@@ -89,7 +89,7 @@ export class Sfnt {
   }
 
   textToGlyphs(text: string): Glyph[] {
-    const _glyphs = this.glyf.getGlyphs()
+    const _glyphs = this.glyf.glyphs
     const indexes = this.textToGlyphIndexes(text)
     const length = indexes.length
     const glyphs: Glyph[] = Array.from({ length })

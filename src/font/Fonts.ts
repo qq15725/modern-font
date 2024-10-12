@@ -1,3 +1,6 @@
+import { Ttf } from './ttf'
+import { Woff } from './woff'
+
 export interface FontsRequest {
   url: string
   when: Promise<ArrayBuffer>
@@ -11,7 +14,7 @@ export interface FontsFont {
 }
 
 export interface FontsLoadedFont extends FontsFont {
-  data: ArrayBuffer
+  font: Woff | Ttf | ArrayBuffer
 }
 
 export interface FontsLoadOptions extends RequestInit {
@@ -59,6 +62,16 @@ export class Fonts {
     )
     document.head.appendChild(style)
     return this
+  }
+
+  parse(source: BufferSource): Ttf | Woff | undefined {
+    if (Ttf.is(source)) {
+      return new Ttf(source)
+    }
+    else if (Woff.is(source)) {
+      return new Woff(source)
+    }
+    return undefined
   }
 
   get(family?: string): FontsLoadedFont | undefined {
@@ -132,7 +145,10 @@ export class Fonts {
     return request
       .when
       .then((data) => {
-        const result = { ...font, data } as any
+        const result: FontsLoadedFont = {
+          ...font,
+          font: this.parse(data) ?? data,
+        }
         if (!this._loaded.has(url)) {
           this._loaded.set(url, result)
           new Set(Array.isArray(family) ? family : [family]).forEach((family) => {
@@ -154,7 +170,7 @@ export class Fonts {
       .catch((err) => {
         if (err instanceof DOMException) {
           if (err.message === 'The user aborted a request.') {
-            return { ...font, data: new ArrayBuffer(0) }
+            return { ...font, font: new ArrayBuffer(0) }
           }
         }
         throw err

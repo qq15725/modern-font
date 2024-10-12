@@ -58,7 +58,14 @@ export class Cmap extends SfntTable {
     return cmap
   }
 
-  getSubtables(): (CmapSubtable & { format: number, view: any })[] {
+  _unicodeGlyphIndexMap?: Map<number, number>
+  get unicodeGlyphIndexMap(): Map<number, number> {
+    if (!this._unicodeGlyphIndexMap)
+      this._unicodeGlyphIndexMap = this._getUnicodeGlyphIndexMap()
+    return this._unicodeGlyphIndexMap
+  }
+
+  protected _getSubtables(): (CmapSubtable & { format: number, view: any })[] {
     const numberSubtables = this.numberSubtables
     this.view.seek(4)
     return Array.from({ length: numberSubtables }, () => {
@@ -100,8 +107,8 @@ export class Cmap extends SfntTable {
     })
   }
 
-  getUnicodeGlyphIndexMap(): Map<number, number> {
-    const tables = this.getSubtables()
+  protected _getUnicodeGlyphIndexMap(): Map<number, number> {
+    const tables = this._getSubtables()
     const table0 = tables.find(item => item.format === 0)?.view as CmapSubtableFormat0 | undefined
     const table2 = tables.find(item => item.platformID === 3 && item.platformSpecificID === 3 && item.format === 2)?.view as CmapSubtableFormat2 | undefined
     const table4 = tables.find(item => item.platformID === 3 && item.platformSpecificID === 1 && item.format === 4)?.view as CmapSubtableFormat4 | undefined

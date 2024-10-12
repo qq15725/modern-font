@@ -21,7 +21,14 @@ export class Vmtx extends SfntTable {
     return vmtx
   }
 
-  getMetrics(): VMetric[] {
+  protected _metrics?: VMetric[]
+  get metrics(): VMetric[] {
+    if (!this._metrics)
+      this._metrics = this._getMetrics()
+    return this._metrics
+  }
+
+  protected _getMetrics(): VMetric[] {
     const numGlyphs = this._sfnt.maxp.numGlyphs
     const numOfLongVerMetrics = this._sfnt.vhea?.numOfLongVerMetrics ?? 0
     this.view.seek(0)

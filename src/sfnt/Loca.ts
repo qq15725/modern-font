@@ -20,7 +20,15 @@ export class Loca extends SfntTable {
     return loca
   }
 
-  getLocations(): number[] {
+  protected _locations?: number[]
+
+  get locations(): number[] {
+    if (!this._locations)
+      this._locations = this._getLocations()
+    return this._locations
+  }
+
+  protected _getLocations(): number[] {
     const numGlyphs = this._sfnt.maxp.numGlyphs
     const indexToLocFormat = this._sfnt.head.indexToLocFormat
     this.view.seek(0)

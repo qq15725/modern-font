@@ -21,7 +21,14 @@ export class Hmtx extends SfntTable {
     return hmtx
   }
 
-  getMetrics(): HMetric[] {
+  protected _metrics?: HMetric[]
+  get metrics(): HMetric[] {
+    if (!this._metrics)
+      this._metrics = this._getMetrics()
+    return this._metrics
+  }
+
+  protected _getMetrics(): HMetric[] {
     const numGlyphs = this._sfnt.maxp.numGlyphs
     const numOfLongHorMetrics = this._sfnt.hhea.numOfLongHorMetrics
     let advanceWidth = 0

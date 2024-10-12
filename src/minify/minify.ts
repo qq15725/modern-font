@@ -7,21 +7,21 @@ export function minify<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: 
   let sfnt: Sfnt
   let outputFormat: 'ttf' | 'woff' | 'ttf-buffer' | 'woff-buffer'
   if (source instanceof Ttf) {
-    sfnt = source.getSfnt().clone()
+    sfnt = source.sfnt.clone()
     outputFormat = 'ttf'
   }
   else if (source instanceof Woff) {
-    sfnt = source.getSfnt().clone()
+    sfnt = source.sfnt.clone()
     outputFormat = 'woff'
   }
   else {
     const view = toDataView(source)
     if (Ttf.is(view)) {
-      sfnt = new Ttf(view).getSfnt()
+      sfnt = new Ttf(view).sfnt
       outputFormat = 'ttf-buffer'
     }
     else if (Woff.is(view)) {
-      sfnt = new Woff(view).getSfnt()
+      sfnt = new Woff(view).sfnt
       outputFormat = 'woff-buffer'
     }
     else {
