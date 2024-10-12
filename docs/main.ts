@@ -1,10 +1,10 @@
-import { Eot, fontLoader, minify, Ttf, Woff } from '../src'
+import { Eot, fonts, minify, Ttf, Woff } from '../src'
 
 async function init(): Promise<void> {
-  // await fontLoader.load({ family: 'source', url: 'https://opentype.js.org/fonts/FiraSansMedium.woff' })
-  await fontLoader.load({ family: 'source', url: '1.woff' })
+  // await fonts.load({ family: 'source', url: 'https://opentype.js.org/fonts/FiraSansMedium.woff' })
+  await fonts.load({ family: 'source', url: '1.woff' })
 
-  const view = new DataView(fontLoader.get('source')!.data)
+  const view = new DataView(fonts.get('source')!.data)
   let woff: Woff | undefined
   let ttf: Ttf | undefined
   let eot: Eot | undefined
@@ -28,14 +28,14 @@ async function init(): Promise<void> {
   let minifyWoff
   if (woff) {
     minifyWoff = minify(woff, 'minify')
-    fontLoader.injectFontFace('woff', woff.toArrayBuffer())
-    fontLoader.injectFontFace('minifyWoff', minifyWoff.toArrayBuffer())
+    fonts.injectFontFace('woff', woff.toArrayBuffer())
+    fonts.injectFontFace('minifyWoff', minifyWoff.toArrayBuffer())
   }
   if (ttf) {
-    fontLoader.injectFontFace('ttf', ttf.toArrayBuffer())
+    fonts.injectFontFace('ttf', ttf.toArrayBuffer())
   }
   if (eot) {
-    fontLoader.injectFontFace('eot', eot.toArrayBuffer())
+    fonts.injectFontFace('eot', eot.toArrayBuffer())
   }
   console.warn(woff, ttf, eot, minifyWoff)
 }

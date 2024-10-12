@@ -1,40 +1,42 @@
-export interface FontLoaderRequest {
+export interface FontsRequest {
   url: string
   when: Promise<ArrayBuffer>
   cancel: () => void
 }
 
-export interface FontLoaderFont {
+export interface FontsFont {
   [key: string]: any
   family: string | string[]
   url: string
 }
 
-export interface FontLoaderLoadedFont extends FontLoaderFont {
+export interface FontsLoadedFont extends FontsFont {
   data: ArrayBuffer
 }
 
-export interface FontLoaderLoadOptions extends RequestInit {
+export interface FontsLoadOptions extends RequestInit {
   injectFontFace?: boolean
   injectStyleTag?: boolean
   cancelOther?: boolean
 }
 
-export class FontLoader {
-  static defaultRequestInit: Partial<FontLoaderLoadOptions> = {
+export class Fonts {
+  static defaultRequestInit: Partial<FontsLoadOptions> = {
     cache: 'force-cache',
   }
 
-  protected _loading = new Map<string, FontLoaderRequest>()
-  protected _loaded = new Map<string, FontLoaderLoadedFont>()
+  fallbackFont?: FontsLoadedFont
+
+  protected _loading = new Map<string, FontsRequest>()
+  protected _loaded = new Map<string, FontsLoadedFont>()
   protected _namesUrls = new Map<string, string>()
 
-  protected _createRequest(url: string, requestInit: RequestInit): FontLoaderRequest {
+  protected _createRequest(url: string, requestInit: RequestInit): FontsRequest {
     const controller = new AbortController()
     return {
       url,
       when: fetch(url, {
-        ...FontLoader.defaultRequestInit,
+        ...Fonts.defaultRequestInit,
         ...requestInit,
         signal: controller.signal,
       }).then(rep => rep.arrayBuffer()),
@@ -59,12 +61,16 @@ export class FontLoader {
     return this
   }
 
-  get(family: string): FontLoaderLoadedFont | undefined {
-    const url = this._namesUrls.get(family) ?? family
-    return this._loaded.get(url)
+  get(family?: string): FontsLoadedFont | undefined {
+    let font
+    if (family) {
+      const url = this._namesUrls.get(family) ?? family
+      font = this._loaded.get(url)
+    }
+    return font ?? this.fallbackFont
   }
 
-  set(family: string, font: FontLoaderLoadedFont): this {
+  set(family: string, font: FontsLoadedFont): this {
     this._namesUrls.set(family, font.url)
     this._loaded.set(font.url, font)
     return this
@@ -88,9 +94,9 @@ export class FontLoader {
   }
 
   async load(
-    font: FontLoaderFont,
-    options: FontLoaderLoadOptions = {},
-  ): Promise<FontLoaderLoadedFont> {
+    font: FontsFont,
+    options: FontsLoadOptions = {},
+  ): Promise<FontsLoadedFont> {
     const {
       cancelOther,
       injectFontFace = true,
@@ -159,4 +165,4 @@ export class FontLoader {
   }
 }
 
-export const fontLoader = new FontLoader()
+export const fonts = new Fonts()
