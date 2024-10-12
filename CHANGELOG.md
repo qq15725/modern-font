@@ -1,3 +1,12 @@
+## [0.1.4](https://github.com/qq15725/modern-font/compare/v0.1.3...v0.1.4) (2024-10-12)
+
+
+### Features
+
+* optimal performance ([d63244d](https://github.com/qq15725/modern-font/commit/d63244dcedb6433927e40d2491a68639f5692cf9))
+
+
+
 ## [0.1.3](https://github.com/qq15725/modern-font/compare/v0.1.2...v0.1.3) (2024-10-12)
 
 
