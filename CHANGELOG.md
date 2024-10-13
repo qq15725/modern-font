@@ -1,3 +1,12 @@
+## [0.1.5](https://github.com/qq15725/modern-font/compare/v0.1.4...v0.1.5) (2024-10-13)
+
+
+### Bug Fixes
+
+* get glyph ([c25fa83](https://github.com/qq15725/modern-font/commit/c25fa832ba33c4a985e3fd0dae61d192e4cf028d))
+
+
+
 ## [0.1.4](https://github.com/qq15725/modern-font/compare/v0.1.3...v0.1.4) (2024-10-12)
 
 
