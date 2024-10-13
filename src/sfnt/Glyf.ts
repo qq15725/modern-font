@@ -35,7 +35,7 @@ export class Glyf extends SfntTable {
   protected _glyphs?: GlyphSet
   get glyphs(): GlyphSet {
     if (!this._glyphs)
-      this._glyphs = new GlyphSet(this, this._sfnt.loca)
+      this._glyphs = new GlyphSet(this._sfnt)
     return this._glyphs
   }
 }
