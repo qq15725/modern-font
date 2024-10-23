@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/qq15725/modern-font/compare/v0.1.5...v0.2.0) (2024-10-23)
+
+
+### Features
+
+* support get CFF table glyph ([c40e030](https://github.com/qq15725/modern-font/commit/c40e03016a6f07d3b74d522fc244016fb392eb6e))
+
+
+
 ## [0.1.5](https://github.com/qq15725/modern-font/compare/v0.1.4...v0.1.5) (2024-10-13)
 
 
