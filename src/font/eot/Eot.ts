@@ -4,7 +4,8 @@ import { Font } from '../Font'
 
 // http://www.w3.org/Submission/EOT
 export class Eot extends Font {
-  override mimeType = 'application/vnd.ms-fontobject'
+  format = 'EmbeddedOpenType'
+  mimeType = 'application/vnd.ms-fontobject'
   @defineColumn('uint32') declare EOTSize: number
   @defineColumn('uint32') declare FontDataSize: number
   @defineColumn('uint32') declare Version: number
@@ -36,7 +37,7 @@ export class Eot extends Font {
   static from(ttf: Ttf): Eot {
     const sfnt = ttf.sfnt
     const name = sfnt.name
-    const names = name.getNames()
+    const names = name.names
     const FamilyName = toUCS2Bytes(names.fontFamily || '')
     const FamilyNameSize = FamilyName.length
     const StyleName = toUCS2Bytes(names.fontStyle || '')

@@ -23,22 +23,21 @@ export class Hmtx extends SfntTable {
 
   protected _metrics?: HMetric[]
   get metrics(): HMetric[] {
-    if (!this._metrics)
-      this._metrics = this._getMetrics()
-    return this._metrics
+    return this._metrics ??= this.readMetrics()
   }
 
-  protected _getMetrics(): HMetric[] {
+  readMetrics(): HMetric[] {
     const numGlyphs = this._sfnt.maxp.numGlyphs
     const numOfLongHorMetrics = this._sfnt.hhea.numOfLongHorMetrics
     let advanceWidth = 0
-    this.view.seek(0)
+    const reader = this.view
+    reader.seek(0)
     return Array.from({ length: numGlyphs }).map((_, i) => {
       if (i < numOfLongHorMetrics)
-        advanceWidth = this.view.readUint16()
+        advanceWidth = reader.readUint16()
       return {
         advanceWidth,
-        leftSideBearing: this.view.readUint16(),
+        leftSideBearing: reader.readUint16(),
       }
     })
   }

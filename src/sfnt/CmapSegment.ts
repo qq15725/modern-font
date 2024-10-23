@@ -11,11 +11,11 @@ export interface CmapSegment {
   delta: number
 }
 
-export function createCmapSegments(unicodeGlyphIndexMap: Map<number, number>, bound?: number): CmapSegment[] {
+export function createCmapSegments(unicodeToGlyphIndexMap: Map<number, number>, bound?: number): CmapSegment[] {
   let prev: Record<string, any> | undefined
   const segments: CmapSegment[] = []
   let segment: CmapSegment = {} as CmapSegment
-  unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
+  unicodeToGlyphIndexMap.forEach((glyphIndex, unicode) => {
     if (bound && unicode > bound)
       return
     if (!prev

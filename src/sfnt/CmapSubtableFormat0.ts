@@ -10,12 +10,12 @@ export class CmapSubtableFormat0 extends Readable {
     super(buffer, byteOffset, 262)
   }
 
-  static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat0 {
+  static from(unicodeToGlyphIndexMap: Map<number, number>): CmapSubtableFormat0 {
     const table = new CmapSubtableFormat0()
     table.format = 0
     table.length = table.view.byteLength
     table.language = 0
-    unicodeGlyphIndexMap.forEach((glyphIndex, unicode) => {
+    unicodeToGlyphIndexMap.forEach((glyphIndex, unicode) => {
       if (unicode < 256 && glyphIndex < 256) {
         table.view.writeUint8(glyphIndex, 6 + unicode)
       }
@@ -23,11 +23,11 @@ export class CmapSubtableFormat0 extends Readable {
     return table
   }
 
-  getUnicodeGlyphIndexMap(): Map<number, number> {
-    const unicodeGlyphIndexMap = new Map<number, number>()
+  getUnicodeToGlyphIndexMap(): Map<number, number> {
+    const unicodeToGlyphIndexMap = new Map<number, number>()
     this.glyphIndexArray.forEach((glyphIndex, unicode) => {
-      unicodeGlyphIndexMap.set(unicode, glyphIndex)
+      unicodeToGlyphIndexMap.set(unicode, glyphIndex)
     })
-    return unicodeGlyphIndexMap
+    return unicodeToGlyphIndexMap
   }
 }

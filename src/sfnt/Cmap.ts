@@ -22,11 +22,11 @@ export class Cmap extends SfntTable {
   @defineColumn('uint16') declare version: number
   @defineColumn('uint16') declare numberSubtables: number
 
-  static from(unicodeGlyphIndexMap: Map<number, number>): Cmap {
-    const has2Byte = Array.from(unicodeGlyphIndexMap.keys()).some(unicode => unicode > 0xFFFF)
-    const table4 = CmapSubtableFormat4.from(unicodeGlyphIndexMap)
-    const table0 = CmapSubtableFormat0.from(unicodeGlyphIndexMap)
-    const table12 = has2Byte ? CmapSubtableFormat12.from(unicodeGlyphIndexMap) : undefined
+  static from(unicodeToGlyphIndexMap: Map<number, number>): Cmap {
+    const has2Byte = Array.from(unicodeToGlyphIndexMap.keys()).some(unicode => unicode > 0xFFFF)
+    const table4 = CmapSubtableFormat4.from(unicodeToGlyphIndexMap)
+    const table0 = CmapSubtableFormat0.from(unicodeToGlyphIndexMap)
+    const table12 = has2Byte ? CmapSubtableFormat12.from(unicodeToGlyphIndexMap) : undefined
     const offset4 = 4 + (table12 ? 32 : 24)
     const offset0 = offset4 + table4.view.byteLength
     const offset12 = offset0 + table0.view.byteLength
@@ -58,14 +58,33 @@ export class Cmap extends SfntTable {
     return cmap
   }
 
-  _unicodeGlyphIndexMap?: Map<number, number>
-  get unicodeGlyphIndexMap(): Map<number, number> {
-    if (!this._unicodeGlyphIndexMap)
-      this._unicodeGlyphIndexMap = this._getUnicodeGlyphIndexMap()
-    return this._unicodeGlyphIndexMap
+  _unicodeToGlyphIndexMap?: Map<number, number>
+  get unicodeToGlyphIndexMap(): Map<number, number> {
+    return this._unicodeToGlyphIndexMap ??= this.readunicodeToGlyphIndexMap()
   }
 
-  protected _getSubtables(): (CmapSubtable & { format: number, view: any })[] {
+  _glyphIndexToUnicodesMap?: Map<number, number[]>
+  get glyphIndexToUnicodesMap(): Map<number, number[]> {
+    if (!this._glyphIndexToUnicodesMap) {
+      const glyphIndexToUnicodesMap = new Map()
+      const unicodeToGlyphIndexMap = this.unicodeToGlyphIndexMap
+      const unicodes = Array.from(unicodeToGlyphIndexMap.keys())
+      for (let i = 0, len = unicodes.length; i < len; i++) {
+        const unicode = unicodes[i]
+        const glyphIndex = unicodeToGlyphIndexMap.get(unicode)
+        if (glyphIndexToUnicodesMap.has(glyphIndex)) {
+          glyphIndexToUnicodesMap.get(glyphIndex).push(unicode)
+        }
+        else {
+          glyphIndexToUnicodesMap.set(glyphIndex, [unicode])
+        }
+      }
+      this._glyphIndexToUnicodesMap = glyphIndexToUnicodesMap
+    }
+    return this._glyphIndexToUnicodesMap
+  }
+
+  readSubtables(): (CmapSubtable & { format: number, view: any })[] {
     const numberSubtables = this.numberSubtables
     this.view.seek(4)
     return Array.from({ length: numberSubtables }, () => {
@@ -107,19 +126,19 @@ export class Cmap extends SfntTable {
     })
   }
 
-  protected _getUnicodeGlyphIndexMap(): Map<number, number> {
-    const tables = this._getSubtables()
+  readunicodeToGlyphIndexMap(): Map<number, number> {
+    const tables = this.readSubtables()
     const table0 = tables.find(item => item.format === 0)?.view as CmapSubtableFormat0 | undefined
     const table2 = tables.find(item => item.platformID === 3 && item.platformSpecificID === 3 && item.format === 2)?.view as CmapSubtableFormat2 | undefined
     const table4 = tables.find(item => item.platformID === 3 && item.platformSpecificID === 1 && item.format === 4)?.view as CmapSubtableFormat4 | undefined
     const table12 = tables.find(item => item.platformID === 3 && item.platformSpecificID === 10 && item.format === 12)?.view as CmapSubtableFormat12 | undefined
     const table14 = tables.find(item => item.platformID === 0 && item.platformSpecificID === 5 && item.format === 14)?.view as CmapSubtableFormat14 | undefined
     return new Map([
-      ...(table0?.getUnicodeGlyphIndexMap() ?? []),
-      ...(table2?.getUnicodeGlyphIndexMap(this._sfnt.maxp.numGlyphs) ?? []),
-      ...(table4?.getUnicodeGlyphIndexMap() ?? []),
-      ...(table12?.getUnicodeGlyphIndexMap() ?? []),
-      ...(table14?.getUnicodeGlyphIndexMap() ?? []),
+      ...(table0?.getUnicodeToGlyphIndexMap() ?? []),
+      ...(table2?.getUnicodeToGlyphIndexMap(this._sfnt.maxp.numGlyphs) ?? []),
+      ...(table4?.getUnicodeToGlyphIndexMap() ?? []),
+      ...(table12?.getUnicodeToGlyphIndexMap() ?? []),
+      ...(table14?.getUnicodeToGlyphIndexMap() ?? []),
     ])
   }
 }

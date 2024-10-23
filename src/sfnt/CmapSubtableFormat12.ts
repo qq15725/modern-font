@@ -20,8 +20,8 @@ export class CmapSubtableFormat12 extends Readable {
     })
   }
 
-  static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat12 {
-    const segments = createCmapSegments(unicodeGlyphIndexMap)
+  static from(unicodeToGlyphIndexMap: Map<number, number>): CmapSubtableFormat12 {
+    const segments = createCmapSegments(unicodeToGlyphIndexMap)
     const table = new CmapSubtableFormat12(new ArrayBuffer(16 + segments.length * 12))
     table.format = 12
     table.reserved = 0
@@ -36,8 +36,8 @@ export class CmapSubtableFormat12 extends Readable {
     return table
   }
 
-  getUnicodeGlyphIndexMap(): Map<number, number> {
-    const unicodeGlyphIndexMap = new Map<number, number>()
+  getUnicodeToGlyphIndexMap(): Map<number, number> {
+    const unicodeToGlyphIndexMap = new Map<number, number>()
     const groups = this.groups
     for (let i = 0, l = groups.length; i < l; i++) {
       const group = groups[i]
@@ -45,9 +45,9 @@ export class CmapSubtableFormat12 extends Readable {
       let start = group.startCharCode
       const end = group.endCharCode
       for (;start <= end;) {
-        unicodeGlyphIndexMap.set(start++, startId++)
+        unicodeToGlyphIndexMap.set(start++, startId++)
       }
     }
-    return unicodeGlyphIndexMap
+    return unicodeToGlyphIndexMap
   }
 }

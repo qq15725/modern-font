@@ -26,6 +26,6 @@ export class Head extends SfntTable {
   @defineColumn('int16') declare glyphDataFormat: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(54), byteOffset?: number) {
-    super(buffer, byteOffset, 54)
+    super(buffer, byteOffset, Math.min(54, buffer.byteLength - (byteOffset ?? 0)))
   }
 }

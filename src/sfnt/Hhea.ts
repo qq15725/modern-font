@@ -23,6 +23,6 @@ export class Hhea extends SfntTable {
   @defineColumn('uint16') declare numOfLongHorMetrics: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(36), byteOffset?: number) {
-    super(buffer, byteOffset, 36)
+    super(buffer, byteOffset, Math.min(36, buffer.byteLength - (byteOffset ?? 0)))
   }
 }

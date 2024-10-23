@@ -1,6 +1,8 @@
+import type { Cff } from './Cff'
 import type { Cmap } from './Cmap'
 import type { Glyf } from './Glyf'
 import type { Glyph, GlyphPathCommand } from './Glyph'
+import type { GlyphSet } from './GlyphSet'
 import type { Gpos } from './Gpos'
 import type { Gsub } from './Gsub'
 import type { Head } from './Head'
@@ -17,12 +19,21 @@ import type { Vhea } from './Vhea'
 import type { Vmtx } from './Vmtx'
 
 export type SfntTableTag =
-// required
-  | 'cmap' | 'glyf' | 'head' | 'hhea' | 'hmtx' | 'loca' | 'maxp' | 'name' | 'post'
+  // required
+  | 'cmap' | 'head' | 'hhea' | 'hmtx' | 'maxp' | 'name' | 'OS/2' | 'post'
+  // only TrueType required
+  | 'glyf' | 'loca'
+  // only OpenType required
+  | 'CFF '
   // optional
-  | 'cvt' | 'fpgm' | 'hdmx' | 'kern' | 'OS/2' | 'prep'
-  | 'vhea' | 'vmtx'
-  | 'GSUB' | 'GPOS' | 'VORG'
+  | 'BASE' | 'CBDT' | 'CBLC' | 'CFF2' | 'COLR' | 'CPAL' | 'DSIG' | 'EBDT'
+  | 'EBLC' | 'EBSC' | 'GDEF' | 'GPOS' | 'GSUB' | 'gasp' | 'JSTF' | 'kern'
+  | 'LTSH' | 'MATH' | 'MERG' | 'Sbix' | 'SVG ' | 'VDMX' | 'vhea' | 'vmtx'
+  | 'VORG' | 'hdmx'
+  // only TrueType optional
+  | 'fpgm' | 'prep' | 'cvt '
+  // only OpenType optional
+  | 'avar' | 'fvar' | 'gvar' | 'HVAR' | 'MVAR' | 'STAT' | 'VVAR'
   | string
 
 export function defineSfntTable(tag: SfntTableTag, prop: string = tag) {
@@ -38,21 +49,23 @@ export function defineSfntTable(tag: SfntTableTag, prop: string = tag) {
 }
 
 export class Sfnt {
-  declare glyf: Glyf
   declare cmap: Cmap
-  declare gpos: Gpos
-  declare gsub: Gsub
   declare head: Head
   declare hhea: Hhea
   declare hmtx: Hmtx
-  declare kern: Kern
-  declare loca: Loca
   declare maxp: Maxp
   declare name: Name
   declare os2: Os2
   declare post: Post
-  declare vhea: Vhea
-  declare vmtx: Vmtx
+  declare loca: Loca
+  declare glyf: Glyf
+  declare cff: Cff
+
+  declare gpos?: Gpos
+  declare gsub?: Gsub
+  declare kern?: Kern
+  declare vhea?: Vhea
+  declare vmtx?: Vmtx
 
   static tableDefinitions = new Map<string, {
     tag: string
@@ -63,33 +76,38 @@ export class Sfnt {
   tables = new Map<string, SfntTable>()
   tableViews = new Map<SfntTableTag, DataView>()
 
-  get names(): Record<string, any> { return this.name.getNames() }
+  get hasGlyf(): boolean { return this.tableViews.has('glyf') }
+  get names(): Record<string, any> { return this.name.names }
   get unitsPerEm(): number { return this.head.unitsPerEm }
   get ascender(): number { return this.hhea.ascent }
   get descender(): number { return this.hhea.descent }
   get createdTimestamp(): Date { return this.head.created }
   get modifiedTimestamp(): Date { return this.head.modified }
+  get glyphs(): GlyphSet { return this.hasGlyf ? this.glyf.glyphs : this.cff.glyphs }
 
   charToGlyphIndex(char: string): number {
-    return this.cmap.unicodeGlyphIndexMap.get(char.codePointAt(0)!) ?? 0
+    let index = this.cmap.unicodeToGlyphIndexMap.get(char.codePointAt(0)!)
+    if (index === undefined && !this.hasGlyf) {
+      const { encoding, charset } = this.cff
+      index = charset.indexOf(encoding[char.codePointAt(0)!])
+    }
+    return index ?? 0
   }
 
   charToGlyph(char: string): Glyph {
-    return this.glyf.glyphs.get(this.charToGlyphIndex(char))
+    return this.glyphs.get(this.charToGlyphIndex(char))
   }
 
   textToGlyphIndexes(text: string): number[] {
-    const unicodeGlyphIndexMap = this.cmap.unicodeGlyphIndexMap
     const indexes: number[] = []
     for (const char of text) {
-      const unicode = char.codePointAt(0)!
-      indexes.push(unicodeGlyphIndexMap.get(unicode) ?? 0)
+      indexes.push(this.charToGlyphIndex(char))
     }
     return indexes
   }
 
   textToGlyphs(text: string): Glyph[] {
-    const _glyphs = this.glyf.glyphs
+    const _glyphs = this.glyphs
     const indexes = this.textToGlyphIndexes(text)
     const length = indexes.length
     const glyphs: Glyph[] = Array.from({ length })
@@ -172,12 +190,10 @@ export class Sfnt {
       const Class = definition.class
       if (Class) {
         const view = this.tableViews.get(tag)
-        if (view) {
-          table = new Class(view.buffer, view.byteOffset, view.byteLength).setSfnt(this) as any
+        if (!view) {
+          return undefined
         }
-        else {
-          table = new Class().setSfnt(this) as any
-        }
+        table = new Class(view.buffer, view.byteOffset, view.byteLength).setSfnt(this) as any
         this.tables.set(definition.prop, table!)
       }
     }

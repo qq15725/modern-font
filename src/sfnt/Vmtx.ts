@@ -23,23 +23,22 @@ export class Vmtx extends SfntTable {
 
   protected _metrics?: VMetric[]
   get metrics(): VMetric[] {
-    if (!this._metrics)
-      this._metrics = this._getMetrics()
-    return this._metrics
+    return this._metrics ??= this.readMetrics()
   }
 
-  protected _getMetrics(): VMetric[] {
+  readMetrics(): VMetric[] {
     const numGlyphs = this._sfnt.maxp.numGlyphs
     const numOfLongVerMetrics = this._sfnt.vhea?.numOfLongVerMetrics ?? 0
-    this.view.seek(0)
+    const reader = this.view
+    reader.seek(0)
     let advanceHeight = 0
     return Array.from({ length: numGlyphs }).map((_, i) => {
       if (i < numOfLongVerMetrics) {
-        advanceHeight = this.view.readUint16()
+        advanceHeight = reader.readUint16()
       }
       return {
         advanceHeight,
-        topSideBearing: this.view.readUint8(),
+        topSideBearing: reader.readUint8(),
       }
     })
   }

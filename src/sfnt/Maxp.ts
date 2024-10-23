@@ -24,6 +24,6 @@ export class Maxp extends SfntTable {
   @defineColumn('uint16') declare maxComponentDepth: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(32), byteOffset?: number) {
-    super(buffer, byteOffset, 32)
+    super(buffer, byteOffset, Math.min(32, buffer.byteLength - (byteOffset ?? 0)))
   }
 }

@@ -1,20 +1,18 @@
+import type { Glyph } from './Glyph'
 import type { Sfnt } from './Sfnt'
-import { Glyph } from './Glyph'
 
 export type GlyphOrLoader = Glyph | undefined
 
-export class GlyphSet {
+export abstract class GlyphSet {
   protected _items: GlyphOrLoader[] = []
-
-  get length(): number {
-    return this._sfnt.loca.locations.length
-  }
 
   constructor(
     protected _sfnt: Sfnt,
   ) {
     //
   }
+
+  protected abstract _get(index: number): Glyph
 
   get(index: number): Glyph {
     const _glyph = this._items[index]
@@ -23,17 +21,16 @@ export class GlyphSet {
       glyph = _glyph
     }
     else {
-      glyph = new Glyph({ index })
-      const locations = this._sfnt.loca.locations
-      const metrics = this._sfnt.hmtx.metrics
-      const metric = metrics[index]
-      const location = locations[index]
+      glyph = this._get(index)
+      const metric = this._sfnt.hmtx.metrics[index]
       if (metric) {
-        glyph.advanceWidth = metrics[index].advanceWidth
-        glyph.leftSideBearing = metrics[index].leftSideBearing
+        glyph.advanceWidth ??= metric.advanceWidth
+        glyph.leftSideBearing ??= metric.leftSideBearing
       }
-      if (location !== locations[index + 1]) {
-        glyph._parse(this._sfnt.glyf, location, this)
+      const unicodes = this._sfnt.cmap.glyphIndexToUnicodesMap.get(index)
+      if (unicodes) {
+        glyph.unicode ??= unicodes[0]
+        glyph.unicodes ??= unicodes
       }
       this._items[index] = glyph
     }

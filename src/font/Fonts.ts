@@ -1,5 +1,7 @@
-import { Ttf } from './ttf'
-import { Woff } from './woff'
+import type { Otf } from './otf'
+import type { Ttf } from './ttf'
+import type { Woff } from './woff'
+import { parse } from './parse'
 
 export interface FontsRequest {
   url: string
@@ -14,7 +16,7 @@ export interface FontsFont {
 }
 
 export interface FontsLoadedFont extends FontsFont {
-  font: Woff | Ttf | ArrayBuffer
+  font: Ttf | Otf | Woff | ArrayBuffer
 }
 
 export interface FontsLoadOptions extends RequestInit {
@@ -62,16 +64,6 @@ export class Fonts {
     )
     document.head.appendChild(style)
     return this
-  }
-
-  parse(source: BufferSource): Ttf | Woff | undefined {
-    if (Ttf.is(source)) {
-      return new Ttf(source)
-    }
-    else if (Woff.is(source)) {
-      return new Woff(source)
-    }
-    return undefined
   }
 
   get(family?: string): FontsLoadedFont | undefined {
@@ -147,7 +139,7 @@ export class Fonts {
       .then((data) => {
         const result: FontsLoadedFont = {
           ...font,
-          font: this.parse(data) ?? data,
+          font: parse(data) ?? data,
         }
         if (!this._loaded.has(url)) {
           this._loaded.set(url, result)

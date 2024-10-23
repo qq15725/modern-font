@@ -35,8 +35,8 @@ export function defineColumn(options: ColumnOptions) {
       return byteLength + dataTypeToByteLength[column.type] * (column.size ?? 1)
     }, 0)
     Object.defineProperty(target.constructor.prototype, name, {
-      get() { return (this as Readable).view.getColumn(column) },
-      set(value) { (this as Readable).view.setColumn(column, value) },
+      get() { return (this as Readable).view.readColumn(column) },
+      set(value) { (this as Readable).view.writeColumn(column, value) },
       configurable: true,
       enumerable: true,
     })

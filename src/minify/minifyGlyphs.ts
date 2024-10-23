@@ -8,9 +8,10 @@ export interface MinimizedGlyph extends HMetric, VMetric {
   view: DataView
 }
 
+// TODO OpenType
 export function minifyGlyphs(sfnt: Sfnt, subset: string): MinimizedGlyph[] {
   const { cmap, loca, hmtx, vmtx, glyf } = sfnt
-  const unicodeGlyphIndexMap = cmap.unicodeGlyphIndexMap
+  const unicodeToGlyphIndexMap = cmap.unicodeToGlyphIndexMap
   const locations = loca.locations
   const hMetrics = hmtx.metrics
   const vMetrics = vmtx?.metrics
@@ -18,12 +19,12 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string): MinimizedGlyph[] {
     new Set(
       subset.split('')
         .map(str => str.codePointAt(0))
-        .filter(unicode => unicode !== undefined && unicodeGlyphIndexMap.has(unicode)) as Array<number>,
+        .filter(unicode => unicode !== undefined && unicodeToGlyphIndexMap.has(unicode)) as Array<number>,
     ),
   ).sort((a, b) => a - b)
   const glyphIndexUnicodesMap = new Map<number, Set<number>>()
   unicodes.forEach((unicode) => {
-    const glyphIndex = unicodeGlyphIndexMap.get(unicode) ?? 0
+    const glyphIndex = unicodeToGlyphIndexMap.get(unicode) ?? 0
     let unicodes = glyphIndexUnicodesMap.get(glyphIndex)
     if (!unicodes)
       glyphIndexUnicodesMap.set(glyphIndex, unicodes = new Set())
@@ -55,7 +56,7 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string): MinimizedGlyph[] {
 
   addGlyph(0)
 
-  unicodes.forEach(unicode => addGlyph(unicodeGlyphIndexMap.get(unicode)!))
+  unicodes.forEach(unicode => addGlyph(unicodeToGlyphIndexMap.get(unicode)!))
 
   glyphs.slice().forEach((glyph) => {
     const { view } = glyph

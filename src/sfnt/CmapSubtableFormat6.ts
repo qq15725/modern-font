@@ -12,12 +12,12 @@ export class CmapSubtableFormat6 extends Readable {
     return Array.from({ length: this.entryCount }, () => this.view.readUint16())
   }
 
-  getUnicodeGlyphIndexMap(): Map<number, number> {
+  getUnicodeToGlyphIndexMap(): Map<number, number> {
     const glyphIndexArray = this.glyphIndexArray
-    const unicodeGlyphIndexMap = new Map<number, number>()
+    const unicodeToGlyphIndexMap = new Map<number, number>()
     glyphIndexArray.forEach((glyphIndex, unicode) => {
-      unicodeGlyphIndexMap.set(unicode, glyphIndex)
+      unicodeToGlyphIndexMap.set(unicode, glyphIndex)
     })
-    return unicodeGlyphIndexMap
+    return unicodeToGlyphIndexMap
   }
 }

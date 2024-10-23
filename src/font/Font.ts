@@ -1,7 +1,8 @@
 import { Readable } from '../utils'
 
-export class Font extends Readable {
-  mimeType = 'font/opentype'
+export abstract class Font extends Readable {
+  abstract format: string
+  abstract mimeType: string
 
   get buffer(): ArrayBuffer {
     return this.view.buffer

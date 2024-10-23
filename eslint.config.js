@@ -5,4 +5,9 @@ export default antfu(
   {
     type: 'lib',
   },
+  {
+    rules: {
+      'antfu/consistent-list-newline': ['off'],
+    },
+  },
 )

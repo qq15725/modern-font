@@ -21,21 +21,19 @@ export class Loca extends SfntTable {
   }
 
   protected _locations?: number[]
-
   get locations(): number[] {
-    if (!this._locations)
-      this._locations = this._getLocations()
-    return this._locations
+    return this._locations ??= this.readLocations()
   }
 
-  protected _getLocations(): number[] {
+  readLocations(): number[] {
     const numGlyphs = this._sfnt.maxp.numGlyphs
     const indexToLocFormat = this._sfnt.head.indexToLocFormat
-    this.view.seek(0)
+    const reader = this.view
+    reader.seek(0)
     return Array.from({ length: numGlyphs }).map(() => {
       return indexToLocFormat
-        ? this.view.readUint32()
-        : this.view.readUint16() * 2
+        ? reader.readUint32()
+        : reader.readUint16() * 2
     })
   }
 }

@@ -80,8 +80,8 @@ export class CmapSubtableFormat4 extends Readable {
     return Array.from({ length }, () => this.view.readUint16())
   }
 
-  static from(unicodeGlyphIndexMap: Map<number, number>): CmapSubtableFormat4 {
-    const segments = createCmapSegments(unicodeGlyphIndexMap, 0xFFFF)
+  static from(unicodeToGlyphIndexMap: Map<number, number>): CmapSubtableFormat4 {
+    const segments = createCmapSegments(unicodeToGlyphIndexMap, 0xFFFF)
     const segCount = segments.length + 1
     const entrySelector = Math.floor(Math.log(segCount) / Math.LN2)
     const searchRange = 2 * 2 ** entrySelector
@@ -101,8 +101,8 @@ export class CmapSubtableFormat4 extends Readable {
     return table
   }
 
-  getUnicodeGlyphIndexMap(): Map<number, number> {
-    const unicodeGlyphIndexMap = new Map<number, number>()
+  getUnicodeToGlyphIndexMap(): Map<number, number> {
+    const unicodeToGlyphIndexMap = new Map<number, number>()
     const segCount = this.segCountX2 / 2
     const graphIndexArrayIndexOffset = (this.glyphIndexArrayCursor - this.idRangeOffsetCursor) / 2
     const startCode = this.startCode
@@ -113,7 +113,7 @@ export class CmapSubtableFormat4 extends Readable {
     for (let i = 0; i < segCount; ++i) {
       for (let start = startCode[i], end = endCode[i]; start <= end; ++start) {
         if (idRangeOffset[i] === 0) {
-          unicodeGlyphIndexMap.set(start, (start + idDelta[i]) % 0x10000)
+          unicodeToGlyphIndexMap.set(start, (start + idDelta[i]) % 0x10000)
         }
         else {
           const index = i + idRangeOffset[i] / 2
@@ -121,15 +121,15 @@ export class CmapSubtableFormat4 extends Readable {
             - graphIndexArrayIndexOffset
           const graphId = glyphIndexArray[index]
           if (graphId !== 0) {
-            unicodeGlyphIndexMap.set(start, (graphId + idDelta[i]) % 0x10000)
+            unicodeToGlyphIndexMap.set(start, (graphId + idDelta[i]) % 0x10000)
           }
           else {
-            unicodeGlyphIndexMap.set(start, 0)
+            unicodeToGlyphIndexMap.set(start, 0)
           }
         }
       }
     }
-    unicodeGlyphIndexMap.delete(65535)
-    return unicodeGlyphIndexMap
+    unicodeToGlyphIndexMap.delete(65535)
+    return unicodeToGlyphIndexMap
   }
 }

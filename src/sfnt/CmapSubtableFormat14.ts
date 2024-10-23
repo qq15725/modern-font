@@ -58,15 +58,15 @@ export class CmapSubtableFormat14 extends Readable {
     })
   }
 
-  getUnicodeGlyphIndexMap(): Map<number, number> {
-    const unicodeGlyphIndexMap = new Map<number, number>()
+  getUnicodeToGlyphIndexMap(): Map<number, number> {
+    const unicodeToGlyphIndexMap = new Map<number, number>()
     const varSelectorRecords = this.getVarSelectorRecords()
     for (let i = 0, l = varSelectorRecords.length; i < l; i++) {
       const { uVSMappings } = varSelectorRecords[i]
       uVSMappings.forEach((uVSMapping) => {
-        unicodeGlyphIndexMap.set(uVSMapping.unicodeValue, uVSMapping.glyphID)
+        unicodeToGlyphIndexMap.set(uVSMapping.unicodeValue, uVSMapping.glyphID)
       })
     }
-    return unicodeGlyphIndexMap
+    return unicodeToGlyphIndexMap
   }
 }

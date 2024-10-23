@@ -62,7 +62,12 @@ export class Name extends SfntTable {
   @defineColumn('uint16') declare count: number
   @defineColumn('uint16') declare stringOffset: number
 
-  getNames(): Record<string, any> {
+  protected _names?: Record<string, any>
+  get names(): Record<string, any> {
+    return this._names ??= this.readNames()
+  }
+
+  readNames(): Record<string, any> {
     const count = this.count
     this.view.seek(6)
     const nameRecords: Record<string, any>[] = []

@@ -1,3 +1,4 @@
+export * from './Cff'
 export * from './Cmap'
 export * from './CmapSegment'
 export * from './CmapSubtableFormat0'

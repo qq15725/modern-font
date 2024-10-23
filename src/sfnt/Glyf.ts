@@ -1,4 +1,4 @@
-import { GlyphSet } from './GlyphSet'
+import { GlyfGlyphSet } from './GlyfGlyphSet'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 
@@ -32,10 +32,8 @@ export class Glyf extends SfntTable {
     return glyf
   }
 
-  protected _glyphs?: GlyphSet
-  get glyphs(): GlyphSet {
-    if (!this._glyphs)
-      this._glyphs = new GlyphSet(this._sfnt)
-    return this._glyphs
+  protected _glyphs?: GlyfGlyphSet
+  get glyphs(): GlyfGlyphSet {
+    return this._glyphs ??= new GlyfGlyphSet(this._sfnt)
   }
 }

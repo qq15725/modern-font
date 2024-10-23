@@ -1,8 +1,7 @@
 import { Eot, fonts, minify, Ttf, Woff } from '../src'
 
 async function init(): Promise<void> {
-  // await fonts.load({ family: 'source', url: 'https://opentype.js.org/fonts/FiraSansMedium.woff' })
-  await fonts.load({ family: 'source', url: '1.woff' })
+  await fonts.load({ family: 'source', url: 'opentype.woff' })
 
   const font = fonts.get('source')?.font
   let woff: Woff | undefined
@@ -16,8 +15,33 @@ async function init(): Promise<void> {
     const ctx = document.querySelector('canvas')!.getContext('2d')!
     ctx.strokeStyle = '#000'
     ctx.lineWidth = 2
-    console.warn(sfnt.getPathCommands('你', 100, 100))
-    console.warn(sfnt.getPathCommands('好', 200, 200))
+    const commands1 = sfnt.getPathCommands('你', 100, 100)
+    const commands2 = sfnt.getPathCommands('好', 200, 200)
+    console.warn(commands1)
+    console.warn(commands2)
+    ;[commands1, commands2].forEach((commands) => {
+      ctx.beginPath()
+      commands?.forEach((cmd) => {
+        switch (cmd.type) {
+          case 'M':
+            ctx.moveTo(cmd.x, cmd.y)
+            break
+          case 'L':
+            ctx.lineTo(cmd.x, cmd.y)
+            break
+          case 'Q':
+            ctx.quadraticCurveTo(cmd.x1, cmd.y1, cmd.x, cmd.y)
+            break
+          case 'C':
+            ctx.bezierCurveTo(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y)
+            break
+          case 'Z':
+            ctx.closePath()
+            break
+        }
+      })
+      ctx.stroke()
+    })
     console.warn(sfnt)
   }
   else if (font instanceof Ttf) {

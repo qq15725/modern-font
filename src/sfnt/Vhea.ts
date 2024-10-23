@@ -23,6 +23,6 @@ export class Vhea extends SfntTable {
   @defineColumn('int16') declare numOfLongVerMetrics: number
 
   constructor(buffer: BufferSource = new ArrayBuffer(36), byteOffset?: number) {
-    super(buffer, byteOffset, 36)
+    super(buffer, byteOffset, Math.min(36, buffer.byteLength - (byteOffset ?? 0)))
   }
 }

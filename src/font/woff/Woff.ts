@@ -3,11 +3,14 @@ import { unzlibSync, zlibSync } from 'fflate'
 import { Sfnt } from '../../sfnt'
 import { defineColumn, toDataView } from '../../utils'
 import { Font } from '../Font'
+import { Otf } from '../otf'
+import { Ttf } from '../ttf'
 import { WoffTableDirectoryEntry } from './WoffTableDirectoryEntry'
 
 // https://www.w3.org/submissions/WOFF
 export class Woff extends Font {
-  override mimeType = 'font/woff'
+  format = 'WOFF'
+  mimeType = 'font/woff'
   @defineColumn('uint32') declare signature: number
   @defineColumn('uint32') declare flavor: number
   @defineColumn('uint32') declare length: number
@@ -22,6 +25,18 @@ export class Woff extends Font {
   @defineColumn('uint32') declare privOffset: number
   @defineColumn('uint32') declare privLength: number
 
+  get subfontFormat(): 'TrueType' | 'OpenType' | 'Open' {
+    if (Ttf.is(this.flavor)) {
+      return 'TrueType'
+    }
+    else if (Otf.is(this.flavor)) {
+      return 'OpenType'
+    }
+    else {
+      return 'Open'
+    }
+  }
+
   protected _sfnt?: Sfnt
   get sfnt(): Sfnt {
     if (!this._sfnt) {
@@ -30,12 +45,17 @@ export class Woff extends Font {
     return this._sfnt
   }
 
-  static FLAGS = new Set([
+  static signature = new Set([
     0x774F4646, // wOFF
   ])
 
-  static is(source: BufferSource): boolean {
-    return this.FLAGS.has(toDataView(source).getUint32(0))
+  static is(source: BufferSource | number): boolean {
+    if (typeof source === 'number') {
+      return this.signature.has(source)
+    }
+    else {
+      return this.signature.has(toDataView(source).getUint32(0))
+    }
   }
 
   static checkSum(source: BufferSource): number {

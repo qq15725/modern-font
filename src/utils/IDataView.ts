@@ -36,7 +36,7 @@ export interface Column {
   default?: any
 }
 
-export function defineMethod() {
+function defineMethod() {
   return function (target: any, name: PropertyKey) {
     Object.defineProperty(target.constructor.prototype, name, {
       get() {
@@ -87,7 +87,7 @@ export class IDataView extends DataView {
     super(toBuffer(source), byteOffset as any, byteLength as any)
   }
 
-  getColumn(column: Column): any {
+  readColumn(column: Column): any {
     if (column.size) {
       const array = Array.from({ length: column.size }, (_, i) => {
         return this.read(column.type, column.offset + i)
@@ -104,7 +104,7 @@ export class IDataView extends DataView {
     }
   }
 
-  setColumn(column: Column, value: any): any {
+  writeColumn(column: Column, value: any): any {
     if (column.size) {
       // eslint-disable-next-line array-callback-return
       Array.from({ length: column.size }, (_, i) => {
@@ -150,16 +150,12 @@ export class IDataView extends DataView {
   }
 
   readString(byteOffset: number, length?: number): string {
-    if (length === undefined) {
-      length = byteOffset
-      byteOffset = this.cursor
+    const bytes = this.readBytes(byteOffset, length)
+    let str = ''
+    for (let i = 0, len = bytes.length; i < len; i++) {
+      str += String.fromCharCode(bytes[i])
     }
-    let value = ''
-    for (let i = 0; i < length; ++i) {
-      value += String.fromCharCode(this.readUint8(byteOffset + i))
-    }
-    this.cursor = byteOffset + length
-    return value
+    return str
   }
 
   readFixed(byteOffset?: number, littleEndian?: boolean): number {

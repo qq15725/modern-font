@@ -35,8 +35,8 @@ export class CmapSubtableFormat2 extends Readable {
     return Array.from({ length }, () => this.view.readUint16())
   }
 
-  getUnicodeGlyphIndexMap(numGlyphs: number): Map<number, number> {
-    const unicodeGlyphIndexMap = new Map<number, number>()
+  getUnicodeToGlyphIndexMap(numGlyphs: number): Map<number, number> {
+    const unicodeToGlyphIndexMap = new Map<number, number>()
     const subHeaderKeys = this.subHeaderKeys
     const maxSubHeaderKey = this.maxSubHeaderKey
     const subHeaders = this.subHeaders
@@ -61,7 +61,7 @@ export class CmapSubtableFormat2 extends Readable {
           }
         }
         if (index !== 0 && index < numGlyphs) {
-          unicodeGlyphIndexMap.set(i, index)
+          unicodeToGlyphIndexMap.set(i, index)
         }
       }
       else {
@@ -78,11 +78,11 @@ export class CmapSubtableFormat2 extends Readable {
           }
           if (index !== 0 && index < numGlyphs) {
             const unicode = ((i << 8) | (j + subHeaders[k].firstCode)) % 0xFFFF
-            unicodeGlyphIndexMap.set(unicode, index)
+            unicodeToGlyphIndexMap.set(unicode, index)
           }
         }
       }
     }
-    return unicodeGlyphIndexMap
+    return unicodeToGlyphIndexMap
   }
 }
