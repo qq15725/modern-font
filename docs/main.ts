@@ -17,6 +17,7 @@ async function init(): Promise<void> {
     ctx.lineWidth = 2
     const commands1 = sfnt.getPathCommands('你', 100, 100)
     const commands2 = sfnt.getPathCommands('好', 200, 200)
+    console.warn(sfnt.charToGlyph('啊'))
     console.warn(commands1)
     console.warn(commands2)
     ;[commands1, commands2].forEach((commands) => {

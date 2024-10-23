@@ -24,8 +24,8 @@ export abstract class GlyphSet {
       glyph = this._get(index)
       const metric = this._sfnt.hmtx.metrics[index]
       if (metric) {
-        glyph.advanceWidth ??= metric.advanceWidth
-        glyph.leftSideBearing ??= metric.leftSideBearing
+        glyph.advanceWidth = glyph.advanceWidth || metric.advanceWidth
+        glyph.leftSideBearing = glyph.leftSideBearing || metric.leftSideBearing
       }
       const unicodes = this._sfnt.cmap.glyphIndexToUnicodesMap.get(index)
       if (unicodes) {

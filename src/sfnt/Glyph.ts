@@ -30,10 +30,10 @@ export type GlyphPathCommand =
 export class Glyph {
   index: number
   name: string | null
-  unicode = 0
-  unicodes: number[] = []
-  advanceWidth = 0
-  leftSideBearing = 0
+  declare unicode: number
+  declare unicodes: number[]
+  declare advanceWidth: number
+  declare leftSideBearing: number
   isComposite = false
   components: GlyphComponent[] = []
   pathCommands: GlyphPathCommand[] = []
@@ -42,23 +42,26 @@ export class Glyph {
     options: GlyphOptions,
   ) {
     const config: GlyphOptions = { ...options }
-
     this.index = config.index ?? 0
-
     if (config.name === '.notdef') {
       config.unicode = undefined
     }
     else if (config.name === '.null') {
       config.unicode = 0
     }
-
     if (config.unicode === 0 && config.name !== '.null') {
       throw new Error('The unicode value "0" is reserved for the glyph name ".null" and cannot be used by any other glyph.')
     }
-
     this.name = config.name ?? null
-    this.unicode = config.unicode ?? 0
-    this.unicodes = config.unicodes ?? (config.unicode !== undefined ? [config.unicode] : [])
+    if (config.unicode) {
+      this.unicode = config.unicode
+    }
+    if (config.unicodes) {
+      this.unicodes = config.unicodes
+    }
+    else if (config.unicode) {
+      this.unicodes = [config.unicode]
+    }
   }
 
   getPathCommands(x = 0, y = 0, fontSize = 72, options: Record<string, any> = {}, sfnt?: Sfnt): GlyphPathCommand[] {
