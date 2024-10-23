@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/qq15725/modern-font/compare/v0.2.0...v0.2.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* glyph advanceWidth ([b8c146b](https://github.com/qq15725/modern-font/commit/b8c146bc010ea5db97b17c9d7fd9065d5074a9c4))
+
+
+
 # [0.2.0](https://github.com/qq15725/modern-font/compare/v0.1.5...v0.2.0) (2024-10-23)
 
 
