@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/qq15725/modern-font/compare/v0.2.1...v0.3.0) (2024-11-11)
+
+
+### Features
+
+* rename export util method, minifyFont and parseFont ([e7c20b5](https://github.com/qq15725/modern-font/commit/e7c20b50d0ec34fb45c8e94b0022e8e374c83a84))
+
+
+
 ## [0.2.1](https://github.com/qq15725/modern-font/compare/v0.2.0...v0.2.1) (2024-10-23)
 
 
