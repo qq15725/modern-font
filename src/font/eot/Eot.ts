@@ -1,9 +1,9 @@
 import type { Ttf } from '../ttf'
 import { defineColumn, toUCS2Bytes } from '../../utils'
-import { Font } from '../Font'
+import { BaseFont } from '../BaseFont'
 
 // http://www.w3.org/Submission/EOT
-export class Eot extends Font {
+export class Eot extends BaseFont {
   format = 'EmbeddedOpenType'
   mimeType = 'application/vnd.ms-fontobject'
   @defineColumn('uint32') declare EOTSize: number

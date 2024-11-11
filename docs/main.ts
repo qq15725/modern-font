@@ -1,4 +1,4 @@
-import { Eot, fonts, minify, Ttf, Woff } from '../src'
+import { Eot, fonts, minifyFont, Ttf, Woff } from '../src'
 
 async function init(): Promise<void> {
   await fonts.load({ family: 'source', url: 'opentype.woff' })
@@ -52,7 +52,7 @@ async function init(): Promise<void> {
   }
   let minifyWoff
   if (woff) {
-    minifyWoff = minify(woff, 'minify')
+    minifyWoff = minifyFont(woff, 'minify')
     fonts.injectFontFace('woff', woff.toBuffer())
     fonts.injectFontFace('minifyWoff', minifyWoff.toBuffer())
   }

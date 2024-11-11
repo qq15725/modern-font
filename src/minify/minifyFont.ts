@@ -3,7 +3,7 @@ import { Ttf, Woff } from '../font'
 import { toDataView } from '../utils'
 import { minifySfnt } from './minifySfnt'
 
-export function minify<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: string): T {
+export function minifyFont<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: string): T {
   let sfnt: Sfnt
   let outputFormat: 'ttf' | 'woff' | 'ttf-buffer' | 'woff-buffer'
   if (source instanceof Ttf) {

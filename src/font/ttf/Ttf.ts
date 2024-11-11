@@ -1,12 +1,12 @@
 import type { SfntTableTag } from '../../sfnt'
 import { Sfnt } from '../../sfnt'
 import { defineColumn, toDataView } from '../../utils'
-import { Font } from '../Font'
+import { BaseFont } from '../BaseFont'
 import { TableDirectory } from './TableDirectory'
 
 // TrueType
 // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
-export class Ttf extends Font {
+export class Ttf extends BaseFont {
   format = 'TrueType'
   mimeType = 'font/ttf'
   @defineColumn('uint32') declare scalerType: number

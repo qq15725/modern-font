@@ -1,25 +1,6 @@
-import { Readable } from '../utils'
+import type { Eot } from './eot'
+import type { Otf } from './otf'
+import type { Ttf } from './ttf'
+import type { Woff } from './woff'
 
-export abstract class Font extends Readable {
-  abstract format: string
-  abstract mimeType: string
-
-  get buffer(): ArrayBuffer {
-    return this.view.buffer
-  }
-
-  toBuffer(): ArrayBuffer {
-    return this.view.buffer.slice(this.view.byteOffset, this.view.byteOffset + this.view.byteLength)
-  }
-
-  toBlob(): Blob {
-    return new Blob(
-      [new Uint8Array(this.view.buffer, this.view.byteOffset, this.view.byteLength)],
-      { type: this.mimeType },
-    )
-  }
-
-  toFontFace(family: string): FontFace {
-    return new FontFace(family, this.view.buffer)
-  }
-}
+export type Font = Ttf | Woff | Otf | Eot

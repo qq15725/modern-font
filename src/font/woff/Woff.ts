@@ -2,13 +2,13 @@ import type { SfntTableTag } from '../../sfnt'
 import { unzlibSync, zlibSync } from 'fflate'
 import { Sfnt } from '../../sfnt'
 import { defineColumn, toDataView } from '../../utils'
-import { Font } from '../Font'
+import { BaseFont } from '../BaseFont'
 import { Otf } from '../otf'
 import { Ttf } from '../ttf'
 import { WoffTableDirectoryEntry } from './WoffTableDirectoryEntry'
 
 // https://www.w3.org/submissions/WOFF
-export class Woff extends Font {
+export class Woff extends BaseFont {
   format = 'WOFF'
   mimeType = 'font/woff'
   @defineColumn('uint32') declare signature: number

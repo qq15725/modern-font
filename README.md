@@ -39,7 +39,7 @@ npm i modern-font
 ## 🦄 Usage
 
 ```ts
-import { Eot, minify, Ttf, Woff } from 'modern-font'
+import { Eot, minifyFont, Ttf, Woff } from 'modern-font'
 
 fetch('font.woff')
   .then(rep => rep.arrayBuffer())
@@ -55,7 +55,7 @@ fetch('font.woff')
       woff = Woff.from(ttf.sfnt)
       eot = Eot.from(ttf)
     }
-    const minifyWoff = minify(woff, 'minify')
+    const minifyWoff = minifyFont(woff, 'minify')
     document.fonts.add(woff.toFontFace('woff'))
     document.fonts.add(ttf.toFontFace('ttf'))
     document.fonts.add(eot.toFontFace('eot'))
@@ -112,12 +112,12 @@ fetch('font.ttf')
 ## 🚀 Minify
 
 ```ts
-import { minify } from 'modern-font'
+import { minifyFont } from 'modern-font'
 
 fetch('font.woff')
   .then(rep => rep.arrayBuffer())
   .then((rawBuffer) => {
-    const buffer = minify(rawBuffer, 'A set of text cropped from a font file')
+    const buffer = minifyFont(rawBuffer, 'A set of text cropped from a font file')
 
     console.log(
       `raw size: ${rawBuffer.byteLength / 1024 / 1024}`,
