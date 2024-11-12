@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/qq15725/modern-font/compare/v0.3.0...v0.3.1) (2024-11-12)
+
+
+### Features
+
+* fonts update ([fdc3aed](https://github.com/qq15725/modern-font/commit/fdc3aedcb49e3d15d2a1529a389fde7bfe91457f))
+
+
+
 # [0.3.0](https://github.com/qq15725/modern-font/compare/v0.2.1...v0.3.0) (2024-11-11)
 
 
