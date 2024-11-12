@@ -1,9 +1,9 @@
 import { Eot, fonts, minifyFont, Ttf, Woff } from '../src'
 
 async function init(): Promise<void> {
-  await fonts.load({ family: 'source', url: 'opentype.woff' })
+  await fonts.load({ family: 'source', src: 'opentype.woff' })
 
-  const font = fonts.get('source')?.font
+  const font = fonts.get('source')?.getFont()
   let woff: Woff | undefined
   let ttf: Ttf | undefined
   let eot: Eot | undefined

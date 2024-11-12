@@ -1,40 +1,45 @@
+import type { Sfnt } from '../sfnt'
 import type { Font } from './Font'
 import { parseFont } from './parseFont'
+import { Ttf } from './ttf'
+import { Woff } from './woff'
 
-export interface FontsRequest {
+export interface FontRequest {
   url: string
   when: Promise<ArrayBuffer>
   cancel: () => void
 }
 
-export interface FontsFont {
-  [key: string]: any
-  family: string | string[]
-  url: string
+export interface FontSource {
+  src: string
+  family?: string | string[]
 }
 
-export interface FontsLoadedFont extends FontsFont {
-  font: Font | ArrayBuffer
+export interface FontLoadedResult extends FontSource {
+  buffer: ArrayBuffer
+  familySet: Set<string>
+  getFont: () => Font | undefined
+  getSfnt: () => Sfnt | undefined
 }
 
-export interface FontsLoadOptions extends RequestInit {
+export interface FontLoadOptions extends RequestInit {
   injectFontFace?: boolean
   injectStyleTag?: boolean
   cancelOther?: boolean
+  noAdd?: boolean
 }
 
 export class Fonts {
-  static defaultRequestInit: Partial<FontsLoadOptions> = {
+  static defaultRequestInit: Partial<FontLoadOptions> = {
     cache: 'force-cache',
   }
 
-  fallbackFont?: FontsLoadedFont
+  fallbackFont?: FontLoadedResult
+  loading = new Map<string, FontRequest>()
+  loaded = new Map<string, FontLoadedResult>()
+  familyToUrl = new Map<string, string>()
 
-  protected _loading = new Map<string, FontsRequest>()
-  protected _loaded = new Map<string, FontsLoadedFont>()
-  protected _namesUrls = new Map<string, string>()
-
-  protected _createRequest(url: string, requestInit: RequestInit): FontsRequest {
+  protected _createRequest(url: string, requestInit: RequestInit): FontRequest {
     const controller = new AbortController()
     return {
       url,
@@ -64,42 +69,41 @@ export class Fonts {
     return this
   }
 
-  get(family?: string): FontsLoadedFont | undefined {
+  get(familyOrUrl?: string): FontLoadedResult | undefined {
     let font
-    if (family) {
-      const url = this._namesUrls.get(family) ?? family
-      font = this._loaded.get(url)
+    if (familyOrUrl) {
+      font = this.loaded.get(
+        this.familyToUrl.get(familyOrUrl)
+        ?? familyOrUrl,
+      )
     }
     return font ?? this.fallbackFont
   }
 
-  set(family: string, font: FontsLoadedFont): this {
-    this._namesUrls.set(family, font.url)
-    this._loaded.set(font.url, font)
+  set(family: string, font: FontLoadedResult): this {
+    this.familyToUrl.set(family, font.src)
+    this.loaded.set(font.src, font)
     return this
   }
 
-  delete(family: string): this {
-    const url = this._namesUrls.get(family) ?? family
-    this._namesUrls.delete(family)
-    this._loaded.delete(url)
+  delete(familyOrUrl: string): this {
+    const url = this.familyToUrl.get(familyOrUrl) ?? familyOrUrl
+    this.familyToUrl.delete(url)
+    this.loaded.delete(url)
     return this
   }
 
   clear(): this {
-    this._namesUrls.clear()
-    this._loaded.clear()
+    this.familyToUrl.clear()
+    this.loading.clear()
+    this.loaded.clear()
     return this
   }
 
-  async waitUntilLoad(): Promise<void> {
-    await Promise.all(Array.from(this._loading.values()).map(v => v.when))
-  }
-
   async load(
-    font: FontsFont,
-    options: FontsLoadOptions = {},
-  ): Promise<FontsLoadedFont> {
+    source: FontSource,
+    options: FontLoadOptions = {},
+  ): Promise<FontLoadedResult> {
     const {
       cancelOther,
       injectFontFace = true,
@@ -107,67 +111,108 @@ export class Fonts {
       ...requestInit
     } = options
 
-    const { family, url } = font
+    const { src } = source
 
-    if (this._loaded.has(url)) {
+    if (this.loaded.has(src)) {
       if (cancelOther) {
-        this._loading.forEach(val => val.cancel())
-        this._loading.clear()
+        this.loading.forEach(val => val.cancel())
+        this.loading.clear()
       }
-      return this._loaded.get(url)!
+      return onLoaded(this.loaded.get(src)!)
     }
 
-    let request = this._loading.get(url)
+    let request = this.loading.get(src)
     if (!request) {
-      request = this._createRequest(url, requestInit)
-      this._loading.set(url, request)
+      request = this._createRequest(src, requestInit)
+      this.loading.set(src, request)
     }
 
     if (cancelOther) {
-      this._loading.forEach((val, key) => {
+      this.loading.forEach((val, key) => {
         if (val !== request) {
           val.cancel()
-          this._loading.delete(key)
+          this.loading.delete(key)
         }
       })
     }
 
     return request
       .when
-      .then((data) => {
-        const result: FontsLoadedFont = {
-          ...font,
-          font: parseFont(data, false) ?? data,
+      .then((buffer) => {
+        if (this.loaded.has(src)) {
+          return onLoaded(this.loaded.get(src)!)
         }
-        if (!this._loaded.has(url)) {
-          this._loaded.set(url, result)
-          new Set(Array.isArray(family) ? family : [family]).forEach((family) => {
-            this._namesUrls.set(family, url)
-
+        else {
+          const loadedFont = createLoadedFont(buffer)
+          if (!options.noAdd) {
+            this.loaded.set(source.src, loadedFont)
+          }
+          loadedFont.familySet.forEach((family) => {
+            this.familyToUrl.set(family, src)
             if (typeof document !== 'undefined') {
               if (injectFontFace) {
-                this.injectFontFace(family, data)
+                this.injectFontFace(family, buffer)
               }
-
               if (injectStyleTag) {
-                this.injectStyleTag(family, url)
+                this.injectStyleTag(family, src)
               }
             }
           })
+          return loadedFont
         }
-        return result
       })
       .catch((err) => {
         if (err instanceof DOMException) {
           if (err.message === 'The user aborted a request.') {
-            return { ...font, font: new ArrayBuffer(0) }
+            return createLoadedFont()
           }
         }
         throw err
       })
       .finally(() => {
-        this._loading.delete(url)
+        this.loading.delete(src)
       })
+
+    function getFamilies(): string[] {
+      return source.family
+        ? Array.isArray(source.family) ? source.family : [source.family]
+        : []
+    }
+
+    function onLoaded(font: FontLoadedResult): FontLoadedResult {
+      getFamilies().forEach((family) => {
+        font.familySet.add(family)
+      })
+      return font
+    }
+
+    function createLoadedFont(buffer = new ArrayBuffer(0)): FontLoadedResult {
+      let font: Font | undefined
+      function getFont(): Font | undefined {
+        if (!font) {
+          font = buffer.byteLength ? parseFont(buffer, false) : undefined
+        }
+        return font
+      }
+      function getSfnt(): Sfnt | undefined {
+        const font = getFont()
+        if (font instanceof Ttf || font instanceof Woff) {
+          return font.sfnt
+        }
+        return undefined
+      }
+      return {
+        ...source,
+        buffer,
+        familySet: new Set(getFamilies()),
+        getFont,
+        getSfnt,
+      }
+    }
+  }
+
+  async waitUntilLoad(): Promise<void> {
+    await Promise.all(Array.from(this.loading.values()).map(v => v.when))
   }
 }
 
