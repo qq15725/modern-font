@@ -27,6 +27,11 @@ export type GlyphPathCommand =
   | { type: 'C', x1: number, y1: number, x2: number, y2: number, x: number, y: number }
   | { type: 'Z' }
 
+export interface GlyphPathCommandOptions {
+  xScale?: number
+  yScale?: number
+}
+
 export class Glyph {
   index: number
   name: string | null
@@ -64,7 +69,7 @@ export class Glyph {
     }
   }
 
-  getPathCommands(x = 0, y = 0, fontSize = 72, options: Record<string, any> = {}, sfnt?: Sfnt): GlyphPathCommand[] {
+  getPathCommands(x = 0, y = 0, fontSize = 72, options: GlyphPathCommandOptions = {}, sfnt?: Sfnt): GlyphPathCommand[] {
     const scale = 1 / (sfnt?.unitsPerEm ?? 1000) * fontSize
     const { xScale = scale, yScale = scale } = options
     const pathCommands = this.pathCommands

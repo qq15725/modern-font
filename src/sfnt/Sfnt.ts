@@ -1,7 +1,7 @@
 import type { Cff } from './Cff'
 import type { Cmap } from './Cmap'
 import type { Glyf } from './Glyf'
-import type { Glyph, GlyphPathCommand } from './Glyph'
+import type { Glyph, GlyphPathCommand, GlyphPathCommandOptions } from './Glyph'
 import type { GlyphSet } from './GlyphSet'
 import type { Gpos } from './Gpos'
 import type { Gsub } from './Gsub'
@@ -118,15 +118,26 @@ export class Sfnt {
     return glyphs
   }
 
-  getPathCommands(text: string, x: number, y: number, fontSize?: number, options?: Record<string, any>): GlyphPathCommand[] | undefined {
-    return this.charToGlyph(text)?.getPathCommands(x, y, fontSize, options, this)
+  getPathCommands(text: string, x: number, y: number, fontSize?: number, options?: GlyphPathCommandOptions): GlyphPathCommand[] {
+    const commands: GlyphPathCommand[] = []
+    this.forEachGlyph(text, x, y, fontSize, options, (glyph, x, y, fontSize, options) => {
+      commands.push(...glyph.getPathCommands(x, y, fontSize, options, this))
+    })
+    return commands
   }
 
-  getAdvanceWidth(text: string, fontSize?: number, options?: Record<string, any>): number {
+  getAdvanceWidth(text: string, fontSize?: number, options?: GlyphPathCommandOptions): number {
     return this.forEachGlyph(text, 0, 0, fontSize, options, () => {})
   }
 
-  forEachGlyph(text: string, x = 0, y = 0, fontSize = 72, options: Record<string, any> = {}, callback: any): number {
+  forEachGlyph(
+    text: string,
+    x = 0,
+    y = 0,
+    fontSize = 72,
+    options: GlyphPathCommandOptions & { letterSpacing?: number, tracking?: number } = {},
+    callback: (glyph: Glyph, x: number, y: number, fontSize: number, options: GlyphPathCommandOptions) => void,
+  ): number {
     const fontScale = 1 / this.unitsPerEm * fontSize
     const glyphs = this.textToGlyphs(text)
     for (let i = 0; i < glyphs.length; i += 1) {
