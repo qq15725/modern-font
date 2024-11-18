@@ -1,3 +1,12 @@
+## [0.3.2](https://github.com/qq15725/modern-font/compare/v0.3.1...v0.3.2) (2024-11-18)
+
+
+### Bug Fixes
+
+* getPathCommands text is not supported ([660cbf8](https://github.com/qq15725/modern-font/commit/660cbf879afc6718656d2817faf304b1afc97fed))
+
+
+
 ## [0.3.1](https://github.com/qq15725/modern-font/compare/v0.3.0...v0.3.1) (2024-11-12)
 
 
