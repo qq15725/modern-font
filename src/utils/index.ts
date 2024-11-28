@@ -1,6 +1,4 @@
 export * from './assert'
 export * from './buffer'
 export * from './constants'
-export * from './IDataView'
-export * from './Readable'
 export * from './string'

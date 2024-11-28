@@ -1,6 +1,6 @@
-import { defineColumn, Readable } from '../../utils'
+import { defineColumn, FontDataObject } from '../../core'
 
-export class TableDirectory extends Readable {
+export class TableDirectory extends FontDataObject {
   @defineColumn({ type: 'char', size: 4 }) declare tag: string
   @defineColumn('uint32') declare checkSum: number
   @defineColumn('uint32') declare offset: number

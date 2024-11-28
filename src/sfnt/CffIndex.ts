@@ -1,6 +1,6 @@
-import { defineColumn, Readable } from '../utils'
+import { defineColumn, FontDataObject } from '../core'
 
-export abstract class CffIndex<T extends string | number[]> extends Readable {
+export abstract class CffIndex<T extends string | number[]> extends FontDataObject {
   @defineColumn('uint16') declare count: number
   @defineColumn('uint8') declare offsetSize: number
 

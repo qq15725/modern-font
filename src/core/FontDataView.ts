@@ -1,4 +1,4 @@
-import { toBuffer, toDataView } from './buffer'
+import { toBuffer, toDataView } from '../utils'
 
 export type DataType =
   | 'int8'
@@ -43,11 +43,11 @@ function defineMethod() {
         if (typeof name === 'string') {
           if (name.startsWith('read')) {
             // @ts-expect-error ...args
-            return (...args: any[]) => (this as IDataView).read(name.substring('read'.length).toLowerCase(), ...args)
+            return (...args: any[]) => (this as FontDataView).read(name.substring('read'.length).toLowerCase(), ...args)
           }
           else if (name.startsWith('write')) {
             // @ts-expect-error ...args
-            return (...args: any[]) => (this as IDataView).write(name.substring('write'.length).toLowerCase(), ...args)
+            return (...args: any[]) => (this as FontDataView).write(name.substring('write'.length).toLowerCase(), ...args)
           }
         }
         return undefined
@@ -58,7 +58,7 @@ function defineMethod() {
   }
 }
 
-export class IDataView extends DataView {
+export class FontDataView extends DataView {
   @defineMethod() declare readInt8: (byteOffset?: number) => number
   @defineMethod() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
   @defineMethod() declare readInt32: (byteOffset?: number, littleEndian?: boolean) => number

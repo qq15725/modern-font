@@ -1,6 +1,6 @@
-import { defineColumn, Readable } from '../utils'
+import { defineColumn, FontDataObject } from '../core'
 
-export class CmapSubtableFormat0 extends Readable {
+export class CmapSubtableFormat0 extends FontDataObject {
   @defineColumn('uint16') declare format: 0
   @defineColumn('uint16') declare length: number
   @defineColumn('uint16') declare language: number

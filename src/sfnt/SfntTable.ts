@@ -1,7 +1,7 @@
 import type { Sfnt } from './Sfnt'
-import { Readable } from '../utils'
+import { FontDataObject } from '../core'
 
-export class SfntTable extends Readable {
+export class SfntTable extends FontDataObject {
   declare protected _sfnt: Sfnt
 
   setSfnt(sfnt: Sfnt): this {

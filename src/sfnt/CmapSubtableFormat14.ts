@@ -1,4 +1,4 @@
-import { defineColumn, Readable } from '../utils'
+import { defineColumn, FontDataObject } from '../core'
 
 export interface VarSelectorRecord {
   varSelector: number
@@ -18,7 +18,7 @@ export interface VSMappings {
   glyphID: number
 }
 
-export class CmapSubtableFormat14 extends Readable {
+export class CmapSubtableFormat14 extends FontDataObject {
   @defineColumn('uint16') declare format: 14
   @defineColumn('uint32') declare length: number
   @defineColumn('uint32') declare numVarSelectorRecords: number

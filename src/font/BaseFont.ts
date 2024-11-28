@@ -1,6 +1,6 @@
-import { Readable } from '../utils'
+import { FontDataObject } from '../core'
 
-export abstract class BaseFont extends Readable {
+export abstract class BaseFont extends FontDataObject {
   abstract format: string
   abstract mimeType: string
 

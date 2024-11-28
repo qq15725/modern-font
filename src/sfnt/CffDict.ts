@@ -1,5 +1,5 @@
 import type { CffIndex } from './CffIndex'
-import { Readable } from '../utils'
+import { FontDataObject } from '../core'
 import { getCffString } from './CffString'
 
 export type CffDictPropType = 'string' | 'number' | 'number[]'
@@ -28,7 +28,7 @@ export function defineCffDictProp(operator: number, type: CffDictPropType = 'num
   }
 }
 
-export class CffDict extends Readable {
+export class CffDict extends FontDataObject {
   protected _dict?: Record<number, number[]>
   get dict(): Record<number, number[]> {
     return this._dict ??= this._readDict()

@@ -1,6 +1,6 @@
-import { defineColumn, Readable } from '../../utils'
+import { defineColumn, FontDataObject } from '../../core'
 
-export class WoffTableDirectoryEntry extends Readable {
+export class WoffTableDirectoryEntry extends FontDataObject {
   @defineColumn({ type: 'char', size: 4 }) declare tag: string
   @defineColumn('uint32') declare offset: number
   @defineColumn('uint32') declare compLength: number

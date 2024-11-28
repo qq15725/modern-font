@@ -1,14 +1,14 @@
-import type { Column, DataType } from './IDataView'
-import { dataTypeToByteLength, IDataView } from './IDataView'
+import type { Column, DataType } from './FontDataView'
+import { dataTypeToByteLength, FontDataView } from './FontDataView'
 
 export type ColumnOptions = DataType | (Partial<Column> & { type: DataType })
 
-export interface IDataViewDefinition {
+export interface FontDataViewDefinition {
   columns: Column[]
   byteLength: number
 }
 
-const definitions = new WeakMap<any, IDataViewDefinition>()
+const definitions = new WeakMap<any, FontDataViewDefinition>()
 
 export function defineColumn(options: ColumnOptions) {
   const config = typeof options === 'object' ? options : { type: options }
@@ -35,16 +35,16 @@ export function defineColumn(options: ColumnOptions) {
       return byteLength + dataTypeToByteLength[column.type] * (column.size ?? 1)
     }, 0)
     Object.defineProperty(target.constructor.prototype, name, {
-      get() { return (this as Readable).view.readColumn(column) },
-      set(value) { (this as Readable).view.writeColumn(column, value) },
+      get() { return (this as FontDataObject).view.readColumn(column) },
+      set(value) { (this as FontDataObject).view.writeColumn(column, value) },
       configurable: true,
       enumerable: true,
     })
   }
 }
 
-export class Readable {
-  view: IDataView
+export class FontDataObject {
+  view: FontDataView
 
   constructor(
     source: BufferSource,
@@ -52,6 +52,6 @@ export class Readable {
     byteLength?: number,
     littleEndian?: boolean,
   ) {
-    this.view = new IDataView(source, byteOffset, byteLength, littleEndian)
+    this.view = new FontDataView(source, byteOffset, byteLength, littleEndian)
   }
 }
