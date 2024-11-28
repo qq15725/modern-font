@@ -1,4 +1,4 @@
-import { defineColumn } from '../utils'
+import { defineColumn } from '../core'
 import { CmapSubtableFormat0 } from './CmapSubtableFormat0'
 import { CmapSubtableFormat2 } from './CmapSubtableFormat2'
 import { CmapSubtableFormat4 } from './CmapSubtableFormat4'

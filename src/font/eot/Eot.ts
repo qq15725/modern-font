@@ -1,5 +1,6 @@
 import type { Ttf } from '../ttf'
-import { defineColumn, toUCS2Bytes } from '../../utils'
+import { defineColumn } from '../../core'
+import { toUCS2Bytes } from '../../utils'
 import { BaseFont } from '../BaseFont'
 
 // http://www.w3.org/Submission/EOT

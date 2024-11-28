@@ -1,6 +1,7 @@
 import type { SfntTableTag } from '../../sfnt'
+import { defineColumn } from '../../core'
 import { Sfnt } from '../../sfnt'
-import { defineColumn, toDataView } from '../../utils'
+import { toDataView } from '../../utils'
 import { BaseFont } from '../BaseFont'
 import { TableDirectory } from './TableDirectory'
 

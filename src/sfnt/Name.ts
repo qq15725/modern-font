@@ -1,4 +1,5 @@
-import { defineColumn, getUCS2String, getUTF8String } from '../utils'
+import { defineColumn } from '../core'
+import { getUCS2String, getUTF8String } from '../utils'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 

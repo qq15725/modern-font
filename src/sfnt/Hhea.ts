@@ -1,4 +1,4 @@
-import { defineColumn } from '../utils'
+import { defineColumn } from '../core'
 import { defineSfntTable } from './Sfnt'
 import { SfntTable } from './SfntTable'
 

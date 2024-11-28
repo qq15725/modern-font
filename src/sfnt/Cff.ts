@@ -1,4 +1,4 @@
-import { defineColumn } from '../utils'
+import { defineColumn } from '../core'
 import { cffExpertEncoding, cffStandardEncoding } from './CffEncoding'
 import { CffGlyphSet } from './CffGlyphSet'
 import { CffNumberIndex, CffStringIndex } from './CffIndex'
