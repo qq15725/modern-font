@@ -1,3 +1,12 @@
+## <small>0.3.3 (2024-12-09)</small>
+
+* fix: defineColumn ([dd066e2](https://github.com/qq15725/modern-font/commit/dd066e2))
+* fix: Iterator.prototype.reduce ([c42ca5a](https://github.com/qq15725/modern-font/commit/c42ca5a))
+* feat: export core dir ([94a1652](https://github.com/qq15725/modern-font/commit/94a1652))
+* feat: rename Readable to FontDataObject ([6cc00e6](https://github.com/qq15725/modern-font/commit/6cc00e6))
+
+
+
 ## [0.3.2](https://github.com/qq15725/modern-font/compare/v0.3.1...v0.3.2) (2024-11-18)
 
 
