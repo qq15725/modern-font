@@ -55,7 +55,7 @@ export class Ttf extends BaseFont {
   static from(sfnt: Sfnt): Ttf {
     const round4 = (value: number): number => (value + 3) & ~3
     const numTables = sfnt.tableViews.size
-    const sfntSize = sfnt.tableViews.values().reduce((total, view) => total + round4(view.byteLength), 0)
+    const sfntSize = Array.from(sfnt.tableViews.values()).reduce((total, view) => total + round4(view.byteLength), 0)
     const ttf = new (this as any)(
       new ArrayBuffer(
         12 // head
