@@ -1,3 +1,7 @@
+## [0.3.4](https://github.com/qq15725/modern-font/compare/v0.3.3...v0.3.4) (2024-12-09)
+
+
+
 ## <small>0.3.3 (2024-12-09)</small>
 
 * fix: defineColumn ([dd066e2](https://github.com/qq15725/modern-font/commit/dd066e2))
