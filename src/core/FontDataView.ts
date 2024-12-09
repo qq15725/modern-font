@@ -58,7 +58,7 @@ function defineMethod() {
   }
 }
 
-export class FontDataView extends DataView<ArrayBuffer> {
+export class FontDataView extends DataView {
   @defineMethod() declare readInt8: (byteOffset?: number) => number
   @defineMethod() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
   @defineMethod() declare readInt32: (byteOffset?: number, littleEndian?: boolean) => number
