@@ -8,7 +8,11 @@ import { Otf } from '../otf'
 import { Ttf } from '../ttf'
 import { WoffTableDirectoryEntry } from './WoffTableDirectoryEntry'
 
-// https://www.w3.org/submissions/WOFF
+/**
+ * WOFF
+ *
+ * @link https://www.w3.org/submissions/WOFF
+ */
 export class Woff extends BaseFont {
   format = 'WOFF'
   mimeType = 'font/woff'

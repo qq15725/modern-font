@@ -4,7 +4,7 @@ import { componentFlags } from '../sfnt'
 export interface MinimizedGlyph extends HMetric, VMetric {
   rawGlyphIndex: number
   glyphIndex: number
-  unicodes: Array<number>
+  unicodes: number[]
   view: DataView
 }
 
@@ -19,7 +19,7 @@ export function minifyGlyphs(sfnt: Sfnt, subset: string): MinimizedGlyph[] {
     new Set(
       subset.split('')
         .map(str => str.codePointAt(0))
-        .filter(unicode => unicode !== undefined && unicodeToGlyphIndexMap.has(unicode)) as Array<number>,
+        .filter(unicode => unicode !== undefined && unicodeToGlyphIndexMap.has(unicode)) as number[],
     ),
   ).sort((a, b) => a - b)
   const glyphIndexUnicodesMap = new Map<number, Set<number>>()

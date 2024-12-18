@@ -235,7 +235,7 @@ export class FontDataView extends DataView {
     return this
   }
 
-  writeBytes(value: BufferSource | Array<number>, byteOffset = this.cursor): this {
+  writeBytes(value: BufferSource | number[], byteOffset = this.cursor): this {
     let len
     if (Array.isArray(value)) {
       len = value.length

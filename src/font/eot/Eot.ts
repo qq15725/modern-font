@@ -3,7 +3,9 @@ import { defineColumn } from '../../core'
 import { toUCS2Bytes } from '../../utils'
 import { BaseFont } from '../BaseFont'
 
-// http://www.w3.org/Submission/EOT
+/**
+ * @link http://www.w3.org/Submission/EOT
+ */
 export class Eot extends BaseFont {
   format = 'EmbeddedOpenType'
   mimeType = 'application/vnd.ms-fontobject'
@@ -11,16 +13,16 @@ export class Eot extends BaseFont {
   @defineColumn('uint32') declare FontDataSize: number
   @defineColumn('uint32') declare Version: number
   @defineColumn('uint32') declare Flags: number
-  @defineColumn({ type: 'uint8', size: 10 }) declare FontPANOSE: Array<number>
+  @defineColumn({ type: 'uint8', size: 10 }) declare FontPANOSE: number[]
   @defineColumn('uint8') declare Charset: number
   @defineColumn('uint8') declare Italic: number
   @defineColumn('uint32') declare Weight: number
   @defineColumn('uint16') declare fsType: number
   @defineColumn('uint16') declare MagicNumber: number
-  @defineColumn({ type: 'uint8', size: 16 }) declare UnicodeRange: Array<number>
-  @defineColumn({ type: 'uint8', size: 8 }) declare CodePageRange: Array<number>
+  @defineColumn({ type: 'uint8', size: 16 }) declare UnicodeRange: number[]
+  @defineColumn({ type: 'uint8', size: 8 }) declare CodePageRange: number[]
   @defineColumn('uint32') declare CheckSumAdjustment: number
-  @defineColumn({ type: 'uint8', size: 16 }) declare Reserved: Array<number>
+  @defineColumn({ type: 'uint8', size: 16 }) declare Reserved: number[]
   @defineColumn('uint16') declare Padding1: number
   // FamilyNameSize
   // FamilyName

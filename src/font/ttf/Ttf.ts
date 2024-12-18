@@ -5,8 +5,11 @@ import { toDataView } from '../../utils'
 import { BaseFont } from '../BaseFont'
 import { TableDirectory } from './TableDirectory'
 
-// TrueType
-// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
+/**
+ * TrueType
+ *
+ * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
+ */
 export class Ttf extends BaseFont {
   format = 'TrueType'
   mimeType = 'font/ttf'
