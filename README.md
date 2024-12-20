@@ -69,14 +69,11 @@ fetch('font.woff')
 ```ts
 import { Ttf, Woff } from 'modern-font'
 
-fetch('font.woff')
-  .then(rep => rep.arrayBuffer())
-  .then((buffer) => {
-    const ttf = Ttf.from(new Woff(buffer).sfnt)
+// buffer is WOFF file arrayBuffer
+const ttf = Ttf.from(new Woff(buffer).sfnt)
 
-    // ttf file
-    window.open(URL.createObjectURL(ttf.toBlob()))
-  })
+// TTF file
+window.open(URL.createObjectURL(ttf.toBlob()))
 ```
 
 ## 🚀 TTF to WOFF
@@ -84,14 +81,11 @@ fetch('font.woff')
 ```ts
 import { Ttf, Woff } from 'modern-font'
 
-fetch('font.ttf')
-  .then(rep => rep.arrayBuffer())
-  .then((buffer) => {
-    const woff = Woff.from(new Ttf(buffer).sfnt)
+// buffer is TTF file arrayBuffer
+const woff = Woff.from(new Ttf(buffer).sfnt)
 
-    // woff file
-    window.open(URL.createObjectURL(woff.toBlob()))
-  })
+// WOFF file
+window.open(URL.createObjectURL(woff.toBlob()))
 ```
 
 ## 🚀 TTF to EOT
@@ -99,14 +93,11 @@ fetch('font.ttf')
 ```ts
 import { Eot, Ttf } from 'modern-font'
 
-fetch('font.ttf')
-  .then(rep => rep.arrayBuffer())
-  .then((buffer) => {
-    const eot = Eot.from(new Ttf(buffer))
+// buffer is TTF file arrayBuffer
+const eot = Eot.from(new Ttf(buffer))
 
-    // eot file
-    window.open(URL.createObjectURL(eot.toBlob()))
-  })
+// EOT file
+window.open(URL.createObjectURL(eot.toBlob()))
 ```
 
 ## 🚀 Minify
