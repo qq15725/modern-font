@@ -131,7 +131,9 @@ export class FontDataView {
         return this.readLongDateTime(byteOffset, littleEndian)
     }
     const key = `get${type.replace(/^\S/, s => s.toUpperCase())}`
-    const method = (this as any)._view[key] ?? (this as any)[key]
+    const self = this as any
+    const method = self._view[key]?.bind(self._view)
+      ?? self[key]?.bind(self[key])
     const result = method(byteOffset, littleEndian)
     this.cursor += (dataTypeToByteLength as any)[type]
     return result
@@ -190,7 +192,9 @@ export class FontDataView {
         return this.writeLongDateTime(value, byteOffset)
     }
     const key = `set${type.replace(/^\S/, s => s.toUpperCase())}`
-    const method = (this as any)._view[key] ?? (this as any)[key]
+    const self = this as any
+    const method = self._view[key]?.bind(self._view)
+      ?? self[key]?.bind(self[key])
     const result = method(byteOffset, value, littleEndian)
     this.cursor += (dataTypeToByteLength as any)[type.toLowerCase()]
     return result
