@@ -188,7 +188,7 @@ export class Sfnt {
     if (definition) {
       this.tables.set(definition.prop, table)
     }
-    this.tableViews.set(tag, table.view)
+    this.tableViews.set(tag, table.view._view)
     return this
   }
 

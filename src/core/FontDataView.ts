@@ -58,7 +58,14 @@ function defineMethod() {
   }
 }
 
-export class FontDataView extends DataView {
+export class FontDataView {
+  _view: DataView<ArrayBuffer>
+  cursor = 0
+
+  get byteOffset(): number { return this._view.byteOffset }
+  get byteLength(): number { return this._view.byteLength }
+  get buffer(): ArrayBuffer { return this._view.buffer }
+
   @defineMethod() declare readInt8: (byteOffset?: number) => number
   @defineMethod() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
   @defineMethod() declare readInt32: (byteOffset?: number, littleEndian?: boolean) => number
@@ -76,15 +83,13 @@ export class FontDataView extends DataView {
   @defineMethod() declare writeFloat32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
   @defineMethod() declare writeFloat64: (value: number, byteOffset?: number, littleEndian?: boolean) => this
 
-  cursor = 0
-
   constructor(
     source: BufferSource,
     byteOffset?: number,
     byteLength?: number,
     public littleEndian?: boolean,
   ) {
-    super(toBuffer(source), byteOffset as any, byteLength as any)
+    this._view = new DataView(toBuffer(source), byteOffset as any, byteLength as any)
   }
 
   readColumn(column: Column): any {
@@ -125,8 +130,9 @@ export class FontDataView extends DataView {
       case 'longDateTime':
         return this.readLongDateTime(byteOffset, littleEndian)
     }
-    const method = `get${type.replace(/^\S/, s => s.toUpperCase())}`
-    const result = (this as any)[method](byteOffset, littleEndian)
+    const key = `get${type.replace(/^\S/, s => s.toUpperCase())}`
+    const method = (this as any)._view[key] ?? (this as any)[key]
+    const result = method(byteOffset, littleEndian)
     this.cursor += (dataTypeToByteLength as any)[type]
     return result
   }
@@ -143,7 +149,7 @@ export class FontDataView extends DataView {
     }
     const array = []
     for (let i = 0; i < length; ++i) {
-      array.push(this.getUint8(byteOffset + i))
+      array.push(this._view.getUint8(byteOffset + i))
     }
     this.cursor = byteOffset + length
     return array
@@ -183,8 +189,9 @@ export class FontDataView extends DataView {
       case 'longDateTime':
         return this.writeLongDateTime(value, byteOffset)
     }
-    const method = `set${type.replace(/^\S/, s => s.toUpperCase())}`
-    const result = (this as any)[method](byteOffset, value, littleEndian)
+    const key = `set${type.replace(/^\S/, s => s.toUpperCase())}`
+    const method = (this as any)._view[key] ?? (this as any)[key]
+    const result = method(byteOffset, value, littleEndian)
     this.cursor += (dataTypeToByteLength as any)[type.toLowerCase()]
     return result
   }
@@ -240,14 +247,14 @@ export class FontDataView extends DataView {
     if (Array.isArray(value)) {
       len = value.length
       for (let i = 0; i < len; ++i) {
-        this.setUint8(byteOffset + i, value[i])
+        this._view.setUint8(byteOffset + i, value[i])
       }
     }
     else {
       const view = toDataView(value)
       len = view.byteLength
       for (let i = 0; i < len; ++i) {
-        this.setUint8(byteOffset + i, view.getUint8(i))
+        this._view.setUint8(byteOffset + i, view.getUint8(i))
       }
     }
     this.cursor = byteOffset + len
