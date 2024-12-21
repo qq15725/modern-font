@@ -1,9 +1,10 @@
 export function toBuffer(source: BufferSource): ArrayBuffer {
-  if (ArrayBuffer.isView(source)) {
+  if ('buffer' in source) {
+    const buffer = source.buffer as ArrayBuffer
     if (source.byteOffset > 0 || source.byteLength < source.buffer.byteLength) {
-      return source.buffer.slice(source.byteOffset, source.byteOffset + source.byteLength)
+      return buffer.slice(source.byteOffset, source.byteOffset + source.byteLength)
     }
-    return source.buffer
+    return buffer
   }
   else {
     return source
@@ -11,7 +12,7 @@ export function toBuffer(source: BufferSource): ArrayBuffer {
 }
 
 export function toDataView(source: BufferSource): DataView {
-  if (ArrayBuffer.isView(source)) {
+  if ('buffer' in source) {
     return new DataView(source.buffer, source.byteOffset, source.byteLength)
   }
   else {
