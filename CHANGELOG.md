@@ -1,3 +1,14 @@
+## [0.3.5](https://github.com/qq15725/modern-font/compare/v0.3.4...v0.3.5) (2024-12-31)
+
+
+### Bug Fixes
+
+* call DataView ([a6589e6](https://github.com/qq15725/modern-font/commit/a6589e6111f919a9ae73c0fb50f0a724f3b29382))
+* fonts.get ([99451e9](https://github.com/qq15725/modern-font/commit/99451e9f8731ba4606e5725ef58bde8d6702b445))
+* toDataView ([86bf75c](https://github.com/qq15725/modern-font/commit/86bf75c674d43d5dbfd839b65b28076e533e9550))
+
+
+
 ## [0.3.4](https://github.com/qq15725/modern-font/compare/v0.3.3...v0.3.4) (2024-12-09)
 
 
