@@ -69,13 +69,33 @@ export class Fonts {
     return this
   }
 
+  protected _parseUrls(familyOrUrl: string): string[] {
+    const items = Array.from(
+      new Set([
+        ...familyOrUrl.split(','),
+        familyOrUrl,
+      ]),
+    )
+
+    return Array.from(
+      new Set(
+        items
+          .map((v) => {
+            return this.familyToUrl.get(v.trim())
+              ?? this.familyToUrl.get(v)
+              ?? v
+          }),
+      ),
+    )
+  }
+
   get(familyOrUrl?: string): FontLoadedResult | undefined {
     let font
     if (familyOrUrl) {
-      font = this.loaded.get(
-        this.familyToUrl.get(familyOrUrl)
-        ?? familyOrUrl,
-      )
+      const urls = this._parseUrls(familyOrUrl)
+      font = urls.reduce((res, url) => {
+        return res || this.loaded.get(url)
+      }, undefined as FontLoadedResult | undefined)
     }
     return font ?? this.fallbackFont
   }
@@ -87,9 +107,10 @@ export class Fonts {
   }
 
   delete(familyOrUrl: string): this {
-    const url = this.familyToUrl.get(familyOrUrl) ?? familyOrUrl
-    this.familyToUrl.delete(url)
-    this.loaded.delete(url)
+    this._parseUrls(familyOrUrl).forEach((url) => {
+      this.familyToUrl.delete(url)
+      this.loaded.delete(url)
+    })
     return this
   }
 

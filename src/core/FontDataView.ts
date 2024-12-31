@@ -58,13 +58,8 @@ function defineMethod() {
   }
 }
 
-export class FontDataView {
-  _view: DataView<ArrayBuffer>
+export class FontDataView extends DataView<ArrayBuffer> {
   cursor = 0
-
-  get byteOffset(): number { return this._view.byteOffset }
-  get byteLength(): number { return this._view.byteLength }
-  get buffer(): ArrayBuffer { return this._view.buffer }
 
   @defineMethod() declare readInt8: (byteOffset?: number) => number
   @defineMethod() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
@@ -89,7 +84,7 @@ export class FontDataView {
     byteLength?: number,
     public littleEndian?: boolean,
   ) {
-    this._view = new DataView(toBuffer(source), byteOffset as any, byteLength as any)
+    super(toBuffer(source), byteOffset as any, byteLength as any)
   }
 
   readColumn(column: Column): any {
@@ -132,9 +127,8 @@ export class FontDataView {
     }
     const key = `get${type.replace(/^\S/, s => s.toUpperCase())}`
     const self = this as any
-    const method = self._view[key]?.bind(self._view)
-      ?? self[key]?.bind(self[key])
-    const result = method(byteOffset, littleEndian)
+    const method = self[key]?.bind(self)
+    const result = method?.(byteOffset, littleEndian)
     this.cursor += (dataTypeToByteLength as any)[type]
     return result
   }
@@ -151,7 +145,7 @@ export class FontDataView {
     }
     const array = []
     for (let i = 0; i < length; ++i) {
-      array.push(this._view.getUint8(byteOffset + i))
+      array.push(this.getUint8(byteOffset + i))
     }
     this.cursor = byteOffset + length
     return array
@@ -193,9 +187,8 @@ export class FontDataView {
     }
     const key = `set${type.replace(/^\S/, s => s.toUpperCase())}`
     const self = this as any
-    const method = self._view[key]?.bind(self._view)
-      ?? self[key]?.bind(self[key])
-    const result = method(byteOffset, value, littleEndian)
+    const method = self[key]?.bind(self)
+    const result = method?.(byteOffset, value, littleEndian)
     this.cursor += (dataTypeToByteLength as any)[type.toLowerCase()]
     return result
   }
@@ -251,14 +244,14 @@ export class FontDataView {
     if (Array.isArray(value)) {
       len = value.length
       for (let i = 0; i < len; ++i) {
-        this._view.setUint8(byteOffset + i, value[i])
+        this.setUint8(byteOffset + i, value[i])
       }
     }
     else {
       const view = toDataView(value)
       len = view.byteLength
       for (let i = 0; i < len; ++i) {
-        this._view.setUint8(byteOffset + i, view.getUint8(i))
+        this.setUint8(byteOffset + i, view.getUint8(i))
       }
     }
     this.cursor = byteOffset + len
