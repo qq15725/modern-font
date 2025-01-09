@@ -39,28 +39,19 @@ npm i modern-font
 ## 🦄 Usage
 
 ```ts
-import { EOT, minifyFont, TTF, WOFF } from 'modern-font'
+import { parseSFNTFont } from 'modern-font'
 
 fetch('font.woff')
   .then(rep => rep.arrayBuffer())
   .then((buffer) => {
-    let woff, ttf, eot
-    if (WOFF.is(buffer)) {
-      woff = new WOFF(buffer)
-      ttf = TTF.from(woff.sfnt)
-      eot = EOT.from(ttf)
-    }
-    else if (TTF.is(buffer)) {
-      ttf = new TTF(buffer)
-      woff = WOFF.from(ttf.sfnt)
-      eot = EOT.from(ttf)
-    }
-    const minifyWoff = minifyFont(woff, 'minify')
-    document.fonts.add(woff.toFontFace('woff'))
-    document.fonts.add(ttf.toFontFace('ttf'))
-    document.fonts.add(eot.toFontFace('eot'))
-    document.fonts.add(minifyWoff.toFontFace('minifyWoff'))
-    console.log(woff, ttf, eot, minifyWoff)
+    const font = parseSFNTFont(buffer)
+    const sfnt = font.sfnt
+
+    // SFNT
+    console.log(sfnt)
+
+    // Char to SVG Path commands
+    console.log(sfnt.getPathCommands('A', 0, 0))
   })
 ```
 
