@@ -14,12 +14,12 @@ import type { Maxp } from './Maxp'
 import type { Name } from './Name'
 import type { Os2 } from './Os2'
 import type { Post } from './Post'
-import type { SfntTable } from './SfntTable'
+import type { SFNTTable } from './SFNTTable'
 import type { Vhea } from './Vhea'
 import type { Vmtx } from './Vmtx'
 
-export type SfntTableTag =
-  // required
+export type SFNTTableTag =
+// required
   | 'cmap' | 'head' | 'hhea' | 'hmtx' | 'maxp' | 'name' | 'OS/2' | 'post'
   // only TrueType required
   | 'glyf' | 'loca'
@@ -36,10 +36,10 @@ export type SfntTableTag =
   | 'avar' | 'fvar' | 'gvar' | 'HVAR' | 'MVAR' | 'STAT' | 'VVAR'
   | string
 
-export function defineSfntTable(tag: SfntTableTag, prop: string = tag) {
+export function defineSFNTTable(tag: SFNTTableTag, prop: string = tag) {
   return (constructor: any) => {
-    Sfnt.tableDefinitions.set(tag, { tag, prop, class: constructor })
-    Object.defineProperty(Sfnt.prototype, prop, {
+    SFNT.tableDefinitions.set(tag, { tag, prop, class: constructor })
+    Object.defineProperty(SFNT.prototype, prop, {
       get() { return this.get(tag) },
       set(table) { return this.set(tag, table) },
       configurable: true,
@@ -48,7 +48,7 @@ export function defineSfntTable(tag: SfntTableTag, prop: string = tag) {
   }
 }
 
-export class Sfnt {
+export class SFNT {
   declare cmap: Cmap
   declare head: Head
   declare hhea: Hhea
@@ -70,11 +70,11 @@ export class Sfnt {
   static tableDefinitions = new Map<string, {
     tag: string
     prop: string
-    class: new (...args: any[]) => SfntTable
+    class: new (...args: any[]) => SFNTTable
   }>()
 
-  tables = new Map<string, SfntTable>()
-  tableViews = new Map<SfntTableTag, DataView>()
+  tables = new Map<string, SFNTTable>()
+  tableViews = new Map<SFNTTableTag, DataView>()
 
   get hasGlyf(): boolean { return this.tableViews.has('glyf') }
   get names(): Record<string, any> { return this.name.names }
@@ -157,7 +157,7 @@ export class Sfnt {
   }
 
   constructor(
-    tableViews: Record<SfntTableTag, DataView> | Map<SfntTableTag, DataView>,
+    tableViews: Record<SFNTTableTag, DataView> | Map<SFNTTableTag, DataView>,
   ) {
     const _tableViews = tableViews instanceof Map ? tableViews : new Map(Object.entries(tableViews))
     _tableViews.forEach((view, key) => {
@@ -170,12 +170,12 @@ export class Sfnt {
     })
   }
 
-  clone(): Sfnt {
-    return new Sfnt(this.tableViews)
+  clone(): SFNT {
+    return new SFNT(this.tableViews)
   }
 
-  delete(tag: SfntTableTag): this {
-    const definition = Sfnt.tableDefinitions.get(tag)
+  delete(tag: SFNTTableTag): this {
+    const definition = SFNT.tableDefinitions.get(tag)
     if (!definition)
       return this
     this.tableViews.delete(tag)
@@ -183,8 +183,8 @@ export class Sfnt {
     return this
   }
 
-  set(tag: SfntTableTag, table: SfntTable): this {
-    const definition = Sfnt.tableDefinitions.get(tag)
+  set(tag: SFNTTableTag, table: SFNTTable): this {
+    const definition = SFNT.tableDefinitions.get(tag)
     if (definition) {
       this.tables.set(definition.prop, table)
     }
@@ -192,8 +192,8 @@ export class Sfnt {
     return this
   }
 
-  get(tag: SfntTableTag): SfntTable | undefined {
-    const definition = Sfnt.tableDefinitions.get(tag)
+  get(tag: SFNTTableTag): SFNTTable | undefined {
+    const definition = SFNT.tableDefinitions.get(tag)
     if (!definition)
       return undefined
     let table = this.tables.get(definition.prop)
@@ -204,7 +204,7 @@ export class Sfnt {
         if (!view) {
           return undefined
         }
-        table = new Class(view.buffer, view.byteOffset, view.byteLength).setSfnt(this) as any
+        table = new Class(view.buffer, view.byteOffset, view.byteLength).setSFNT(this) as any
         this.tables.set(definition.prop, table!)
       }
     }

@@ -1,4 +1,4 @@
-import type { Sfnt } from './Sfnt'
+import type { SFNT } from './SFNT'
 
 export interface GlyphOptions {
   index?: number
@@ -69,7 +69,7 @@ export class Glyph {
     }
   }
 
-  getPathCommands(x = 0, y = 0, fontSize = 72, options: GlyphPathCommandOptions = {}, sfnt?: Sfnt): GlyphPathCommand[] {
+  getPathCommands(x = 0, y = 0, fontSize = 72, options: GlyphPathCommandOptions = {}, sfnt?: SFNT): GlyphPathCommand[] {
     const scale = 1 / (sfnt?.unitsPerEm ?? 1000) * fontSize
     const { xScale = scale, yScale = scale } = options
     const pathCommands = this.pathCommands

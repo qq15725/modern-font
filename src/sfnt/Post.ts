@@ -1,12 +1,12 @@
 import { defineColumn } from '../core'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6post.html
  */
-@defineSfntTable('post')
-export class Post extends SfntTable {
+@defineSFNTTable('post')
+export class Post extends SFNTTable {
   @defineColumn('fixed') declare format: number
   @defineColumn('fixed') declare italicAngle: number
   @defineColumn('int16') declare underlinePosition: number

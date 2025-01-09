@@ -1,12 +1,12 @@
 import { defineColumn } from '../core'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
  */
-@defineSfntTable('OS/2', 'os2')
-export class Os2 extends SfntTable {
+@defineSFNTTable('OS/2', 'os2')
+export class Os2 extends SFNTTable {
   @defineColumn('uint16') declare version: number
   @defineColumn('int16') declare xAvgCharWidth: number
   @defineColumn('uint16') declare usWeightClass: number

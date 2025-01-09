@@ -1,12 +1,12 @@
 import { defineColumn } from '../core'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 /**
  * @link https://learn.microsoft.com/zh-cn/typography/opentype/spec/gsub
  */
-@defineSfntTable('GSUB', 'gsub')
-export class Gsub extends SfntTable {
+@defineSFNTTable('GSUB', 'gsub')
+export class Gsub extends SFNTTable {
   @defineColumn('uint16') declare majorVersion: number
   @defineColumn('uint16') declare minorVersion: number
   @defineColumn('uint16') declare scriptListOffset: number

@@ -5,8 +5,8 @@ import { CmapSubtableFormat4 } from './CmapSubtableFormat4'
 import { CmapSubtableFormat6 } from './CmapSubtableFormat6'
 import { CmapSubtableFormat12 } from './CmapSubtableFormat12'
 import { CmapSubtableFormat14 } from './CmapSubtableFormat14'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 export interface CmapSubtable {
   platformID: number
@@ -17,8 +17,8 @@ export interface CmapSubtable {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6cmap.html
  */
-@defineSfntTable('cmap')
-export class Cmap extends SfntTable {
+@defineSFNTTable('cmap')
+export class Cmap extends SFNTTable {
   @defineColumn('uint16') declare version: number
   @defineColumn('uint16') declare numberSubtables: number
 

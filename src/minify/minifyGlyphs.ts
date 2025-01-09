@@ -1,4 +1,4 @@
-import type { HMetric, Sfnt, VMetric } from '../sfnt'
+import type { HMetric, SFNT, VMetric } from '../sfnt'
 import { componentFlags } from '../sfnt'
 
 export interface MinimizedGlyph extends HMetric, VMetric {
@@ -9,7 +9,7 @@ export interface MinimizedGlyph extends HMetric, VMetric {
 }
 
 // TODO OpenType
-export function minifyGlyphs(sfnt: Sfnt, subset: string): MinimizedGlyph[] {
+export function minifyGlyphs(sfnt: SFNT, subset: string): MinimizedGlyph[] {
   const { cmap, loca, hmtx, vmtx, glyf } = sfnt
   const unicodeToGlyphIndexMap = cmap.unicodeToGlyphIndexMap
   const locations = loca.locations

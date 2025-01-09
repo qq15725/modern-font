@@ -1,19 +1,12 @@
 import type { Font } from './Font'
-import { Otf } from './otf'
-import { Ttf } from './ttf'
-import { Woff } from './woff'
+import { parseSFNTFont } from './parseSFNTFont'
 
-export function parseFont(source: BufferSource): Font
-export function parseFont(source: BufferSource, orFail: false): Font | undefined
-export function parseFont(source: BufferSource, orFail = true): Font | undefined {
-  if (Ttf.is(source)) {
-    return new Ttf(source)
-  }
-  else if (Otf.is(source)) {
-    return new Otf(source)
-  }
-  else if (Woff.is(source)) {
-    return new Woff(source)
+export function parseFont<T extends Font = Font>(source: BufferSource): T
+export function parseFont<T extends Font = Font>(source: BufferSource, orFail: false): T | undefined
+export function parseFont<T extends Font = Font>(source: BufferSource, orFail = true): T | undefined {
+  const font = parseSFNTFont(source, false)
+  if (font) {
+    return font as T
   }
   if (orFail) {
     throw new Error('Failed to parseFont')

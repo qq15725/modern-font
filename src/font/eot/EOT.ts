@@ -1,4 +1,4 @@
-import type { Ttf } from '../ttf'
+import type { TTF } from '../ttf'
 import { defineColumn } from '../../core'
 import { toUCS2Bytes } from '../../utils'
 import { BaseFont } from '../BaseFont'
@@ -6,7 +6,7 @@ import { BaseFont } from '../BaseFont'
 /**
  * @link http://www.w3.org/Submission/EOT
  */
-export class Eot extends BaseFont {
+export class EOT extends BaseFont {
   format = 'EmbeddedOpenType'
   mimeType = 'application/vnd.ms-fontobject'
   @defineColumn('uint32') declare EOTSize: number
@@ -37,7 +37,7 @@ export class Eot extends BaseFont {
   // FullName
   // FontData
 
-  static from(ttf: Ttf): Eot {
+  static from(ttf: TTF): EOT {
     const sfnt = ttf.sfnt
     const name = sfnt.name
     const names = name.names
@@ -58,7 +58,7 @@ export class Eot extends BaseFont {
       + 2
       + ttf.view.byteLength
 
-    const eot = new Eot(new ArrayBuffer(size), 0, size, true)
+    const eot = new EOT(new ArrayBuffer(size), 0, size, true)
     eot.EOTSize = eot.view.byteLength
     eot.FontDataSize = ttf.view.byteLength
     eot.Version = 0x00020001 // 0x00010000 / 0x00020001 / 0x00020002

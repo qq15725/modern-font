@@ -1,6 +1,6 @@
-import type { SfntTableTag } from '../../sfnt'
+import type { SFNTTableTag } from '../../sfnt'
 import { defineColumn } from '../../core'
-import { Sfnt } from '../../sfnt'
+import { SFNT } from '../../sfnt'
 import { toDataView } from '../../utils'
 import { BaseFont } from '../BaseFont'
 import { TableDirectory } from './TableDirectory'
@@ -10,7 +10,7 @@ import { TableDirectory } from './TableDirectory'
  *
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
  */
-export class Ttf extends BaseFont {
+export class TTF extends BaseFont {
   format = 'TrueType'
   mimeType = 'font/ttf'
   @defineColumn('uint32') declare scalerType: number
@@ -19,10 +19,10 @@ export class Ttf extends BaseFont {
   @defineColumn('uint16') declare entrySelector: number
   @defineColumn('uint16') declare rangeShift: number
 
-  protected _sfnt?: Sfnt
-  get sfnt(): Sfnt {
+  protected _sfnt?: SFNT
+  get sfnt(): SFNT {
     if (!this._sfnt) {
-      this._sfnt = this.createSfnt()
+      this._sfnt = this.createSFNT()
     }
     return this._sfnt
   }
@@ -55,7 +55,7 @@ export class Ttf extends BaseFont {
     return sum & 0xFFFFFFFF
   }
 
-  static from(sfnt: Sfnt): Ttf {
+  static from(sfnt: SFNT): TTF {
     const round4 = (value: number): number => (value + 3) & ~3
     const numTables = sfnt.tableViews.size
     const sfntSize = Array.from(sfnt.tableViews.values()).reduce((total, view) => total + round4(view.byteLength), 0)
@@ -65,7 +65,7 @@ export class Ttf extends BaseFont {
         + numTables * 16 // dirs
         + sfntSize, // tables
       ),
-    ) as Ttf
+    ) as TTF
     ttf.scalerType = 0x00010000
     ttf.numTables = numTables
     const log2 = Math.log(2)
@@ -84,7 +84,7 @@ export class Ttf extends BaseFont {
       ttf.view.writeBytes(view, dataOffset)
       dataOffset += round4(dir.length)
     })
-    const head = ttf.createSfnt().head
+    const head = ttf.createSFNT().head
     head.checkSumAdjustment = 0
     head.checkSumAdjustment = 0xB1B0AFBA - this.checksum(ttf.view)
     return ttf as any
@@ -99,12 +99,12 @@ export class Ttf extends BaseFont {
     })
   }
 
-  createSfnt(): Sfnt {
-    return new Sfnt(
+  createSFNT(): SFNT {
+    return new SFNT(
       this.getDirectories().reduce((views, dir) => {
         views[dir.tag] = new DataView(this.view.buffer, this.view.byteOffset + dir.offset, dir.length)
         return views
-      }, {} as Record<SfntTableTag, DataView>),
+      }, {} as Record<SFNTTableTag, DataView>),
     )
   }
 }

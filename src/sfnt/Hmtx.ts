@@ -1,5 +1,5 @@
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 export interface HMetric {
   advanceWidth: number
@@ -9,8 +9,8 @@ export interface HMetric {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hmtx.html
  */
-@defineSfntTable('hmtx')
-export class Hmtx extends SfntTable {
+@defineSFNTTable('hmtx')
+export class Hmtx extends SFNTTable {
   static from(metrics: HMetric[]): Hmtx {
     const byteLength = metrics.length * 4
     const hmtx = new Hmtx(new ArrayBuffer(byteLength))

@@ -1,8 +1,8 @@
-import type { Sfnt } from '../sfnt'
+import type { SFNT } from '../sfnt'
 import type { Font } from './Font'
 import { parseFont } from './parseFont'
-import { Ttf } from './ttf'
-import { Woff } from './woff'
+import { TTF } from './ttf'
+import { WOFF } from './woff'
 
 export interface FontRequest {
   url: string
@@ -19,7 +19,7 @@ export interface FontLoadedResult extends FontSource {
   buffer: ArrayBuffer
   familySet: Set<string>
   getFont: () => Font | undefined
-  getSfnt: () => Sfnt | undefined
+  getSFNT: () => SFNT | undefined
 }
 
 export interface FontLoadOptions extends RequestInit {
@@ -215,9 +215,9 @@ export class Fonts {
         }
         return font
       }
-      function getSfnt(): Sfnt | undefined {
+      function getSFNT(): SFNT | undefined {
         const font = getFont()
-        if (font instanceof Ttf || font instanceof Woff) {
+        if (font instanceof TTF || font instanceof WOFF) {
           return font.sfnt
         }
         return undefined
@@ -227,7 +227,7 @@ export class Fonts {
         buffer,
         familySet: new Set(getFamilies()),
         getFont,
-        getSfnt,
+        getSFNT,
       }
     }
   }

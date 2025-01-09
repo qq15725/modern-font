@@ -1,17 +1,17 @@
-import { Eot, fonts, minifyFont, Ttf, Woff } from '../src'
+import { EOT, fonts, minifyFont, TTF, WOFF } from '../src'
 
 async function init(): Promise<void> {
   await fonts.load({ family: 'source', src: 'opentype.woff' })
 
   const font = fonts.get('source')?.getFont()
-  let woff: Woff | undefined
-  let ttf: Ttf | undefined
-  let eot: Eot | undefined
-  if (font instanceof Woff) {
+  let woff: WOFF | undefined
+  let ttf: TTF | undefined
+  let eot: EOT | undefined
+  if (font instanceof WOFF) {
     woff = font
     const sfnt = woff.sfnt
-    ttf = Ttf.from(sfnt)
-    eot = Eot.from(ttf)
+    ttf = TTF.from(sfnt)
+    eot = EOT.from(ttf)
     const ctx = document.querySelector('canvas')!.getContext('2d')!
     ctx.strokeStyle = '#000'
     ctx.lineWidth = 2
@@ -45,10 +45,10 @@ async function init(): Promise<void> {
     })
     console.warn(sfnt)
   }
-  else if (font instanceof Ttf) {
+  else if (font instanceof TTF) {
     ttf = font
-    woff = Woff.from(ttf.sfnt)
-    eot = Eot.from(ttf)
+    woff = WOFF.from(ttf.sfnt)
+    eot = EOT.from(ttf)
   }
   let minifyWoff
   if (woff) {

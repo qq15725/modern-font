@@ -1,12 +1,12 @@
 import { defineColumn } from '../core'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hhea.html
  */
-@defineSfntTable('hhea')
-export class Hhea extends SfntTable {
+@defineSFNTTable('hhea')
+export class Hhea extends SFNTTable {
   @defineColumn('fixed') declare version: number
   @defineColumn('int16') declare ascent: number
   @defineColumn('int16') declare descent: number

@@ -39,21 +39,21 @@ npm i modern-font
 ## 🦄 Usage
 
 ```ts
-import { Eot, minifyFont, Ttf, Woff } from 'modern-font'
+import { EOT, minifyFont, TTF, WOFF } from 'modern-font'
 
 fetch('font.woff')
   .then(rep => rep.arrayBuffer())
   .then((buffer) => {
     let woff, ttf, eot
-    if (Woff.is(buffer)) {
-      woff = new Woff(buffer)
-      ttf = Ttf.from(woff.sfnt)
-      eot = Eot.from(ttf)
+    if (WOFF.is(buffer)) {
+      woff = new WOFF(buffer)
+      ttf = TTF.from(woff.sfnt)
+      eot = EOT.from(ttf)
     }
-    else if (Ttf.is(buffer)) {
-      ttf = new Ttf(buffer)
-      woff = Woff.from(ttf.sfnt)
-      eot = Eot.from(ttf)
+    else if (TTF.is(buffer)) {
+      ttf = new TTF(buffer)
+      woff = WOFF.from(ttf.sfnt)
+      eot = EOT.from(ttf)
     }
     const minifyWoff = minifyFont(woff, 'minify')
     document.fonts.add(woff.toFontFace('woff'))
@@ -67,10 +67,10 @@ fetch('font.woff')
 ## 🚀 WOFF to TTF
 
 ```ts
-import { Ttf, Woff } from 'modern-font'
+import { TTF, WOFF } from 'modern-font'
 
 // buffer is WOFF file arrayBuffer
-const ttf = Ttf.from(new Woff(buffer).sfnt)
+const ttf = TTF.from(new WOFF(buffer).sfnt)
 
 // TTF file
 window.open(URL.createObjectURL(ttf.toBlob()))
@@ -79,10 +79,10 @@ window.open(URL.createObjectURL(ttf.toBlob()))
 ## 🚀 TTF to WOFF
 
 ```ts
-import { Ttf, Woff } from 'modern-font'
+import { TTF, WOFF } from 'modern-font'
 
 // buffer is TTF file arrayBuffer
-const woff = Woff.from(new Ttf(buffer).sfnt)
+const woff = WOFF.from(new TTF(buffer).sfnt)
 
 // WOFF file
 window.open(URL.createObjectURL(woff.toBlob()))
@@ -91,10 +91,10 @@ window.open(URL.createObjectURL(woff.toBlob()))
 ## 🚀 TTF to EOT
 
 ```ts
-import { Eot, Ttf } from 'modern-font'
+import { EOT, TTF } from 'modern-font'
 
 // buffer is TTF file arrayBuffer
-const eot = Eot.from(new Ttf(buffer))
+const eot = EOT.from(new TTF(buffer))
 
 // EOT file
 window.open(URL.createObjectURL(eot.toBlob()))

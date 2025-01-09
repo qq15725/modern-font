@@ -1,5 +1,5 @@
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 export interface VMetric {
   advanceHeight: number
@@ -9,8 +9,8 @@ export interface VMetric {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6vmtx.html
  */
-@defineSfntTable('vmtx')
-export class Vmtx extends SfntTable {
+@defineSFNTTable('vmtx')
+export class Vmtx extends SFNTTable {
   static from(metrics: VMetric[]): Vmtx {
     const byteLength = metrics.length * 4
     const vmtx = new Vmtx(new ArrayBuffer(byteLength))

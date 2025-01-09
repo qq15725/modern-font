@@ -1,8 +1,8 @@
-import type { Sfnt } from '../sfnt'
+import type { SFNT } from '../sfnt'
 import { Cmap, Glyf, Hmtx, Loca, Post, Vmtx } from '../sfnt'
 import { minifyGlyphs } from './minifyGlyphs'
 
-export function minifySfnt(sfnt: Sfnt, subset: string): Sfnt {
+export function minifySFNT(sfnt: SFNT, subset: string): SFNT {
   const glyphs = minifyGlyphs(sfnt, subset)
   const numGlyphs = glyphs.length
 

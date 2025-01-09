@@ -1,5 +1,5 @@
 import type { Glyph } from './Glyph'
-import type { Sfnt } from './Sfnt'
+import type { SFNT } from './SFNT'
 
 export type GlyphOrLoader = Glyph | undefined
 
@@ -7,7 +7,7 @@ export abstract class GlyphSet {
   protected _items: GlyphOrLoader[] = []
 
   constructor(
-    protected _sfnt: Sfnt,
+    protected _sfnt: SFNT,
   ) {
     //
   }

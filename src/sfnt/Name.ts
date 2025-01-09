@@ -1,7 +1,7 @@
 import { defineColumn } from '../core'
 import { getUCS2String, getUTF8String } from '../utils'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 const nameId = {
   0: 'copyright',
@@ -57,8 +57,8 @@ const win = {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
  */
-@defineSfntTable('name')
-export class Name extends SfntTable {
+@defineSFNTTable('name')
+export class Name extends SFNTTable {
   @defineColumn('uint16') declare format: number
   @defineColumn('uint16') declare count: number
   @defineColumn('uint16') declare stringOffset: number

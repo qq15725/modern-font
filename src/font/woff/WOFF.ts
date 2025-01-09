@@ -1,19 +1,19 @@
-import type { SfntTableTag } from '../../sfnt'
+import type { SFNTTableTag } from '../../sfnt'
 import { unzlibSync, zlibSync } from 'fflate'
 import { defineColumn } from '../../core'
-import { Sfnt } from '../../sfnt'
+import { SFNT } from '../../sfnt'
 import { toDataView } from '../../utils'
 import { BaseFont } from '../BaseFont'
-import { Otf } from '../otf'
-import { Ttf } from '../ttf'
-import { WoffTableDirectoryEntry } from './WoffTableDirectoryEntry'
+import { OTF } from '../otf'
+import { TTF } from '../ttf'
+import { WOFFTableDirectoryEntry } from './WOFFTableDirectoryEntry'
 
 /**
  * WOFF
  *
  * @link https://www.w3.org/submissions/WOFF
  */
-export class Woff extends BaseFont {
+export class WOFF extends BaseFont {
   format = 'WOFF'
   mimeType = 'font/woff'
   @defineColumn('uint32') declare signature: number
@@ -21,7 +21,7 @@ export class Woff extends BaseFont {
   @defineColumn('uint32') declare length: number
   @defineColumn('uint16') declare numTables: number
   @defineColumn('uint16') declare reserved: number
-  @defineColumn('uint32') declare totalSfntSize: number
+  @defineColumn('uint32') declare totalSFNTSize: number
   @defineColumn('uint16') declare majorVersion: number
   @defineColumn('uint16') declare minorVersion: number
   @defineColumn('uint32') declare metaOffset: number
@@ -31,10 +31,10 @@ export class Woff extends BaseFont {
   @defineColumn('uint32') declare privLength: number
 
   get subfontFormat(): 'TrueType' | 'OpenType' | 'Open' {
-    if (Ttf.is(this.flavor)) {
+    if (TTF.is(this.flavor)) {
       return 'TrueType'
     }
-    else if (Otf.is(this.flavor)) {
+    else if (OTF.is(this.flavor)) {
       return 'OpenType'
     }
     else {
@@ -42,10 +42,10 @@ export class Woff extends BaseFont {
     }
   }
 
-  protected _sfnt?: Sfnt
-  get sfnt(): Sfnt {
+  protected _sfnt?: SFNT
+  get sfnt(): SFNT {
     if (!this._sfnt) {
-      this._sfnt = this.createSfnt()
+      this._sfnt = this.createSFNT()
     }
     return this._sfnt
   }
@@ -84,7 +84,7 @@ export class Woff extends BaseFont {
     return sum % 0x100000000
   }
 
-  static from(sfnt: Sfnt, rest = new ArrayBuffer(0)): Woff {
+  static from(sfnt: SFNT, rest = new ArrayBuffer(0)): WOFF {
     const round4 = (value: number): number => (value + 3) & ~3
     const tables: { tag: string, view: DataView, rawView: DataView }[] = []
     sfnt.tableViews.forEach((view, tag) => {
@@ -103,7 +103,7 @@ export class Woff extends BaseFont {
     })
     const numTables = tables.length
     const sfntSize = tables.reduce((total, table) => total + round4(table.view.byteLength), 0)
-    const woff = new Woff(
+    const woff = new WOFF(
       new ArrayBuffer(
         44 // WOFFHeader
         + 20 * numTables // TableDirectory
@@ -115,7 +115,7 @@ export class Woff extends BaseFont {
     woff.flavor = 0x00010000
     woff.length = woff.view.byteLength
     woff.numTables = numTables
-    woff.totalSfntSize = 12 + 16 * numTables + tables.reduce((total, table) => total + round4(table.rawView.byteLength), 0)
+    woff.totalSFNTSize = 12 + 16 * numTables + tables.reduce((total, table) => total + round4(table.rawView.byteLength), 0)
     let dataOffset = 44 + numTables * 20
     let i = 0
     const directories = woff.getDirectories()
@@ -124,7 +124,7 @@ export class Woff extends BaseFont {
       dir.tag = table.tag
       dir.offset = dataOffset
       dir.compLength = table.view.byteLength
-      dir.origChecksum = Woff.checkSum(table.rawView)
+      dir.origChecksum = WOFF.checkSum(table.rawView)
       dir.origLength = table.rawView.byteLength
       woff.view.writeBytes(table.view, dataOffset)
       dataOffset += round4(dir.compLength)
@@ -133,17 +133,17 @@ export class Woff extends BaseFont {
     return woff
   }
 
-  getDirectories(): WoffTableDirectoryEntry[] {
+  getDirectories(): WOFFTableDirectoryEntry[] {
     let offset = 44
     return Array.from({ length: this.numTables }, () => {
-      const dir = new WoffTableDirectoryEntry(this.view.buffer, offset)
+      const dir = new WOFFTableDirectoryEntry(this.view.buffer, offset)
       offset += dir.view.byteLength
       return dir
     })
   }
 
-  createSfnt(): Sfnt {
-    return new Sfnt(
+  createSFNT(): SFNT {
+    return new SFNT(
       this.getDirectories().reduce((views, dir) => {
         const tag = dir.tag
         const start = this.view.byteOffset + dir.offset
@@ -154,7 +154,7 @@ export class Woff extends BaseFont {
           ? new DataView(this.view.buffer, start, compLength)
           : new DataView(unzlibSync(new Uint8Array(this.view.buffer.slice(start, end))).buffer)
         return views
-      }, {} as Record<SfntTableTag, DataView>),
+      }, {} as Record<SFNTTableTag, DataView>),
     )
   }
 }

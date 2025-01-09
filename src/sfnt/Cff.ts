@@ -5,14 +5,14 @@ import { CffNumberIndex, CffStringIndex } from './CffIndex'
 import { CffPrivateDict } from './CffPrivateDict'
 import { cffExpertSubsetStrings, cffIExpertStrings, cffISOAdobeStrings, getCffString } from './CffString'
 import { CffTopDict } from './CffTopDict'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 /**
  * @link https://www.microsoft.com/typography/OTSPEC/cff.htm
  */
-@defineSfntTable('CFF ', 'cff')
-export class Cff extends SfntTable {
+@defineSFNTTable('CFF ', 'cff')
+export class Cff extends SFNTTable {
   @defineColumn('uint8') declare majorVersion: number
   @defineColumn('uint8') declare minorVersion: number
   @defineColumn('uint8') declare headerSize: number

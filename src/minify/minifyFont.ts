@@ -1,43 +1,43 @@
-import type { Sfnt } from '../sfnt'
-import { Ttf, Woff } from '../font'
+import type { SFNT } from '../sfnt'
+import { TTF, WOFF } from '../font'
 import { toDataView } from '../utils'
-import { minifySfnt } from './minifySfnt'
+import { minifySFNT } from './minifySFNT'
 
-export function minifyFont<T extends (Ttf | Woff | ArrayBuffer)>(source: T, subset: string): T {
-  let sfnt: Sfnt
+export function minifyFont<T extends (TTF | WOFF | ArrayBuffer)>(source: T, subset: string): T {
+  let sfnt: SFNT
   let outputFormat: 'ttf' | 'woff' | 'ttf-buffer' | 'woff-buffer'
-  if (source instanceof Ttf) {
+  if (source instanceof TTF) {
     sfnt = source.sfnt.clone()
     outputFormat = 'ttf'
   }
-  else if (source instanceof Woff) {
+  else if (source instanceof WOFF) {
     sfnt = source.sfnt.clone()
     outputFormat = 'woff'
   }
   else {
     const view = toDataView(source)
-    if (Ttf.is(view)) {
-      sfnt = new Ttf(view).sfnt
+    if (TTF.is(view)) {
+      sfnt = new TTF(view).sfnt
       outputFormat = 'ttf-buffer'
     }
-    else if (Woff.is(view)) {
-      sfnt = new Woff(view).sfnt
+    else if (WOFF.is(view)) {
+      sfnt = new WOFF(view).sfnt
       outputFormat = 'woff-buffer'
     }
     else {
       throw new Error('Failed to minify, only support ttf、woff source')
     }
   }
-  const newSfnt = minifySfnt(sfnt, subset)
+  const newSFNT = minifySFNT(sfnt, subset)
   switch (outputFormat) {
     case 'ttf':
-      return Ttf.from(newSfnt) as T
+      return TTF.from(newSFNT) as T
     case 'woff':
-      return Woff.from(newSfnt) as T
+      return WOFF.from(newSFNT) as T
     case 'ttf-buffer':
-      return Ttf.from(newSfnt).view.buffer as T
+      return TTF.from(newSFNT).view.buffer as T
     case 'woff-buffer':
     default:
-      return Woff.from(newSfnt).view.buffer as T
+      return WOFF.from(newSFNT).view.buffer as T
   }
 }

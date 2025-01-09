@@ -1,6 +1,6 @@
 import { GlyfGlyphSet } from './GlyfGlyphSet'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 export const componentFlags = {
   ARG_1_AND_2_ARE_WORDS: 0x01,
@@ -21,8 +21,8 @@ export const componentFlags = {
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6glyf.html
  */
-@defineSfntTable('glyf')
-export class Glyf extends SfntTable {
+@defineSFNTTable('glyf')
+export class Glyf extends SFNTTable {
   static from(glyphs: DataView[]): Glyf {
     const byteLength = glyphs.reduce((byteLength, view) => byteLength + view.byteLength, 0)
     const glyf = new Glyf(new ArrayBuffer(byteLength))

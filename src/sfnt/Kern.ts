@@ -1,10 +1,10 @@
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6kern.html
  */
-@defineSfntTable('kern', 'kern')
-export class Kern extends SfntTable {
+@defineSFNTTable('kern', 'kern')
+export class Kern extends SFNTTable {
   // TODO
 }

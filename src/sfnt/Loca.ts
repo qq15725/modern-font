@@ -1,11 +1,11 @@
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6loca.html
  */
-@defineSfntTable('loca')
-export class Loca extends SfntTable {
+@defineSFNTTable('loca')
+export class Loca extends SFNTTable {
   static from(locations: number[], indexToLocFormat = 1): Loca {
     const byteLength = locations.length * (indexToLocFormat ? 4 : 2)
     const loca = new Loca(new ArrayBuffer(byteLength))

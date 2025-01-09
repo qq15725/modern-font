@@ -1,12 +1,12 @@
 import { defineColumn } from '../core'
-import { defineSfntTable } from './Sfnt'
-import { SfntTable } from './SfntTable'
+import { defineSFNTTable } from './SFNT'
+import { SFNTTable } from './SFNTTable'
 
 /**
  * @link https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6head.html
  */
-@defineSfntTable('head')
-export class Head extends SfntTable {
+@defineSFNTTable('head')
+export class Head extends SFNTTable {
   @defineColumn('fixed') declare version: number
   @defineColumn('fixed') declare fontRevision: number
   @defineColumn('uint32') declare checkSumAdjustment: number

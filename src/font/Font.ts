@@ -1,6 +1,4 @@
-import type { Eot } from './eot'
-import type { Otf } from './otf'
-import type { Ttf } from './ttf'
-import type { Woff } from './woff'
+import type { EOT } from './eot'
+import type { SFNTFont } from './SFNTFont'
 
-export type Font = Ttf | Woff | Otf | Eot
+export type Font = SFNTFont | EOT
