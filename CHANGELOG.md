@@ -1,3 +1,21 @@
+# [0.4.0](https://github.com/qq15725/modern-font/compare/v0.3.5...v0.4.0) (2025-01-09)
+
+
+### Bug Fixes
+
+* typo filename ([e085a6e](https://github.com/qq15725/modern-font/commit/e085a6ed9dbd1a1bdc4d26ecadf262edf90b6da8))
+* typo filename ([4b4d97a](https://github.com/qq15725/modern-font/commit/4b4d97a399ae1bc67da2a3e2d00116fddf5b0942))
+* typo filename ([1b2dc0c](https://github.com/qq15725/modern-font/commit/1b2dc0cdee72b43ff7da05f07c3fedcc54aab39d))
+
+
+### Features
+
+* add `SFNT.numGlyphs` and `SFNT.unicodes` ([ba1584a](https://github.com/qq15725/modern-font/commit/ba1584a0891e70d5516c39b82627c2627018df70))
+* rename `Woff` to `WOFF`、`Ttf` to `TTF`、`Otf` to `OTF`、`Eot` to `EOT` ([8287680](https://github.com/qq15725/modern-font/commit/8287680824b47b908112b164863060441befe092))
+* SFNT.unicodes ([7a63e55](https://github.com/qq15725/modern-font/commit/7a63e550808870322f4e98310e776db6cc39c2e5))
+
+
+
 ## [0.3.5](https://github.com/qq15725/modern-font/compare/v0.3.4...v0.3.5) (2024-12-31)
 
 
