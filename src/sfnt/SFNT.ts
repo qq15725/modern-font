@@ -84,7 +84,7 @@ export class SFNT {
   get createdTimestamp(): Date { return this.head.created }
   get modifiedTimestamp(): Date { return this.head.modified }
   get numGlyphs(): number { return this.maxp.numGlyphs }
-  get unicodes(): (number[] | undefined)[] { return Array.from({ length: this.numGlyphs }).map((_, i) => this.cmap.glyphIndexToUnicodesMap.get(i)) }
+  get unicodes(): Map<number, number[]> { return this.cmap.glyphIndexToUnicodesMap }
   get glyphs(): GlyphSet { return this.hasGlyf ? this.glyf.glyphs : this.cff.glyphs }
 
   charToGlyphIndex(char: string): number {
