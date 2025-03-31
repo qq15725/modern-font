@@ -1,3 +1,12 @@
+## [0.4.1](https://github.com/qq15725/modern-font/compare/v0.4.0...v0.4.1) (2025-03-31)
+
+
+### Features
+
+* add `fonts.loadFallbackFont ` method ([b2d9a05](https://github.com/qq15725/modern-font/commit/b2d9a05d07692c0a1c5572b99ec09aef5d41afec))
+
+
+
 # [0.4.0](https://github.com/qq15725/modern-font/compare/v0.3.5...v0.4.0) (2025-01-09)
 
 
