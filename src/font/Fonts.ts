@@ -10,12 +10,16 @@ export interface FontRequest {
   cancel: () => void
 }
 
-export interface FontSource {
+export type FontURL = string
+
+export interface FontObject {
   src: string
   family?: string | string[]
 }
 
-export interface FontLoadedResult extends FontSource {
+export type FontSource = FontURL | FontObject
+
+export interface FontLoadedResult extends FontObject {
   buffer: ArrayBuffer
   familySet: Set<string>
   getFont: () => Font | undefined
@@ -38,6 +42,14 @@ export class Fonts {
   loading = new Map<string, FontRequest>()
   loaded = new Map<string, FontLoadedResult>()
   familyToUrl = new Map<string, string>()
+
+  setFallbackFont(loadedFont: FontLoadedResult): void {
+    this.fallbackFont = loadedFont
+  }
+
+  async loadFallbackFont(source: FontSource, options: FontLoadOptions = {}): Promise<void> {
+    this.fallbackFont = await this.load(source, options)
+  }
 
   protected _createRequest(url: string, requestInit: RequestInit): FontRequest {
     const controller = new AbortController()
@@ -121,10 +133,7 @@ export class Fonts {
     return this
   }
 
-  async load(
-    source: FontSource,
-    options: FontLoadOptions = {},
-  ): Promise<FontLoadedResult> {
+  async load(source: FontSource, options: FontLoadOptions = {}): Promise<FontLoadedResult> {
     const {
       cancelOther,
       injectFontFace = true,
@@ -132,7 +141,14 @@ export class Fonts {
       ...requestInit
     } = options
 
-    const { src } = source
+    let src: string
+    let family: string | string[] | undefined
+    if (typeof source === 'string') {
+      src = source
+    }
+    else {
+      ({ src, family } = source)
+    }
 
     if (this.loaded.has(src)) {
       if (cancelOther) {
@@ -166,7 +182,7 @@ export class Fonts {
         else {
           const loadedFont = createLoadedFont(buffer)
           if (!options.noAdd) {
-            this.loaded.set(source.src, loadedFont)
+            this.loaded.set(src, loadedFont)
           }
           loadedFont.familySet.forEach((family) => {
             this.familyToUrl.set(family, src)
@@ -195,8 +211,8 @@ export class Fonts {
       })
 
     function getFamilies(): string[] {
-      return source.family
-        ? Array.isArray(source.family) ? source.family : [source.family]
+      return family
+        ? Array.isArray(family) ? family : [family]
         : []
     }
 
@@ -223,7 +239,8 @@ export class Fonts {
         return undefined
       }
       return {
-        ...source,
+        src,
+        family,
         buffer,
         familySet: new Set(getFamilies()),
         getFont,
