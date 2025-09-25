@@ -1,3 +1,12 @@
+## [0.4.2](https://github.com/qq15725/modern-font/compare/v0.4.1...v0.4.2) (2025-09-25)
+
+
+### Features
+
+* add family dataset to style tag for debug ([e63e712](https://github.com/qq15725/modern-font/commit/e63e7120eba5f9e4f5849bf182f9518d31aec781))
+
+
+
 ## [0.4.1](https://github.com/qq15725/modern-font/compare/v0.4.0...v0.4.1) (2025-03-31)
 
 
