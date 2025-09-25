@@ -18,23 +18,23 @@ import type { SFNTTable } from './SFNTTable'
 import type { Vhea } from './Vhea'
 import type { Vmtx } from './Vmtx'
 
-export type SFNTTableTag =
+export type SFNTTableTag
 // required
-  | 'cmap' | 'head' | 'hhea' | 'hmtx' | 'maxp' | 'name' | 'OS/2' | 'post'
+  = | 'cmap' | 'head' | 'hhea' | 'hmtx' | 'maxp' | 'name' | 'OS/2' | 'post'
   // only TrueType required
-  | 'glyf' | 'loca'
+    | 'glyf' | 'loca'
   // only OpenType required
-  | 'CFF '
+    | 'CFF '
   // optional
-  | 'BASE' | 'CBDT' | 'CBLC' | 'CFF2' | 'COLR' | 'CPAL' | 'DSIG' | 'EBDT'
-  | 'EBLC' | 'EBSC' | 'GDEF' | 'GPOS' | 'GSUB' | 'gasp' | 'JSTF' | 'kern'
-  | 'LTSH' | 'MATH' | 'MERG' | 'Sbix' | 'SVG ' | 'VDMX' | 'vhea' | 'vmtx'
-  | 'VORG' | 'hdmx'
+    | 'BASE' | 'CBDT' | 'CBLC' | 'CFF2' | 'COLR' | 'CPAL' | 'DSIG' | 'EBDT'
+    | 'EBLC' | 'EBSC' | 'GDEF' | 'GPOS' | 'GSUB' | 'gasp' | 'JSTF' | 'kern'
+    | 'LTSH' | 'MATH' | 'MERG' | 'Sbix' | 'SVG ' | 'VDMX' | 'vhea' | 'vmtx'
+    | 'VORG' | 'hdmx'
   // only TrueType optional
-  | 'fpgm' | 'prep' | 'cvt '
+    | 'fpgm' | 'prep' | 'cvt '
   // only OpenType optional
-  | 'avar' | 'fvar' | 'gvar' | 'HVAR' | 'MVAR' | 'STAT' | 'VVAR'
-  | string
+    | 'avar' | 'fvar' | 'gvar' | 'HVAR' | 'MVAR' | 'STAT' | 'VVAR'
+    | string
 
 export function defineSFNTTable(tag: SFNTTableTag, prop: string = tag) {
   return (constructor: any) => {

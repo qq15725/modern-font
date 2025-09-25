@@ -1,17 +1,17 @@
 import { toBuffer, toDataView } from '../utils'
 
-export type DataType =
-  | 'int8'
-  | 'int16'
-  | 'int32'
-  | 'uint8'
-  | 'uint16'
-  | 'uint32'
-  | 'float32'
-  | 'float64'
-  | 'fixed'
-  | 'longDateTime'
-  | 'char'
+export type DataType
+  = | 'int8'
+    | 'int16'
+    | 'int32'
+    | 'uint8'
+    | 'uint16'
+    | 'uint32'
+    | 'float32'
+    | 'float64'
+    | 'fixed'
+    | 'longDateTime'
+    | 'char'
 
 export const dataTypeToByteLength: Record<DataType, number> = {
   int8: 1,

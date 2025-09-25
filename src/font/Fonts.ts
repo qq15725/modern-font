@@ -71,6 +71,7 @@ export class Fonts {
 
   injectStyleTag(family: string, url: string): this {
     const style = document.createElement('style')
+    style.dataset.family = family
     style.appendChild(
       document.createTextNode(`@font-face {
   font-family: "${family}";

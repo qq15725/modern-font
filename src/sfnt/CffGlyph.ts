@@ -1,7 +1,8 @@
 import type { Cff } from './Cff'
 import type { CffGlyphSet } from './CffGlyphSet'
+import type { GlyphPathCommand } from './Glyph'
 import { cffStandardEncoding } from './CffEncoding'
-import { Glyph, type GlyphPathCommand } from './Glyph'
+import { Glyph } from './Glyph'
 
 export class CffGlyph extends Glyph {
   parse(cff: Cff, code: number[], glyphs: CffGlyphSet): void {
