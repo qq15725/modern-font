@@ -1,3 +1,12 @@
+## [0.4.4](https://github.com/qq15725/modern-font/compare/v0.4.3...v0.4.4) (2025-09-26)
+
+
+### Bug Fixes
+
+* Fonts.load ([4c05b8b](https://github.com/qq15725/modern-font/commit/4c05b8b549b0e6703d8472f47d5bf7648c66d348))
+
+
+
 ## [0.4.3](https://github.com/qq15725/modern-font/compare/v0.4.2...v0.4.3) (2025-09-26)
 
 
