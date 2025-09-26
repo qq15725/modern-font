@@ -65,23 +65,26 @@ export class Fonts {
   }
 
   injectFontFace(family: string, data: ArrayBuffer): this {
-    document.fonts.add(new FontFace(family, data))
+    if (!document.fonts.check(`14px ${family}`)) {
+      document.fonts.add(new FontFace(family, data))
+    }
     return this
   }
 
   injectStyleTag(family: string, url: string): this {
-    const style = document.createElement('style')
-    style.type = 'text/css'
-    style.dataset.family = family
-    family.split(',').forEach((v) => {
+    const escapedFamily = CSS.escape(family)
+    if (!document.querySelector(`style[data-family="${escapedFamily}"]`)) {
+      const style = document.createElement('style')
+      style.type = 'text/css'
+      style.dataset.family = family
       style.appendChild(
         document.createTextNode(`@font-face {
-  font-family: "${v.trim()}";
+  font-family: "${family}";
   src: url(${url});
 }`),
       )
-    })
-    document.head.appendChild(style)
+      document.head.appendChild(style)
+    }
     return this
   }
 
@@ -137,6 +140,13 @@ export class Fonts {
     return this
   }
 
+  protected _parseFamilies(family: string | string[] | undefined): string[] {
+    if (!family)
+      return []
+    return (Array.isArray(family) ? family : [family])
+      .flatMap(item => item.split(',').map(v => v.trim()))
+  }
+
   async load(source: FontSource, options: FontLoadOptions = {}): Promise<FontLoadedResult> {
     const {
       cancelOther,
@@ -153,6 +163,8 @@ export class Fonts {
     else {
       ({ src, family } = source)
     }
+
+    const families = this._parseFamilies(family)
 
     if (this.loaded.has(src)) {
       if (cancelOther) {
@@ -180,27 +192,32 @@ export class Fonts {
     return request
       .when
       .then((buffer) => {
+        let loadedFont
         if (this.loaded.has(src)) {
-          return onLoaded(this.loaded.get(src)!)
+          loadedFont = onLoaded(this.loaded.get(src)!)
         }
         else {
-          const loadedFont = createLoadedFont(buffer)
+          loadedFont = createLoadedFont(buffer)
           if (!options.noAdd) {
             this.loaded.set(src, loadedFont)
           }
-          loadedFont.familySet.forEach((family) => {
-            this.familyToUrl.set(family, src)
-            if (typeof document !== 'undefined') {
-              if (injectFontFace) {
-                this.injectFontFace(family, buffer)
-              }
-              if (injectStyleTag) {
-                this.injectStyleTag(family, src)
-              }
-            }
-          })
-          return loadedFont
         }
+        return Promise.all(Array.from(loadedFont.familySet).map((family) => {
+          this.familyToUrl.set(family, src)
+          if (typeof document !== 'undefined') {
+            if (injectFontFace) {
+              this.injectFontFace(family, buffer)
+            }
+            if (injectStyleTag) {
+              this.injectStyleTag(family, src)
+            }
+            if (injectFontFace || injectStyleTag) {
+              return document.fonts.load(`14px ${family}`)
+            }
+          }
+          return Promise.resolve()
+        }))
+          .then(() => loadedFont)
       })
       .catch((err) => {
         if (err instanceof DOMException) {
@@ -214,14 +231,8 @@ export class Fonts {
         this.loading.delete(src)
       })
 
-    function getFamilies(): string[] {
-      return family
-        ? Array.isArray(family) ? family : [family]
-        : []
-    }
-
     function onLoaded(font: FontLoadedResult): FontLoadedResult {
-      getFamilies().forEach((family) => {
+      families.forEach((family) => {
         font.familySet.add(family)
       })
       return font
@@ -246,7 +257,7 @@ export class Fonts {
         src,
         family,
         buffer,
-        familySet: new Set(getFamilies()),
+        familySet: new Set(families),
         getFont,
         getSFNT,
       }
