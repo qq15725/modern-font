@@ -71,13 +71,16 @@ export class Fonts {
 
   injectStyleTag(family: string, url: string): this {
     const style = document.createElement('style')
+    style.type = 'text/css'
     style.dataset.family = family
-    style.appendChild(
-      document.createTextNode(`@font-face {
-  font-family: "${family}";
+    family.split(',').forEach((v) => {
+      style.appendChild(
+        document.createTextNode(`@font-face {
+  font-family: "${v.trim()}";
   src: url(${url});
 }`),
-    )
+      )
+    })
     document.head.appendChild(style)
     return this
   }
