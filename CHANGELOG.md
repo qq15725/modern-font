@@ -1,3 +1,12 @@
+## [0.4.3](https://github.com/qq15725/modern-font/compare/v0.4.2...v0.4.3) (2025-09-26)
+
+
+### Bug Fixes
+
+* injectStyleTag ([2d51338](https://github.com/qq15725/modern-font/commit/2d5133899098803c9b4794965e035dc5dbd99f34))
+
+
+
 ## [0.4.2](https://github.com/qq15725/modern-font/compare/v0.4.1...v0.4.2) (2025-09-25)
 
 
