@@ -1,3 +1,9 @@
+# [0.5.0](https://github.com/qq15725/modern-font/compare/v0.4.4...v0.5.0) (2026-03-11)
+
+
+### Bug Fixes
+
+* os2 ([c8f0966](https://github.com/qq15725/modern-font/commit/c8f0966b836b5e03616bc715e45c7e75e9b297fe))
 ## [0.4.4](https://github.com/qq15725/modern-font/compare/v0.4.3...v0.4.4) (2025-09-26)
 
 
