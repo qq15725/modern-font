@@ -86,15 +86,17 @@ export class WOFF extends BaseFont {
 
   static from(sfnt: SFNT, rest = new ArrayBuffer(0)): WOFF {
     const round4 = (value: number): number => (value + 3) & ~3
-    const tables: { tag: string, view: DataView, rawView: DataView }[] = []
+    const tables: { tag: string, view: DataView<ArrayBuffer>, rawView: DataView<ArrayBuffer> }[] = []
     sfnt.tableViews.forEach((view, tag) => {
-      const newView = toDataView(zlibSync(
-        new Uint8Array(
-          view.buffer,
-          view.byteOffset,
-          view.byteLength,
-        ),
-      ))
+      const newView = toDataView(
+        zlibSync(
+          new Uint8Array(
+            view.buffer,
+            view.byteOffset,
+            view.byteLength,
+          ),
+        ) as Uint8Array<ArrayBuffer>,
+      )
       tables.push({
         tag,
         view: newView.byteLength < view.byteLength ? newView : view,
@@ -152,9 +154,11 @@ export class WOFF extends BaseFont {
         const end = start + compLength
         views[tag] = compLength >= origLength
           ? new DataView(this.view.buffer, start, compLength)
-          : new DataView(unzlibSync(new Uint8Array(this.view.buffer.slice(start, end))).buffer)
+          : new DataView(
+              unzlibSync(new Uint8Array(this.view.buffer.slice(start, end))).buffer as ArrayBuffer,
+            )
         return views
-      }, {} as Record<SFNTTableTag, DataView>),
+      }, {} as Record<SFNTTableTag, DataView<ArrayBuffer>>),
     )
   }
 }

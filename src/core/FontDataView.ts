@@ -36,47 +36,25 @@ export interface Column {
   default?: any
 }
 
-function defineMethod() {
-  return function (target: any, name: PropertyKey) {
-    Object.defineProperty(target.constructor.prototype, name, {
-      get() {
-        if (typeof name === 'string') {
-          if (name.startsWith('read')) {
-            // @ts-expect-error ...args
-            return (...args: any[]) => (this as FontDataView).read(name.substring('read'.length).toLowerCase(), ...args)
-          }
-          else if (name.startsWith('write')) {
-            // @ts-expect-error ...args
-            return (...args: any[]) => (this as FontDataView).write(name.substring('write'.length).toLowerCase(), ...args)
-          }
-        }
-        return undefined
-      },
-      configurable: true,
-      enumerable: true,
-    })
-  }
-}
-
 export class FontDataView extends DataView<ArrayBuffer> {
   cursor = 0
 
-  @defineMethod() declare readInt8: (byteOffset?: number) => number
-  @defineMethod() declare readInt16: (byteOffset?: number, littleEndian?: boolean) => number
-  @defineMethod() declare readInt32: (byteOffset?: number, littleEndian?: boolean) => number
-  @defineMethod() declare readUint8: (byteOffset?: number) => number
-  @defineMethod() declare readUint16: (byteOffset?: number, littleEndian?: boolean) => number
-  @defineMethod() declare readUint32: (byteOffset?: number, littleEndian?: boolean) => number
-  @defineMethod() declare readFloat32: (byteOffset?: number, littleEndian?: boolean) => number
-  @defineMethod() declare readFloat64: (byteOffset?: number, littleEndian?: boolean) => number
-  @defineMethod() declare writeInt8: (value: number, byteOffset?: number) => this
-  @defineMethod() declare writeInt16: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @defineMethod() declare writeInt32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @defineMethod() declare writeUint8: (value: number, byteOffset?: number) => this
-  @defineMethod() declare writeUint16: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @defineMethod() declare writeUint32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @defineMethod() declare writeFloat32: (value: number, byteOffset?: number, littleEndian?: boolean) => this
-  @defineMethod() declare writeFloat64: (value: number, byteOffset?: number, littleEndian?: boolean) => this
+  readInt8 = (byteOffset?: number): number => this.read('int8', byteOffset)
+  readInt16 = (byteOffset?: number, littleEndian?: boolean): number => this.read('int16', byteOffset, littleEndian)
+  readInt32 = (byteOffset?: number, littleEndian?: boolean): number => this.read('int32', byteOffset, littleEndian)
+  readUint8 = (byteOffset?: number): number => this.read('uint8', byteOffset)
+  readUint16 = (byteOffset?: number, littleEndian?: boolean): number => this.read('uint16', byteOffset, littleEndian)
+  readUint32 = (byteOffset?: number, littleEndian?: boolean): number => this.read('uint32', byteOffset, littleEndian)
+  readFloat32 = (byteOffset?: number, littleEndian?: boolean): number => this.read('float32', byteOffset, littleEndian)
+  readFloat64 = (byteOffset?: number, littleEndian?: boolean): number => this.read('float64', byteOffset, littleEndian)
+  writeInt8 = (value: number, byteOffset?: number): this => this.write('int8', value, byteOffset)
+  writeInt16 = (value: number, byteOffset?: number, littleEndian?: boolean): this => this.write('int16', value, byteOffset, littleEndian)
+  writeInt32 = (value: number, byteOffset?: number, littleEndian?: boolean): this => this.write('int32', value, byteOffset, littleEndian)
+  writeUint8 = (value: number, byteOffset?: number): this => this.write('uint8', value, byteOffset)
+  writeUint16 = (value: number, byteOffset?: number, littleEndian?: boolean): this => this.write('uint16', value, byteOffset, littleEndian)
+  writeUint32 = (value: number, byteOffset?: number, littleEndian?: boolean): this => this.write('uint32', value, byteOffset, littleEndian)
+  writeFloat32 = (value: number, byteOffset?: number, littleEndian?: boolean): this => this.write('float32', value, byteOffset, littleEndian)
+  writeFloat64 = (value: number, byteOffset?: number, littleEndian?: boolean): this => this.write('float64', value, byteOffset, littleEndian)
 
   constructor(
     source: BufferSource,
@@ -117,19 +95,43 @@ export class FontDataView extends DataView<ArrayBuffer> {
   }
 
   read(type: DataType, byteOffset = this.cursor, littleEndian = this.littleEndian): any {
+    let result
     switch (type) {
-      case 'char':
-        return this.readChar(byteOffset)
+      case 'int8':
+        result = this.getInt8(byteOffset)
+        break
+      case 'int16':
+        result = this.getInt16(byteOffset, littleEndian)
+        break
+      case 'int32':
+        result = this.getInt32(byteOffset, littleEndian)
+        break
+      case 'uint8':
+        result = this.getUint8(byteOffset)
+        break
+      case 'uint16':
+        result = this.getUint16(byteOffset, littleEndian)
+        break
+      case 'uint32':
+        result = this.getUint32(byteOffset, littleEndian)
+        break
+      case 'float32':
+        result = this.getFloat32(byteOffset, littleEndian)
+        break
+      case 'float64':
+        result = this.getFloat64(byteOffset, littleEndian)
+        break
       case 'fixed':
-        return this.readFixed(byteOffset, littleEndian)
+        result = this.readFixed(byteOffset, littleEndian)
+        break
       case 'longDateTime':
-        return this.readLongDateTime(byteOffset, littleEndian)
+        result = this.readLongDateTime(byteOffset, littleEndian)
+        break
+      case 'char':
+        result = this.readChar(byteOffset)
+        break
     }
-    const key = `get${type.replace(/^\S/, s => s.toUpperCase())}`
-    const self = this as any
-    const method = self[key]?.bind(self)
-    const result = method?.(byteOffset, littleEndian)
-    this.cursor += (dataTypeToByteLength as any)[type]
+    this.cursor += dataTypeToByteLength[type]
     return result
   }
 
@@ -176,21 +178,44 @@ export class FontDataView extends DataView<ArrayBuffer> {
     return this.readString(byteOffset, 1)
   }
 
-  write(type: DataType, value: any, byteOffset = this.cursor, littleEndian = this.littleEndian): any {
+  write(type: DataType, value: any, byteOffset = this.cursor, littleEndian = this.littleEndian): this {
     switch (type) {
+      case 'int8':
+        this.setInt8(byteOffset, value)
+        break
+      case 'int16':
+        this.setInt16(byteOffset, value, littleEndian)
+        break
+      case 'int32':
+        this.setInt32(byteOffset, value, littleEndian)
+        break
+      case 'uint8':
+        this.setUint8(byteOffset, value)
+        break
+      case 'uint16':
+        this.setUint16(byteOffset, value, littleEndian)
+        break
+      case 'uint32':
+        this.setUint32(byteOffset, value, littleEndian)
+        break
+      case 'float32':
+        this.setFloat32(byteOffset, value, littleEndian)
+        break
+      case 'float64':
+        this.setFloat64(byteOffset, value, littleEndian)
+        break
       case 'char':
-        return this.writeChar(value, byteOffset)
+        this.writeChar(value, byteOffset)
+        break
       case 'fixed':
-        return this.writeFixed(value, byteOffset)
+        this.writeFixed(value, byteOffset)
+        break
       case 'longDateTime':
-        return this.writeLongDateTime(value, byteOffset)
+        this.writeLongDateTime(value, byteOffset)
+        break
     }
-    const key = `set${type.replace(/^\S/, s => s.toUpperCase())}`
-    const self = this as any
-    const method = self[key]?.bind(self)
-    const result = method?.(byteOffset, value, littleEndian)
-    this.cursor += (dataTypeToByteLength as any)[type.toLowerCase()]
-    return result
+    this.cursor += dataTypeToByteLength[type]
+    return this
   }
 
   writeString(str = '', byteOffset = this.cursor): this {

@@ -64,11 +64,12 @@ export class Fonts {
     }
   }
 
-  injectFontFace(family: string, data: ArrayBuffer): this {
-    if (!document.fonts.check(`14px ${family}`)) {
-      document.fonts.add(new FontFace(family, data))
+  async injectFontFace(family: string, data: ArrayBuffer): Promise<void> {
+    if (!document.fonts.check(`14px "${family}"`)) {
+      const face = new FontFace(family, data)
+      await face.load()
+      document.fonts.add(face)
     }
-    return this
   }
 
   injectStyleTag(family: string, url: string): this {
@@ -89,23 +90,19 @@ export class Fonts {
   }
 
   protected _parseUrls(familyOrUrl: string): string[] {
-    const items = Array.from(
-      new Set([
-        ...familyOrUrl.split(','),
-        familyOrUrl,
-      ]),
-    )
+    const items = [...new Set([
+      ...familyOrUrl.split(','),
+      familyOrUrl,
+    ])]
 
-    return Array.from(
-      new Set(
-        items
-          .map((v) => {
-            return this.familyToUrl.get(v.trim())
-              ?? this.familyToUrl.get(v)
-              ?? v
-          }),
-      ),
-    )
+    return [...new Set(
+      items
+        .map((v) => {
+          return this.familyToUrl.get(v.trim())
+            ?? this.familyToUrl.get(v)
+            ?? v
+        }),
+    )]
   }
 
   get(familyOrUrl?: string): FontLoadedResult | undefined {
@@ -150,8 +147,8 @@ export class Fonts {
   async load(source: FontSource, options: FontLoadOptions = {}): Promise<FontLoadedResult> {
     const {
       cancelOther,
-      injectFontFace = true,
-      injectStyleTag = true,
+      injectStyleTag = false,
+      injectFontFace = false,
       ...requestInit
     } = options
 
@@ -202,21 +199,22 @@ export class Fonts {
             this.loaded.set(src, loadedFont)
           }
         }
-        return Promise.all(Array.from(loadedFont.familySet).map((family) => {
-          this.familyToUrl.set(family, src)
-          if (typeof document !== 'undefined') {
-            if (injectFontFace) {
-              this.injectFontFace(family, buffer)
+        return Promise.all(
+          Array.from(loadedFont.familySet, async (family) => {
+            this.familyToUrl.set(family, src)
+            if (typeof document !== 'undefined') {
+              if (injectFontFace) {
+                await this.injectFontFace(family, buffer)
+              }
+              if (injectStyleTag) {
+                this.injectStyleTag(family, src)
+              }
+              if (injectFontFace || injectStyleTag) {
+                return await document.fonts.load(`14px "${family}"`)
+              }
             }
-            if (injectStyleTag) {
-              this.injectStyleTag(family, src)
-            }
-            if (injectFontFace || injectStyleTag) {
-              return document.fonts.load(`14px ${family}`)
-            }
-          }
-          return Promise.resolve()
-        }))
+          }),
+        )
           .then(() => loadedFont)
       })
       .catch((err) => {
@@ -265,7 +263,7 @@ export class Fonts {
   }
 
   async waitUntilLoad(): Promise<void> {
-    await Promise.all(Array.from(this.loading.values()).map(v => v.when))
+    await Promise.all(Array.from(this.loading.values(), v => v.when))
   }
 }
 

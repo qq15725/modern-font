@@ -11,7 +11,7 @@ export function toBuffer(source: BufferSource): ArrayBuffer {
   }
 }
 
-export function toDataView(source: BufferSource): DataView {
+export function toDataView(source: BufferSource): DataView<ArrayBuffer> {
   if ('buffer' in source) {
     return new DataView(source.buffer, source.byteOffset, source.byteLength)
   }

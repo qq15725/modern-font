@@ -35,7 +35,7 @@ export class Os2 extends SFNTTable {
   @defineColumn({ type: 'uint8' }) declare bMidline: number
   @defineColumn({ type: 'uint8' }) declare bXHeight: number
   // unicode range
-  @defineColumn({ type: 'uint8', size: 16 }) declare ulUnicodeRange: number[]
+  @defineColumn({ type: 'uint32', size: 4 }) declare ulUnicodeRange: number[]
   @defineColumn({ type: 'char', size: 4 }) declare achVendID: string
   @defineColumn('uint16') declare fsSelection: number
   @defineColumn('uint16') declare usFirstCharIndex: number
@@ -46,10 +46,10 @@ export class Os2 extends SFNTTable {
   @defineColumn('int16') declare sTypoLineGap: number
   @defineColumn('uint16') declare usWinAscent: number
   @defineColumn('uint16') declare usWinDescent: number
-  // version 0 above 39
-  @defineColumn({ offset: 72, type: 'uint8', size: 8 }) declare ulCodePageRange: number[]
-  // version 1 above 41
-  @defineColumn({ offset: 72, type: 'int16' }) declare sxHeight: number
+  // version > 0
+  @defineColumn({ offset: 78, type: 'uint32', size: 2 }) declare ulCodePageRange: number[]
+  // version > 1
+  @defineColumn({ offset: 86, type: 'int16' }) declare sxHeight: number
   @defineColumn('int16') declare sCapHeight: number
   @defineColumn('uint16') declare usDefaultChar: number
   @defineColumn('uint16') declare usBreakChar: number

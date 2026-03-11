@@ -58,7 +58,7 @@ export class TTF extends BaseFont {
   static from(sfnt: SFNT): TTF {
     const round4 = (value: number): number => (value + 3) & ~3
     const numTables = sfnt.tableViews.size
-    const sfntSize = Array.from(sfnt.tableViews.values()).reduce((total, view) => total + round4(view.byteLength), 0)
+    const sfntSize = [...sfnt.tableViews.values()].reduce((total, view) => total + round4(view.byteLength), 0)
     const ttf = new (this as any)(
       new ArrayBuffer(
         12 // head
@@ -101,10 +101,11 @@ export class TTF extends BaseFont {
 
   createSFNT(): SFNT {
     return new SFNT(
-      this.getDirectories().reduce((views, dir) => {
-        views[dir.tag] = new DataView(this.view.buffer, this.view.byteOffset + dir.offset, dir.length)
-        return views
-      }, {} as Record<SFNTTableTag, DataView>),
+      this.getDirectories()
+        .reduce((views, dir) => {
+          views[dir.tag] = new DataView(this.view.buffer, this.view.byteOffset + dir.offset, dir.length)
+          return views
+        }, {} as Record<SFNTTableTag, DataView<ArrayBuffer>>),
     )
   }
 }

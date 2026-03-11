@@ -19,7 +19,7 @@ export class EOT extends BaseFont {
   @defineColumn('uint32') declare Weight: number
   @defineColumn('uint16') declare fsType: number
   @defineColumn('uint16') declare MagicNumber: number
-  @defineColumn({ type: 'uint8', size: 16 }) declare UnicodeRange: number[]
+  @defineColumn({ type: 'uint32', size: 4 }) declare UnicodeRange: number[]
   @defineColumn({ type: 'uint8', size: 8 }) declare CodePageRange: number[]
   @defineColumn('uint32') declare CheckSumAdjustment: number
   @defineColumn({ type: 'uint8', size: 16 }) declare Reserved: number[]
@@ -75,7 +75,7 @@ export class EOT extends BaseFont {
       eot.Weight = os2.usWeightClass
       eot.fsType = os2.fsType
       eot.UnicodeRange = os2.ulUnicodeRange
-      eot.CodePageRange = os2.ulCodePageRange
+      eot.CodePageRange = os2.version > 0 ? os2.ulCodePageRange : []
     }
 
     // write names

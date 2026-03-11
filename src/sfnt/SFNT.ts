@@ -74,7 +74,7 @@ export class SFNT {
   }>()
 
   tables = new Map<string, SFNTTable>()
-  tableViews = new Map<SFNTTableTag, DataView>()
+  tableViews = new Map<SFNTTableTag, DataView<ArrayBuffer>>()
 
   get hasGlyf(): boolean { return this.tableViews.has('glyf') }
   get names(): Record<string, any> { return this.name.names }
@@ -159,7 +159,7 @@ export class SFNT {
   }
 
   constructor(
-    tableViews: Record<SFNTTableTag, DataView> | Map<SFNTTableTag, DataView>,
+    tableViews: Record<SFNTTableTag, DataView<ArrayBuffer>> | Map<SFNTTableTag, DataView<ArrayBuffer>>,
   ) {
     const _tableViews = tableViews instanceof Map ? tableViews : new Map(Object.entries(tableViews))
     _tableViews.forEach((view, key) => {
