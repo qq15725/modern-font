@@ -17,7 +17,7 @@ export function defineCffDictProp(operator: number, type: CffDictPropType = 'num
     const prop: CffDictProp = {
       type,
       operator,
-      default: defaultValue ?? type === 'number' ? 0 : undefined,
+      default: defaultValue,
     }
     Object.defineProperty(target.constructor.prototype, name, {
       get() { return (this as CffDict)._getProp(prop) },
@@ -119,16 +119,21 @@ export class CffDict extends FontDataObject {
   }
 
   _getProp(prop: CffDictProp): any {
-    const value = this.dict[prop.operator] ?? prop.default
+    // `dict[operator]` is the raw operand array; when the operator is absent we
+    // fall back to the declared default (which is in value-space, not operand
+    // array form — so it must not be indexed with [0]).
+    const operands = this.dict[prop.operator]
     switch (prop.type) {
       case 'number':
-        return value[0]
+        return operands ? operands[0] : (prop.default ?? 0)
       case 'string':
-        return getCffString(this._stringIndex?.objects ?? [], value[0])
+        return operands
+          ? getCffString(this._stringIndex?.objects ?? [], operands[0])
+          : prop.default
       case 'number[]':
-        return value
+        return operands ?? prop.default
     }
-    return value
+    return operands ?? prop.default
   }
 
   _setProp(_prop: CffDictProp, _value: any): void {
