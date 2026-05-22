@@ -5,7 +5,7 @@ export interface MinimizedGlyph extends HMetric, VMetric {
   rawGlyphIndex: number
   glyphIndex: number
   unicodes: number[]
-  view: DataView
+  view: DataView<ArrayBuffer>
 }
 
 // TODO OpenType

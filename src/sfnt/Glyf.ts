@@ -23,7 +23,7 @@ export const componentFlags = {
  */
 @defineSFNTTable('glyf')
 export class Glyf extends SFNTTable {
-  static from(glyphs: DataView[]): Glyf {
+  static from(glyphs: DataView<ArrayBuffer>[]): Glyf {
     const byteLength = glyphs.reduce((byteLength, view) => byteLength + view.byteLength, 0)
     const glyf = new Glyf(new ArrayBuffer(byteLength))
     glyphs.forEach((view) => {
