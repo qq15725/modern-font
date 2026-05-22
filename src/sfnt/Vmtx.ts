@@ -38,7 +38,7 @@ export class Vmtx extends SFNTTable {
       }
       return {
         advanceHeight,
-        topSideBearing: reader.readUint8(),
+        topSideBearing: reader.readInt16(),
       }
     })
   }

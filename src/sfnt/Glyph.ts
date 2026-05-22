@@ -39,6 +39,8 @@ export class Glyph {
   declare unicodes: number[]
   declare advanceWidth: number
   declare leftSideBearing: number
+  declare advanceHeight: number
+  declare topSideBearing: number
   isComposite = false
   components: GlyphComponent[] = []
   pathCommands: GlyphPathCommand[] = []

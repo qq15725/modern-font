@@ -27,6 +27,11 @@ export abstract class GlyphSet {
         glyph.advanceWidth = glyph.advanceWidth || metric.advanceWidth
         glyph.leftSideBearing = glyph.leftSideBearing || metric.leftSideBearing
       }
+      const vMetric = this._sfnt.vmtx?.metrics[index]
+      if (vMetric) {
+        glyph.advanceHeight = glyph.advanceHeight || vMetric.advanceHeight
+        glyph.topSideBearing = glyph.topSideBearing || vMetric.topSideBearing
+      }
       const unicodes = this._sfnt.cmap.glyphIndexToUnicodesMap.get(index)
       if (unicodes) {
         glyph.unicode ??= unicodes[0]

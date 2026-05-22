@@ -87,6 +87,9 @@ export class SFNT {
   get unicodes(): Map<number, number[]> { return this.cmap.glyphIndexToUnicodesMap }
   get glyphs(): GlyphSet { return this.hasGlyf ? this.glyf.glyphs : this.cff.glyphs }
 
+  /** Advance height used when a glyph has no `vmtx` metric (no vertical metrics table). */
+  get defaultAdvanceHeight(): number { return this.ascender + Math.abs(this.descender) }
+
   charToGlyphIndex(char: string): number {
     let index = this.cmap.unicodeToGlyphIndexMap.get(char.codePointAt(0)!)
     if (index === undefined && !this.hasGlyf) {
@@ -98,6 +101,16 @@ export class SFNT {
 
   charToGlyph(char: string): Glyph {
     return this.glyphs.get(this.charToGlyphIndex(char))
+  }
+
+  /**
+   * Resolve the glyph a GSUB feature substitutes `glyphIndex` with, or return
+   * `glyphIndex` unchanged when there is no substitution (or no GSUB table).
+   * Pass `'vert'`/`'vrt2'` to get a glyph's vertical-writing variant — this is
+   * the font's own mapping, replacing any rotation/heuristic approximation.
+   */
+  getSubstituteGlyphIndex(glyphIndex: number, featureTag: string): number {
+    return this.gsub?.getSingleSubstitutions(featureTag).get(glyphIndex) ?? glyphIndex
   }
 
   textToGlyphIndexes(text: string): number[] {
@@ -130,6 +143,33 @@ export class SFNT {
 
   getAdvanceWidth(text: string, fontSize?: number, options?: GlyphPathCommandOptions): number {
     return this.forEachGlyph(text, 0, 0, fontSize, options, () => {})
+  }
+
+  /**
+   * Total vertical advance of `text` at `fontSize`, the vertical-writing
+   * counterpart of {@link getAdvanceWidth}. Uses each glyph's `vmtx`
+   * advanceHeight when available, falling back to {@link defaultAdvanceHeight}
+   * (`ascender + |descender|`) for glyphs without one.
+   */
+  getAdvanceHeight(
+    text: string,
+    fontSize = 72,
+    options: GlyphPathCommandOptions & { letterSpacing?: number, tracking?: number } = {},
+  ): number {
+    const fontScale = 1 / this.unitsPerEm * fontSize
+    const defaultAdvanceHeight = this.defaultAdvanceHeight
+    const glyphs = this.textToGlyphs(text)
+    let y = 0
+    for (let i = 0; i < glyphs.length; i += 1) {
+      y += (glyphs[i].advanceHeight || defaultAdvanceHeight) * fontScale
+      if (options.letterSpacing) {
+        y += options.letterSpacing * fontSize
+      }
+      else if (options.tracking) {
+        y += (options.tracking / 1000) * fontSize
+      }
+    }
+    return y
   }
 
   forEachGlyph(

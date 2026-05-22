@@ -61,7 +61,7 @@ function testGlyph(sfnt: SFNT) {
   const descender = hhea.descent
   const rate = unitsPerEm / fontSize
   const advanceWidth = sfnt.getAdvanceWidth(content, fontSize)
-  const advanceHeight = (ascender + Math.abs(descender)) / rate
+  const advanceHeight = sfnt.getAdvanceHeight(content, fontSize)
   const baseline = ascender / rate
   const res: Record<string, any> = {}
   res.advanceWidth = advanceWidth
@@ -77,7 +77,6 @@ function testGlyph(sfnt: SFNT) {
   res.typoLineGap = os2.sTypoLineGap / rate
   res.winAscent = os2.usWinAscent / rate
   res.winDescent = os2.usWinDescent / rate
-  console.log(os2)
   res.xHeight = os2.version > 1 ? os2.sxHeight / rate : 0
   res.capHeight = os2.version > 1 ? os2.sCapHeight / rate : 0
   res.baseline = baseline
