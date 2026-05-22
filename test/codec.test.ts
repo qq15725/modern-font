@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
-import { parseFont, parseSFNTFont, TTF, WOFF } from '../src'
+import { EOT, parseFont, parseSFNTFont, TTF, WOFF } from '../src'
+import { toUCS2Bytes } from '../src/utils/string'
 
 async function readBuffer(path: string): Promise<ArrayBuffer> {
   const v = await fs.readFile(path)
@@ -77,5 +78,31 @@ describe('format conversion round trip', () => {
     const buf = WOFF.from(ttf.sfnt).toBuffer()
     expect(WOFF.is(buf)).toBe(true)
     expect(parseSFNTFont(buf).sfnt.numGlyphs).toBe(woff.sfnt.numGlyphs)
+  })
+})
+
+describe('TTF.from header', () => {
+  it('computes spec-correct searchRange/entrySelector/rangeShift', async () => {
+    const woff = parseFont(await readBuffer('./test/assets/example.woff')) as WOFF
+    const ttf = TTF.from(woff.sfnt)
+    const n = ttf.numTables
+    const entrySelector = Math.floor(Math.log2(n)) // largest k with 2^k <= n
+    expect(ttf.entrySelector).toBe(entrySelector)
+    expect(ttf.searchRange).toBe(2 ** entrySelector * 16)
+    expect(ttf.rangeShift).toBe(n * 16 - ttf.searchRange)
+  })
+})
+
+describe('EOT.from', () => {
+  it('writes the name section at the header end with the subfamily as StyleName', async () => {
+    const sfnt = (parseFont(await readBuffer('./test/assets/example.woff')) as WOFF).sfnt
+    const names = sfnt.name.names
+    const dv = new DataView(EOT.from(TTF.from(sfnt)).toBuffer())
+    // names start right after the fixed 82-byte header
+    const familySize = dv.getUint16(82, true)
+    expect(familySize).toBe(toUCS2Bytes(names.fontFamily || '').length)
+    const styleSize = dv.getUint16(82 + 2 + familySize + 2, true)
+    expect(styleSize).toBe(toUCS2Bytes(names.fontSubFamily || '').length)
+    expect(styleSize).toBeGreaterThan(0) // was always 0 (read from a non-existent `fontStyle`)
   })
 })
