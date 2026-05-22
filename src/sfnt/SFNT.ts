@@ -17,6 +17,7 @@ import type { Post } from './Post'
 import type { SFNTTable } from './SFNTTable'
 import type { Vhea } from './Vhea'
 import type { Vmtx } from './Vmtx'
+import { commandsToPathData } from './Glyph'
 
 export type SFNTTableTag
 // required
@@ -165,6 +166,17 @@ export class SFNT {
       commands.push(...glyph.getPathCommands(x, y, fontSize, options, this))
     })
     return commands
+  }
+
+  /** SVG path `d` string for `text` (a serialized {@link getPathCommands}). */
+  getPathData(text: string, x: number, y: number, fontSize?: number, options?: GlyphPathCommandOptions, fractionDigits = 2): string {
+    return commandsToPathData(this.getPathCommands(text, x, y, fontSize, options), fractionDigits)
+  }
+
+  /** Kerning adjustment (font units) between two glyph indices, from the `kern` table. */
+  getKerningValue(leftGlyphIndex: number, rightGlyphIndex: number): number {
+    // GPOS pair kerning lands in a later phase; this reads the legacy kern table.
+    return this.kern?.getKerningValue(leftGlyphIndex, rightGlyphIndex) ?? 0
   }
 
   getAdvanceWidth(text: string, fontSize?: number, options?: GlyphPathCommandOptions): number {

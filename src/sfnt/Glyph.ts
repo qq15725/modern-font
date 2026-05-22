@@ -96,4 +96,36 @@ export class Glyph {
     }
     return commands
   }
+
+  /** Glyph outline as an SVG path `d` string (a serialized {@link getPathCommands}). */
+  getPathData(x = 0, y = 0, fontSize = 72, options: GlyphPathCommandOptions = {}, sfnt?: SFNT, fractionDigits = 2): string {
+    return commandsToPathData(this.getPathCommands(x, y, fontSize, options, sfnt), fractionDigits)
+  }
+}
+
+/** Serialize glyph path commands into an SVG path `d` string (also valid for Path2D). */
+export function commandsToPathData(commands: GlyphPathCommand[], fractionDigits = 2): string {
+  const n = (v: number): string => String(Number(v.toFixed(fractionDigits)))
+  let d = ''
+  for (let i = 0; i < commands.length; i++) {
+    const cmd = commands[i]
+    switch (cmd.type) {
+      case 'M':
+        d += `M${n(cmd.x)} ${n(cmd.y)}`
+        break
+      case 'L':
+        d += `L${n(cmd.x)} ${n(cmd.y)}`
+        break
+      case 'Q':
+        d += `Q${n(cmd.x1)} ${n(cmd.y1)} ${n(cmd.x)} ${n(cmd.y)}`
+        break
+      case 'C':
+        d += `C${n(cmd.x1)} ${n(cmd.y1)} ${n(cmd.x2)} ${n(cmd.y2)} ${n(cmd.x)} ${n(cmd.y)}`
+        break
+      case 'Z':
+        d += 'Z'
+        break
+    }
+  }
+  return d
 }

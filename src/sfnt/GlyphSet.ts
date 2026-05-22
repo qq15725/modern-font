@@ -37,6 +37,12 @@ export abstract class GlyphSet {
         glyph.unicode ??= unicodes[0]
         glyph.unicodes ??= unicodes
       }
+      if (glyph.name == null) {
+        // glyf glyphs have no intrinsic name; CFF glyphs already set theirs from the charset
+        const name = this._sfnt.post?.getGlyphName(index)
+        if (name)
+          glyph.name = name
+      }
       this._items[index] = glyph
     }
     return glyph
