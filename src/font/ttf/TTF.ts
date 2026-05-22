@@ -66,8 +66,10 @@ export class TTF extends BaseFont {
 
   static from(sfnt: SFNT): TTF {
     const round4 = (value: number): number => (value + 3) & ~3
-    const numTables = sfnt.tableViews.size
-    const sfntSize = [...sfnt.tableViews.values()].reduce((total, view) => total + round4(view.byteLength), 0)
+    const tags = sfnt.tableTags
+    const views = tags.map(tag => sfnt.getTableView(tag)!)
+    const numTables = tags.length
+    const sfntSize = views.reduce((total, view) => total + round4(view.byteLength), 0)
     const ttf = new (this as any)(
       new ArrayBuffer(
         12 // head
@@ -83,10 +85,10 @@ export class TTF extends BaseFont {
     ttf.entrySelector = entrySelector
     ttf.rangeShift = numTables * 16 - ttf.searchRange
     let dataOffset = 12 + numTables * 16
-    let i = 0
     const directories = ttf.getDirectories()
-    sfnt.tableViews.forEach((view, tag) => {
-      const dir = directories[i++]
+    tags.forEach((tag, i) => {
+      const view = views[i]
+      const dir = directories[i]
       dir.tag = tag
       dir.checkSum = this.checksum(view)
       dir.offset = dataOffset

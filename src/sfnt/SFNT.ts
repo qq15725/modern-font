@@ -74,9 +74,35 @@ export class SFNT {
   }>()
 
   tables = new Map<string, SFNTTable>()
+  /** Resolved (decompressed) table views; populated lazily as tables are accessed. */
   tableViews = new Map<SFNTTableTag, DataView<ArrayBuffer>>()
+  /** Tables not yet materialized; each loader decompresses its own table on demand. */
+  protected _viewLoaders = new Map<SFNTTableTag, () => DataView<ArrayBuffer>>()
 
-  get hasGlyf(): boolean { return this.tableViews.has('glyf') }
+  /** All present table tags (resolved or still pending) without forcing decompression. */
+  get tableTags(): SFNTTableTag[] {
+    return [...new Set([...this.tableViews.keys(), ...this._viewLoaders.keys()])]
+  }
+
+  hasTable(tag: SFNTTableTag): boolean {
+    return this.tableViews.has(tag) || this._viewLoaders.has(tag)
+  }
+
+  /** Resolve (decompress on demand) and cache the raw view for a tag. */
+  getTableView(tag: SFNTTableTag): DataView<ArrayBuffer> | undefined {
+    let view = this.tableViews.get(tag)
+    if (!view) {
+      const loader = this._viewLoaders.get(tag)
+      if (loader) {
+        view = loader()
+        this.tableViews.set(tag, view)
+        this._viewLoaders.delete(tag)
+      }
+    }
+    return view
+  }
+
+  get hasGlyf(): boolean { return this.hasTable('glyf') }
   get names(): Record<string, any> { return this.name.names }
   get unitsPerEm(): number { return this.head.unitsPerEm }
   get ascender(): number { return this.hhea.ascent }
@@ -199,21 +225,27 @@ export class SFNT {
   }
 
   constructor(
-    tableViews: Record<SFNTTableTag, DataView<ArrayBuffer>> | Map<SFNTTableTag, DataView<ArrayBuffer>>,
+    tableViews?: Record<SFNTTableTag, DataView<ArrayBuffer>> | Map<SFNTTableTag, DataView<ArrayBuffer>>,
+    viewLoaders?: Map<SFNTTableTag, () => DataView<ArrayBuffer>>,
   ) {
-    const _tableViews = tableViews instanceof Map ? tableViews : new Map(Object.entries(tableViews))
-    _tableViews.forEach((view, key) => {
-      this.tableViews.set(key, new DataView(
-        view.buffer.slice(
-          view.byteOffset,
-          view.byteOffset + view.byteLength,
-        ),
-      ))
-    })
+    if (tableViews) {
+      const map = tableViews instanceof Map ? tableViews : new Map(Object.entries(tableViews))
+      // Store views as-is (no copy); callers needing an owned, mutable copy use clone().
+      map.forEach((view, key) => this.tableViews.set(key, view))
+    }
+    viewLoaders?.forEach((loader, key) => this._viewLoaders.set(key, loader))
   }
 
   clone(): SFNT {
-    return new SFNT(this.tableViews)
+    // Deep copy: resolve every table and give each its own buffer, so the clone
+    // can be mutated (e.g. by minify, which rewrites glyf in place) without
+    // touching the source.
+    const tableViews = new Map<SFNTTableTag, DataView<ArrayBuffer>>()
+    this.tableTags.forEach((tag) => {
+      const view = this.getTableView(tag)!
+      tableViews.set(tag, new DataView(view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength)))
+    })
+    return new SFNT(tableViews)
   }
 
   delete(tag: SFNTTableTag): this {
@@ -221,6 +253,7 @@ export class SFNT {
     if (!definition)
       return this
     this.tableViews.delete(tag)
+    this._viewLoaders.delete(tag)
     this.tables.delete(definition.prop)
     return this
   }
@@ -231,6 +264,7 @@ export class SFNT {
       this.tables.set(definition.prop, table)
     }
     this.tableViews.set(tag, table.view)
+    this._viewLoaders.delete(tag)
     return this
   }
 
@@ -242,7 +276,7 @@ export class SFNT {
     if (!table) {
       const Class = definition.class
       if (Class) {
-        const view = this.tableViews.get(tag)
+        const view = this.getTableView(tag)
         if (!view) {
           return undefined
         }
