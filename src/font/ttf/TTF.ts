@@ -77,9 +77,10 @@ export class TTF extends BaseFont {
     ) as TTF
     ttf.scalerType = 0x00010000
     ttf.numTables = numTables
-    const log2 = Math.log(2)
-    ttf.searchRange = Math.floor(Math.log(numTables) / log2) * 16
-    ttf.entrySelector = Math.floor(ttf.searchRange / log2)
+    // searchRange = (largest power of 2 <= numTables) * 16; entrySelector = log2 of it
+    const entrySelector = Math.floor(Math.log2(numTables))
+    ttf.searchRange = 2 ** entrySelector * 16
+    ttf.entrySelector = entrySelector
     ttf.rangeShift = numTables * 16 - ttf.searchRange
     let dataOffset = 12 + numTables * 16
     let i = 0
