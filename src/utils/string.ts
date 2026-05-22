@@ -22,16 +22,9 @@ export function toUCS2Bytes(str: string): number[] {
 }
 
 export function getUTF8String(bytes: number[]): string {
-  let str = ''
-  for (let i = 0, l = bytes.length; i < l; i++) {
-    if (bytes[i] < 0x7F) {
-      str += String.fromCharCode(bytes[i])
-    }
-    else {
-      str += `%${(256 + bytes[i]).toString(16).slice(1)}`
-    }
-  }
-  return unescape(str)
+  // Proper multi-byte UTF-8 decoding. The old `unescape(%XX…)` path decoded each
+  // byte as Latin-1, mangling any multi-byte sequence, and used deprecated unescape.
+  return new TextDecoder().decode(Uint8Array.from(bytes))
 }
 
 export function getUCS2String(bytes: number[]): string {
