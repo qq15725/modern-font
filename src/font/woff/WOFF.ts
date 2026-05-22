@@ -1,5 +1,5 @@
 import type { SFNTTableTag } from '../../sfnt'
-import { unzlibSync, zlibSync } from 'fflate'
+import { unzlib, unzlibSync, zlib, zlibSync } from 'fflate'
 import { defineColumn } from '../../core'
 import { SFNT } from '../../sfnt'
 import { toDataView } from '../../utils'
@@ -7,6 +7,30 @@ import { BaseFont } from '../BaseFont'
 import { OTF } from '../otf'
 import { TTF } from '../ttf'
 import { WOFFTableDirectoryEntry } from './WOFFTableDirectoryEntry'
+
+interface WOFFTable {
+  tag: string
+  view: DataView<ArrayBuffer>
+  rawView: DataView<ArrayBuffer>
+}
+
+function toUint8(view: DataView<ArrayBuffer>): Uint8Array<ArrayBuffer> {
+  return new Uint8Array(view.buffer, view.byteOffset, view.byteLength) as Uint8Array<ArrayBuffer>
+}
+
+// fflate's async zlib/unzlib run on a worker pool in the browser, keeping the
+// (de)compression off the main thread. Promisify them.
+function zlibAsync(data: Uint8Array): Promise<Uint8Array<ArrayBuffer>> {
+  return new Promise((resolve, reject) => {
+    zlib(data, (err, out) => (err ? reject(err) : resolve(out as Uint8Array<ArrayBuffer>)))
+  })
+}
+
+function unzlibAsync(data: Uint8Array): Promise<Uint8Array<ArrayBuffer>> {
+  return new Promise((resolve, reject) => {
+    unzlib(data, (err, out) => (err ? reject(err) : resolve(out as Uint8Array<ArrayBuffer>)))
+  })
+}
 
 /**
  * WOFF
@@ -84,25 +108,30 @@ export class WOFF extends BaseFont {
     return sum % 0x100000000
   }
 
+  /** Keep whichever of the raw/compressed view is smaller (WOFF stores per-table). */
+  protected static _pickTable(tag: string, rawView: DataView<ArrayBuffer>, compressed: DataView<ArrayBuffer>): WOFFTable {
+    return { tag, view: compressed.byteLength < rawView.byteLength ? compressed : rawView, rawView }
+  }
+
   static from(sfnt: SFNT, rest = new ArrayBuffer(0)): WOFF {
-    const round4 = (value: number): number => (value + 3) & ~3
-    const tables: { tag: string, view: DataView<ArrayBuffer>, rawView: DataView<ArrayBuffer> }[] = []
-    sfnt.tableViews.forEach((view, tag) => {
-      const newView = toDataView(
-        zlibSync(
-          new Uint8Array(
-            view.buffer,
-            view.byteOffset,
-            view.byteLength,
-          ),
-        ) as Uint8Array<ArrayBuffer>,
-      )
-      tables.push({
-        tag,
-        view: newView.byteLength < view.byteLength ? newView : view,
-        rawView: view,
-      })
+    const tables = sfnt.tableTags.map((tag) => {
+      const view = sfnt.getTableView(tag)!
+      return this._pickTable(tag, view, toDataView(zlibSync(toUint8(view)) as Uint8Array<ArrayBuffer>))
     })
+    return this._assemble(tables, rest)
+  }
+
+  /** Like {@link from}, but compresses tables off the main thread (fflate async). */
+  static async fromAsync(sfnt: SFNT, rest = new ArrayBuffer(0)): Promise<WOFF> {
+    const tables = await Promise.all(sfnt.tableTags.map(async (tag) => {
+      const view = sfnt.getTableView(tag)!
+      return this._pickTable(tag, view, toDataView(await zlibAsync(toUint8(view))))
+    }))
+    return this._assemble(tables, rest)
+  }
+
+  protected static _assemble(tables: WOFFTable[], rest: ArrayBuffer): WOFF {
+    const round4 = (value: number): number => (value + 3) & ~3
     const numTables = tables.length
     const sfntSize = tables.reduce((total, table) => total + round4(table.view.byteLength), 0)
     const woff = new WOFF(
@@ -144,21 +173,44 @@ export class WOFF extends BaseFont {
     })
   }
 
+  protected _decodeTable(start: number, compLength: number, origLength: number): DataView<ArrayBuffer> {
+    if (compLength >= origLength) {
+      return new DataView(this.view.buffer, start, compLength)
+    }
+    const out = unzlibSync(new Uint8Array(this.view.buffer.slice(start, start + compLength)))
+    return new DataView(out.buffer as ArrayBuffer, out.byteOffset, out.byteLength)
+  }
+
+  /** Decode lazily: each table is decompressed only on first access (see SFNT.getTableView). */
   createSFNT(): SFNT {
-    return new SFNT(
-      this.getDirectories().reduce((views, dir) => {
-        const tag = dir.tag
-        const start = this.view.byteOffset + dir.offset
-        const compLength = dir.compLength
-        const origLength = dir.origLength
-        const end = start + compLength
-        views[tag] = compLength >= origLength
-          ? new DataView(this.view.buffer, start, compLength)
-          : new DataView(
-              unzlibSync(new Uint8Array(this.view.buffer.slice(start, end))).buffer as ArrayBuffer,
-            )
-        return views
-      }, {} as Record<SFNTTableTag, DataView<ArrayBuffer>>),
-    )
+    const loaders = new Map<SFNTTableTag, () => DataView<ArrayBuffer>>()
+    this.getDirectories().forEach((dir) => {
+      const tag = dir.tag
+      const start = this.view.byteOffset + dir.offset
+      const compLength = dir.compLength
+      const origLength = dir.origLength
+      loaders.set(tag, () => this._decodeTable(start, compLength, origLength))
+    })
+    return new SFNT(undefined, loaders)
+  }
+
+  /** Decode eagerly but off the main thread (fflate async unzlib in parallel). */
+  async createSFNTAsync(): Promise<SFNT> {
+    const entries = await Promise.all(this.getDirectories().map(async (dir) => {
+      const tag = dir.tag
+      const start = this.view.byteOffset + dir.offset
+      const compLength = dir.compLength
+      const origLength = dir.origLength
+      let view: DataView<ArrayBuffer>
+      if (compLength >= origLength) {
+        view = new DataView(this.view.buffer, start, compLength)
+      }
+      else {
+        const out = await unzlibAsync(new Uint8Array(this.view.buffer.slice(start, start + compLength)))
+        view = new DataView(out.buffer as ArrayBuffer, out.byteOffset, out.byteLength)
+      }
+      return [tag, view] as [SFNTTableTag, DataView<ArrayBuffer>]
+    }))
+    return new SFNT(new Map(entries))
   }
 }
