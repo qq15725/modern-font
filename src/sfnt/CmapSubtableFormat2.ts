@@ -77,7 +77,7 @@ export class CmapSubtableFormat2 extends FontDataObject {
             }
           }
           if (index !== 0 && index < numGlyphs) {
-            const unicode = ((i << 8) | (j + subHeaders[k].firstCode)) % 0xFFFF
+            const unicode = ((i << 8) | (j + subHeaders[k].firstCode)) & 0xFFFF
             unicodeToGlyphIndexMap.set(unicode, index)
           }
         }
