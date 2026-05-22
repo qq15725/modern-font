@@ -43,7 +43,7 @@ export class EOT extends BaseFont {
     const names = name.names
     const FamilyName = toUCS2Bytes(names.fontFamily || '')
     const FamilyNameSize = FamilyName.length
-    const StyleName = toUCS2Bytes(names.fontStyle || '')
+    const StyleName = toUCS2Bytes(names.fontSubFamily || '')
     const StyleNameSize = StyleName.length
     const VersionName = toUCS2Bytes(names.version || '')
     const VersionNameSize = VersionName.length
@@ -78,7 +78,9 @@ export class EOT extends BaseFont {
       eot.CodePageRange = os2.version > 0 ? os2.ulCodePageRange : []
     }
 
-    // write names
+    // write names — the 82-byte header was filled via column setters, which
+    // leave the cursor at an arbitrary position, so seek to the header end first.
+    eot.view.seek(82)
     eot.view.writeUint16(FamilyNameSize)
     eot.view.writeBytes(FamilyName)
     eot.view.writeUint16(0)
