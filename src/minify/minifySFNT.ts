@@ -1,13 +1,14 @@
 import type { SFNT } from '../sfnt'
 import { Cmap, Glyf, Hmtx, Loca, Post, Vmtx } from '../sfnt'
+import { minifyCFF } from './minifyCFF'
 import { minifyGlyphs } from './minifyGlyphs'
 
 export function minifySFNT(sfnt: SFNT, subset: string): SFNT {
   if (!sfnt.hasGlyf) {
-    throw new Error(
-      'minifyFont currently only supports TrueType (glyf) fonts; '
-      + 'CFF/OpenType (\'CFF \' table) subsetting is not implemented yet',
-    )
+    if (sfnt.hasTable('CFF ')) {
+      return minifyCFF(sfnt, subset)
+    }
+    throw new Error('minifyFont only supports TrueType (glyf) and OpenType (CFF) fonts')
   }
   const glyphs = minifyGlyphs(sfnt, subset)
   const numGlyphs = glyphs.length

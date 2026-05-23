@@ -21,10 +21,18 @@ describe('minifyFont', () => {
     }
   })
 
-  it('throws a clear error for CFF/OpenType fonts (unsupported) instead of crashing', async () => {
-    const cff = await readBuffer('./test/assets/example-cff.woff')
-    const woff = parseFont(cff) as WOFF
-    expect(woff.sfnt.hasGlyf).toBe(false)
-    expect(() => minifyFont(woff, 'A')).toThrow(/TrueType|CFF/i)
+  it('subsets a CFF/OpenType font: smaller, keeps subset glyphs, blanks the rest', async () => {
+    const raw = await readBuffer('./test/assets/example-cff.woff')
+    const orig = (parseFont(raw) as WOFF).sfnt
+    expect(orig.hasGlyf).toBe(false)
+    expect(orig.charToGlyph('A').pathCommands.length).toBeGreaterThan(0)
+    expect(orig.charToGlyph('B').pathCommands.length).toBeGreaterThan(0)
+
+    const out = minifyFont(raw, 'A')
+    expect(out.byteLength).toBeLessThan(raw.byteLength)
+
+    const sfnt = (parseFont(out) as WOFF).sfnt
+    expect(sfnt.charToGlyph('A').pathCommands.length).toBeGreaterThan(0) // kept
+    expect(sfnt.charToGlyph('B').pathCommands.length).toBe(0) // blanked (outside subset)
   })
 })

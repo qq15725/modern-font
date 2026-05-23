@@ -185,6 +185,30 @@ export class Cff extends SFNTTable {
     return encoding
   }
 
+  /**
+   * Replace the charstring of every glyph not in `keepGlyphIndexes` with a bare
+   * `endchar` (empty outline), filling the rest of each slot with `endchar` so
+   * the dead bytes compress away. Glyph count, charset, subrs and all offsets
+   * stay valid (no reindex), so this is safe for both name- and CID-keyed CFF.
+   * The uncompressed table size is unchanged; the win shows after compression
+   * (e.g. WOFF output).
+   */
+  blankGlyphsExcept(keepGlyphIndexes: Set<number>): this {
+    const ENDCHAR = 14
+    const offsets = this.charStringsIndex.offsets
+    const numGlyphs = offsets.length - 1
+    const dataStart = this.topDict.charStrings + this.charStringsIndex.objectOffset
+    for (let gid = 0; gid < numGlyphs; gid++) {
+      if (keepGlyphIndexes.has(gid))
+        continue
+      const end = dataStart + offsets[gid + 1]
+      for (let p = dataStart + offsets[gid]; p < end; p++) {
+        this.view.setUint8(p, ENDCHAR)
+      }
+    }
+    return this
+  }
+
   protected _calcSubroutineBias(subrs: number[][]): number {
     let bias
     if (subrs.length < 1240) {
