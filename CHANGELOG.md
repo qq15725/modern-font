@@ -1,3 +1,32 @@
+# [0.6.0](https://github.com/qq15725/modern-font/compare/v0.5.0...v0.6.0) (2026-05-23)
+
+
+### Bug Fixes
+
+* CFF dict default value handling ([59a0223](https://github.com/qq15725/modern-font/commit/59a02236551fe3b441db7a09741c614987115c63))
+* cmap format 6 and format 2 unicode mapping ([7e7126b](https://github.com/qq15725/modern-font/commit/7e7126bf6fa0a7cc0c422a3338e9c22950723d49))
+* correct TTF checksum & checkSumAdjustment ([998c4fd](https://github.com/qq15725/modern-font/commit/998c4fd6a5b97e5382139c7d43232df3fde2571a))
+* decode name records as real UTF-8 ([10259e7](https://github.com/qq15725/modern-font/commit/10259e705a05f4cbc31cf6978143cad472ec7300))
+* EOT name section offset and StyleName source ([b2a30a9](https://github.com/qq15725/modern-font/commit/b2a30a962c8cac9454c92b4f1efe4ff6caedc6c3))
+* read cmap subtables at the table's byteOffset ([45d305f](https://github.com/qq15725/modern-font/commit/45d305f6a2da508d88cd5ef6fde8089b17b4ad07))
+* spec-correct TTF table directory header ([41ab8f2](https://github.com/qq15725/modern-font/commit/41ab8f2e525b7facbb777d1eee389d2aba5975c0))
+* throw a clear error when minifying CFF fonts ([cb973f0](https://github.com/qq15725/modern-font/commit/cb973f0c6b393e25ae0f866cd10887dcbd9ef31c))
+* type Glyf.from views as DataView<ArrayBuffer> ([842c1c3](https://github.com/qq15725/modern-font/commit/842c1c3e87fa6ee409c431c170bae303b44e4ce3))
+
+
+### Features
+
+* async WOFF (de)compression API + lazy decode ([53d5167](https://github.com/qq15725/modern-font/commit/53d5167784b8d9124d3a93156da27a8b0785dc52))
+* GPOS pair kerning and TTC collection parsing ([8b5f7ab](https://github.com/qq15725/modern-font/commit/8b5f7abcad7e1cb78677d2116dc405d5b22d479a))
+* GSUB ligature substitution (applyLigatures) ([322029a](https://github.com/qq15725/modern-font/commit/322029aebb8802f779f876d735d6c1296382d361))
+* GSUB vert substitution + vertical advance ([56480be](https://github.com/qq15725/modern-font/commit/56480be78b0901e5e66aba9f4236f61fb3608b8e))
+* minify CFF/OpenType fonts (blank unused outlines) ([c720ac5](https://github.com/qq15725/modern-font/commit/c720ac5e6dc997658f171f5f3e90579120988785))
+* SVG path data, kern table, post glyph names ([26514a3](https://github.com/qq15725/modern-font/commit/26514a39f57065372a9607063f283465899007cb))
+
+
+### Performance Improvements
+
+* zero-copy decode and lazy table accessors ([fda01cf](https://github.com/qq15725/modern-font/commit/fda01cfa2d0e92d8c120a49e03b0957a3cb2deb4))
 # [0.5.0](https://github.com/qq15725/modern-font/compare/v0.4.4...v0.5.0) (2026-03-11)
 
 
