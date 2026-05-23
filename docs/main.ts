@@ -1,119 +1,107 @@
 import type { SFNT } from '../src'
 import { EOT, fonts, minifyFont, TTF, WOFF } from '../src'
 
+const app = document.querySelector<HTMLDivElement>('#app')!
+
+function section(title: string, body: Node): void {
+  const el = document.createElement('section')
+  const h = document.createElement('h2')
+  h.textContent = title
+  el.append(h, body)
+  app.append(el)
+}
+
+function table(rows: [string, unknown][]): HTMLTableElement {
+  const t = document.createElement('table')
+  for (const [k, v] of rows) {
+    const tr = document.createElement('tr')
+    const value = typeof v === 'number' ? Math.round(v * 100) / 100 : v
+    tr.innerHTML = `<td>${k}</td><td>${value}</td>`
+    t.append(tr)
+  }
+  return t
+}
+
+// Render text as an SVG path via the new getPathData() API.
+function glyphSvg(sfnt: SFNT, text: string, fontSize = 80): SVGSVGElement {
+  const scale = fontSize / sfnt.unitsPerEm
+  const ascent = sfnt.ascender * scale
+  const width = Math.ceil(sfnt.getAdvanceWidth(text, fontSize)) + 20
+  const height = Math.ceil((sfnt.ascender - sfnt.descender) * scale) + 20
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('width', String(width))
+  svg.setAttribute('height', String(height))
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  path.setAttribute('d', sfnt.getPathData(text, 10, ascent + 10, fontSize))
+  path.setAttribute('fill', '#222')
+  svg.append(path)
+  return svg
+}
+
+function glyphMetrics(sfnt: SFNT, content: string, fontSize: number): [string, unknown][] {
+  const { hhea, os2, post, head } = sfnt
+  const rate = head.unitsPerEm / fontSize
+  const ascender = hhea.ascent
+  return [
+    ['advanceWidth', sfnt.getAdvanceWidth(content, fontSize)],
+    ['advanceHeight', sfnt.getAdvanceHeight(content, fontSize)],
+    ['ascender', ascender / rate],
+    ['descender', hhea.descent / rate],
+    ['baseline', ascender / rate],
+    ['underlinePosition', (ascender - post.underlinePosition) / rate],
+    ['strikeoutPosition', (ascender - os2.yStrikeoutPosition) / rate],
+    ['capHeight', os2.version > 1 ? os2.sCapHeight / rate : 0],
+    ['xHeight', os2.version > 1 ? os2.sxHeight / rate : 0],
+  ]
+}
+
+const kb = (n: number): string => `${(n / 1024).toFixed(1)} KB`
+const pct = (r: number): string => (r < 0.01 ? '<1%' : `${Math.round(r * 100)}%`)
+
 async function init(): Promise<void> {
   await fonts.load({ family: 'source', src: 'opentype.woff' })
-
   const font = fonts.get('source')?.getFont()
-  let woff: WOFF | undefined
-  let ttf: TTF | undefined
-  let eot: EOT | undefined
-  let sfnt
-  if (font instanceof WOFF) {
-    woff = font
-    sfnt = woff.sfnt
-    ttf = TTF.from(sfnt)
-    eot = EOT.from(ttf)
+  if (!(font instanceof WOFF) && !(font instanceof TTF)) {
+    app.textContent = 'failed to load font'
+    return
   }
-  else if (font instanceof TTF) {
-    ttf = font
-    sfnt = ttf.sfnt
-    woff = WOFF.from(sfnt)
-    eot = EOT.from(ttf)
-  }
+  const sfnt = font.sfnt
+  app.textContent = ''
 
-  if (sfnt) {
-    testGlyph(sfnt)
-    testCanvas(sfnt)
-  }
+  section('Source font', table([
+    ['family', sfnt.names.fontFamily],
+    ['format', font.format],
+    ['numGlyphs', sfnt.numGlyphs],
+    ['unitsPerEm', sfnt.unitsPerEm],
+  ]))
 
-  let minifyWoff
-  if (woff) {
-    minifyWoff = minifyFont(woff, 'minify')
-    await fonts.injectFontFace('woff', woff.toBuffer())
-    await fonts.injectFontFace('minifyWoff', minifyWoff.toBuffer())
-  }
-  if (ttf) {
-    await fonts.injectFontFace('ttf', ttf.toBuffer())
-  }
-  if (eot) {
-    await fonts.injectFontFace('eot', eot.toBuffer())
-  }
-  console.warn(woff, ttf, eot, minifyWoff)
-}
+  section('getPathData() → SVG', glyphSvg(sfnt, '你好世界 Ag'))
 
-const fsSelectionMap: Record<number, 'italic' | 'bold'> = {
-  0x01: 'italic',
-  0x20: 'bold',
-}
+  section('Glyph metrics (你, 100px)', table(glyphMetrics(sfnt, '你', 100)))
 
-const macStyleMap: Record<number, 'italic' | 'bold'> = {
-  0x01: 'italic',
-  0x02: 'bold',
-}
+  section('Advance & kerning', table([
+    ['getAdvanceWidth("你好", 100)', sfnt.getAdvanceWidth('你好', 100)],
+    ['getAdvanceHeight("你", 100)', sfnt.getAdvanceHeight('你', 100)],
+    ['getKerningValue(4, 16)', sfnt.getKerningValue(4, 16)],
+  ]))
 
-function testGlyph(sfnt: SFNT) {
-  const content = '你'
-  const fontSize = 100
-  const { hhea, os2, post, head } = sfnt
-  const unitsPerEm = head.unitsPerEm
-  const ascender = hhea.ascent
-  const descender = hhea.descent
-  const rate = unitsPerEm / fontSize
-  const advanceWidth = sfnt.getAdvanceWidth(content, fontSize)
-  const advanceHeight = sfnt.getAdvanceHeight(content, fontSize)
-  const baseline = ascender / rate
-  const res: Record<string, any> = {}
-  res.advanceWidth = advanceWidth
-  res.advanceHeight = advanceHeight
-  res.underlinePosition = (ascender - post.underlinePosition) / rate
-  res.underlineThickness = post.underlineThickness / rate
-  res.strikeoutPosition = (ascender - os2.yStrikeoutPosition) / rate
-  res.strikeoutSize = os2.yStrikeoutSize / rate
-  res.ascender = ascender / rate
-  res.descender = descender / rate
-  res.typoAscender = os2.sTypoAscender / rate
-  res.typoDescender = os2.sTypoDescender / rate
-  res.typoLineGap = os2.sTypoLineGap / rate
-  res.winAscent = os2.usWinAscent / rate
-  res.winDescent = os2.usWinDescent / rate
-  res.xHeight = os2.version > 1 ? os2.sxHeight / rate : 0
-  res.capHeight = os2.version > 1 ? os2.sCapHeight / rate : 0
-  res.baseline = baseline
-  res.centerDiviation = advanceHeight / 2 - baseline
-  res.fontStyle = fsSelectionMap[os2.fsSelection] ?? macStyleMap[head.macStyle]
-  console.log(res)
-}
+  const ttf = TTF.from(sfnt)
+  const woff = font instanceof WOFF ? font : WOFF.from(sfnt)
+  const eot = EOT.from(ttf)
+  const minified = minifyFont(woff, '你好世界')
+  const woffSize = woff.toBuffer().byteLength
+  const minSize = minified.toBuffer().byteLength
+  section('Format conversion & minify', table([
+    ['woff', kb(woffSize)],
+    ['ttf', kb(ttf.toBuffer().byteLength)],
+    ['eot', kb(eot.toBuffer().byteLength)],
+    ['minify("你好世界")', `${kb(minSize)} (${pct(minSize / woffSize)})`],
+  ]))
 
-function testCanvas(sfnt: SFNT) {
-  const ctx = document.querySelector('canvas')!.getContext('2d')!
-  ctx.strokeStyle = '#000'
-  ctx.lineWidth = 2
-  const commands1 = sfnt.getPathCommands('你', 100, 100)
-  const commands2 = sfnt.getPathCommands('好', 200, 200)
-  ;[commands1, commands2].forEach((commands) => {
-    ctx.beginPath()
-    commands?.forEach((cmd) => {
-      switch (cmd.type) {
-        case 'M':
-          ctx.moveTo(cmd.x, cmd.y)
-          break
-        case 'L':
-          ctx.lineTo(cmd.x, cmd.y)
-          break
-        case 'Q':
-          ctx.quadraticCurveTo(cmd.x1, cmd.y1, cmd.x, cmd.y)
-          break
-        case 'C':
-          ctx.bezierCurveTo(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y)
-          break
-        case 'Z':
-          ctx.closePath()
-          break
-      }
-    })
-    ctx.stroke()
-  })
+  await fonts.injectFontFace('woff', woff.toBuffer())
+  await fonts.injectFontFace('ttf', ttf.toBuffer())
+  await fonts.injectFontFace('eot', eot.toBuffer())
+  await fonts.injectFontFace('minifyWoff', minified.toBuffer())
 }
 
 init()

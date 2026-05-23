@@ -2,17 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Docs</title>
+  <title>modern-font · demos</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; color: #222; max-width: 760px; }
+    h1 { font-size: 18px; }
+    section { margin: 16px 0; padding: 12px 16px; border: 1px solid #e6e6e6; border-radius: 8px; }
+    section > h2 { font-size: 13px; margin: 0 0 8px; color: #666; font-weight: 600; }
+    table { border-collapse: collapse; font: 12px/1.6 ui-monospace, monospace; }
+    td { padding: 0 16px 0 0; vertical-align: top; }
+    td:first-child { color: #999; }
+    svg, canvas { border: 1px dashed #ccc; border-radius: 4px; max-width: 100%; }
+    .sample { font-size: 30px; line-height: 1.4; }
+  </style>
 </head>
 <body>
+  <h1>modern-font · feature demos</h1>
+  <div id="app">loading…</div>
 
-<div style="font-family: woff">woff</div>
-<div style="font-family: ttf">ttf</div>
-<div style="font-family: eot">eot</div>
-<div style="font-family: minifyWoff">minifyWoff</div>
+  <section>
+    <h2>@font-face (decoded → injected)</h2>
+    <div class="sample" style="font-family: woff">woff 你好世界 Ag</div>
+    <div class="sample" style="font-family: ttf">ttf 你好世界 Ag</div>
+    <div class="sample" style="font-family: eot">eot 你好世界 Ag</div>
+    <div class="sample" style="font-family: minifyWoff">minifyWoff 你好世界</div>
+  </section>
 
-<canvas width="300" height="300"></canvas>
-
-<script type="module" src="./main.ts"></script>
+  <script type="module" src="./main.ts"></script>
 </body>
 </html>
