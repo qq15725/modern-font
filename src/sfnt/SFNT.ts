@@ -173,9 +173,14 @@ export class SFNT {
     return commandsToPathData(this.getPathCommands(text, x, y, fontSize, options), fractionDigits)
   }
 
-  /** Kerning adjustment (font units) between two glyph indices, from the `kern` table. */
+  /**
+   * Kerning adjustment (font units) between two glyph indices. Prefers the GPOS
+   * `kern` feature (pair adjustment), falling back to the legacy `kern` table.
+   */
   getKerningValue(leftGlyphIndex: number, rightGlyphIndex: number): number {
-    // GPOS pair kerning lands in a later phase; this reads the legacy kern table.
+    const gpos = this.gpos?.getKerningValue(leftGlyphIndex, rightGlyphIndex) ?? 0
+    if (gpos)
+      return gpos
     return this.kern?.getKerningValue(leftGlyphIndex, rightGlyphIndex) ?? 0
   }
 
