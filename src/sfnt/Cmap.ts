@@ -99,23 +99,23 @@ export class Cmap extends SFNTTable {
       let view
       switch (format) {
         case 0:
-          view = new CmapSubtableFormat0(this.view.buffer, table.offset)
+          view = new CmapSubtableFormat0(this.view.buffer, this.view.byteOffset + table.offset)
           break
         case 2:
-          view = new CmapSubtableFormat2(this.view.buffer, table.offset, this.view.readUint16())
+          view = new CmapSubtableFormat2(this.view.buffer, this.view.byteOffset + table.offset, this.view.readUint16())
           break
         case 4:
-          view = new CmapSubtableFormat4(this.view.buffer, table.offset, this.view.readUint16())
+          view = new CmapSubtableFormat4(this.view.buffer, this.view.byteOffset + table.offset, this.view.readUint16())
           break
         case 6:
-          view = new CmapSubtableFormat6(this.view.buffer, table.offset, this.view.readUint16())
+          view = new CmapSubtableFormat6(this.view.buffer, this.view.byteOffset + table.offset, this.view.readUint16())
           break
         case 12:
-          view = new CmapSubtableFormat12(this.view.buffer, table.offset, this.view.readUint32(table.offset + 4))
+          view = new CmapSubtableFormat12(this.view.buffer, this.view.byteOffset + table.offset, this.view.readUint32(table.offset + 4))
           break
         case 14:
         default:
-          view = new CmapSubtableFormat14(this.view.buffer, table.offset, this.view.readUint32())
+          view = new CmapSubtableFormat14(this.view.buffer, this.view.byteOffset + table.offset, this.view.readUint32())
           break
       }
       return {

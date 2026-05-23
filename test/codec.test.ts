@@ -70,6 +70,8 @@ describe('format conversion round trip', () => {
     const reparsed = parseSFNTFont(buf)
     expect(reparsed).toBeInstanceOf(TTF)
     expect(reparsed.sfnt.numGlyphs).toBe(woff.sfnt.numGlyphs)
+    // cmap must resolve through a non-zero table byteOffset (regression guard)
+    expect(reparsed.sfnt.charToGlyph('永').pathCommands.length).toBeGreaterThan(0)
   })
 
   it('TTF -> WOFF -> re-parse preserves glyph count', async () => {
