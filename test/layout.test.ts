@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
-import { FontCollection, parseCollection, parseFont, TTF, WOFF } from '../src'
+import { FontCollection, parseCollection, parseFont, SFNT, TTF, WOFF } from '../src'
 
 async function loadSFNT(path: string) {
   const v = await fs.readFile(path)
@@ -16,6 +16,45 @@ describe('GPOS pair kerning', () => {
     expect(sfnt.getKerningValue(4, 16)).toBe(-32)
     // an un-kerned pair is 0
     expect(sfnt.getKerningValue(0, 0)).toBe(0)
+  })
+})
+
+describe('GSUB ligatures', () => {
+  // Minimal GSUB with a 'liga' feature → one Type 4 lookup mapping [10, 20] -> 99.
+  function buildLigatureGsub(): SFNT {
+    const buf = new ArrayBuffer(62)
+    const dv = new DataView(buf)
+    const u16 = (o: number, v: number) => dv.setUint16(o, v, false)
+    u16(0, 1); u16(2, 0); u16(4, 10); u16(6, 12); u16(8, 26) // header
+    u16(10, 0) // scriptList: scriptCount = 0
+    u16(12, 1) // featureList: featureCount = 1
+    for (let i = 0; i < 4; i++) dv.setUint8(14 + i, 'liga'.charCodeAt(i)) // FeatureRecord tag
+    u16(18, 8) // featureOffset -> 20
+    u16(20, 0); u16(22, 1); u16(24, 0) // Feature: params, lookupIndexCount, indices[0]=0
+    u16(26, 1); u16(28, 4) // LookupList: count, offset[0] -> 30
+    u16(30, 4); u16(32, 0); u16(34, 1); u16(36, 8) // Lookup: type 4, flag, subtableCount, offset -> 38
+    u16(38, 1); u16(40, 8); u16(42, 1); u16(44, 14) // LigatureSubst f1: format, coverage->46, setCount, set->52
+    u16(46, 1); u16(48, 1); u16(50, 10) // Coverage f1: format, glyphCount, glyph[0]=10
+    u16(52, 1); u16(54, 4) // LigatureSet: ligatureCount, offset -> 56
+    u16(56, 99); u16(58, 2); u16(60, 20) // Ligature: glyph=99, componentCount=2, components[0]=20
+    return new SFNT(new Map<any, any>([['GSUB', new DataView(buf)]]))
+  }
+
+  it('parses Type 4 ligature rules and applies them over a glyph run', () => {
+    const sfnt = buildLigatureGsub()
+    expect(sfnt.gsub!.getLigatures('liga').get(10)).toEqual([{ components: [20], ligatureGlyph: 99 }])
+    expect(sfnt.applyLigatures([5, 10, 20, 7], 'liga')).toEqual([5, 99, 7])
+    expect(sfnt.applyLigatures([10, 21], 'liga')).toEqual([10, 21]) // components don't match
+    expect(sfnt.applyLigatures([10], 'liga')).toEqual([10]) // no following component
+  })
+
+  it('reads ligatures from a real font and collapses a known sequence', async () => {
+    const sfnt = await loadSFNT('./test/assets/example.woff')
+    const ligatures = sfnt.gsub!.getLigatures('liga')
+    expect(ligatures.size).toBeGreaterThan(0)
+    const [first, rules] = ligatures.entries().next().value as [number, { components: number[], ligatureGlyph: number }[]]
+    const sequence = [first, ...rules[0].components]
+    expect(sfnt.applyLigatures(sequence, 'liga')).toEqual([rules[0].ligatureGlyph])
   })
 })
 

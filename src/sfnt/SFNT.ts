@@ -140,6 +140,45 @@ export class SFNT {
     return this.gsub?.getSingleSubstitutions(featureTag).get(glyphIndex) ?? glyphIndex
   }
 
+  /**
+   * Apply ligature substitution (GSUB Lookup Type 4) for `featureTag` to a glyph
+   * index run, replacing matched sequences with their ligature glyph. Rules are
+   * tried in table order; the first match at each position wins.
+   */
+  applyLigatures(glyphIndexes: number[], featureTag = 'liga'): number[] {
+    const ligatures = this.gsub?.getLigatures(featureTag)
+    if (!ligatures || !ligatures.size)
+      return glyphIndexes.slice()
+    const out: number[] = []
+    for (let i = 0; i < glyphIndexes.length;) {
+      const rules = ligatures.get(glyphIndexes[i])
+      let matched = false
+      if (rules) {
+        for (const rule of rules) {
+          const n = rule.components.length
+          let ok = true
+          for (let k = 0; k < n; k++) {
+            if (glyphIndexes[i + 1 + k] !== rule.components[k]) {
+              ok = false
+              break
+            }
+          }
+          if (ok) {
+            out.push(rule.ligatureGlyph)
+            i += n + 1
+            matched = true
+            break
+          }
+        }
+      }
+      if (!matched) {
+        out.push(glyphIndexes[i])
+        i++
+      }
+    }
+    return out
+  }
+
   textToGlyphIndexes(text: string): number[] {
     const indexes: number[] = []
     for (const char of text) {
