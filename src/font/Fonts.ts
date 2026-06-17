@@ -38,10 +38,47 @@ export class Fonts {
     cache: 'force-cache',
   }
 
-  fallbackFont?: FontLoadedResult
   loading = new Map<string, FontRequest>()
   loaded = new Map<string, FontLoadedResult>()
   familyToUrl = new Map<string, string>()
+
+  /**
+   * 字体可用通知。加载完成 / 设置兜底字体时触发，携带刚就绪的字体。
+   * 消费方（如渲染层的文字元素）据此在字体到位后重新测量——避免「字体未就绪即测量，glyph 宽度为 0」。
+   */
+  protected _loadListeners = new Set<(font: FontLoadedResult) => void>()
+
+  on(event: 'load', listener: (font: FontLoadedResult) => void): this {
+    if (event === 'load') {
+      this._loadListeners.add(listener)
+    }
+    return this
+  }
+
+  off(event: 'load', listener: (font: FontLoadedResult) => void): this {
+    if (event === 'load') {
+      this._loadListeners.delete(listener)
+    }
+    return this
+  }
+
+  protected _emitLoad(font: FontLoadedResult): void {
+    this._loadListeners.forEach(listener => listener(font))
+  }
+
+  // fallbackFont 做成 setter：无论走 setFallbackFont 还是直接赋值（消费方常这么干），
+  // 兜底字体一就绪就 emit 'load'，让订阅方（渲染层）可靠地在字体到位后重排文字。
+  protected _fallbackFont?: FontLoadedResult
+  get fallbackFont(): FontLoadedResult | undefined {
+    return this._fallbackFont
+  }
+
+  set fallbackFont(font: FontLoadedResult | undefined) {
+    this._fallbackFont = font
+    if (font) {
+      this._emitLoad(font)
+    }
+  }
 
   setFallbackFont(loadedFont: FontLoadedResult): void {
     this.fallbackFont = loadedFont
@@ -215,7 +252,10 @@ export class Fonts {
             }
           }),
         )
-          .then(() => loadedFont)
+          .then(() => {
+            this._emitLoad(loadedFont)
+            return loadedFont
+          })
       })
       .catch((err) => {
         if (err instanceof DOMException) {
