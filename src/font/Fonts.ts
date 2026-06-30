@@ -1,5 +1,6 @@
 import type { SFNT } from '../sfnt'
 import type { Font } from './Font'
+import { base64ToArrayBuffer, EMBEDDED_FALLBACK_FONT_BASE64 } from './fallbackFontData'
 import { parseFont } from './parseFont'
 import { TTF } from './ttf'
 import { WOFF } from './woff'
@@ -84,8 +85,48 @@ export class Fonts {
     this.fallbackFont = loadedFont
   }
 
-  async loadFallbackFont(source: FontSource, options: FontLoadOptions = {}): Promise<void> {
-    this.fallbackFont = await this.load(source, options)
+  /**
+   * 加载兜底字体。
+   *
+   * 传 `source` 时按常规加载该字体作为兜底。
+   *
+   * 不传 `source` 时启用「自动两手兜底」——当应用没有指定兜底字体、又不想随包附带一个
+   * woff 时用：
+   * 1. **Local Font Access API**（`queryLocalFonts`）：拿一个本机系统字体（覆盖最全，含
+   *    CJK）。仅 Chromium / HTTPS 可用，且需用户手势 + 权限，失败则跳到下一步。
+   * 2. **内嵌豆腐字体**：随包附带的 552 字节占位字体，保证任何环境都不会因缺字体而崩。
+   */
+  async loadFallbackFont(source?: FontSource, options: FontLoadOptions = {}): Promise<void> {
+    if (source != null) {
+      this.fallbackFont = await this.load(source, options)
+      return
+    }
+    const system = await this._loadSystemFallbackFont().catch(() => undefined)
+    this.fallbackFont = system ?? this._loadEmbeddedFallbackFont()
+  }
+
+  /** 第一手：经 Local Font Access API 取一个本机系统字体作兜底；不支持/无权限时返回 undefined。 */
+  protected async _loadSystemFallbackFont(): Promise<FontLoadedResult | undefined> {
+    const query = (globalThis as any)?.queryLocalFonts
+    if (typeof query !== 'function') {
+      return undefined
+    }
+    const available: any[] = await query() // 无用户手势 / 拒绝权限会 reject → 由调用方 catch
+    if (!available?.length) {
+      return undefined
+    }
+    // 优先常见的全覆盖西文字体，否则退回第一个。
+    const preferred = ['Arial', 'Helvetica', 'Helvetica Neue', 'Roboto', 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans']
+    const data = available.find(f => preferred.includes(f.family)) ?? available[0]
+    const buffer = await (await data.blob()).arrayBuffer()
+    const family = data.family ?? data.fullName ?? data.postscriptName ?? 'system-fallback'
+    return this._createLoadedFont(`local-font:${family}`, [family], buffer)
+  }
+
+  /** 第二手：随包内嵌的极小豆腐字体（始终可用）。 */
+  protected _loadEmbeddedFallbackFont(): FontLoadedResult {
+    const buffer = base64ToArrayBuffer(EMBEDDED_FALLBACK_FONT_BASE64)
+    return this._createLoadedFont('modern-font:embedded-fallback', ['ModernFallback'], buffer)
   }
 
   protected _createRequest(url: string, requestInit: RequestInit): FontRequest {
@@ -231,7 +272,7 @@ export class Fonts {
           loadedFont = onLoaded(this.loaded.get(src)!)
         }
         else {
-          loadedFont = createLoadedFont(buffer)
+          loadedFont = this._createLoadedFont(src, families, buffer)
           if (!options.noAdd) {
             this.loaded.set(src, loadedFont)
           }
@@ -260,7 +301,7 @@ export class Fonts {
       .catch((err) => {
         if (err instanceof DOMException) {
           if (err.message === 'The user aborted a request.') {
-            return createLoadedFont()
+            return this._createLoadedFont(src, families)
           }
         }
         throw err
@@ -275,30 +316,32 @@ export class Fonts {
       })
       return font
     }
+  }
 
-    function createLoadedFont(buffer = new ArrayBuffer(0)): FontLoadedResult {
-      let font: Font | undefined
-      function getFont(): Font | undefined {
-        if (!font) {
-          font = buffer.byteLength ? parseFont(buffer, false) : undefined
-        }
-        return font
+  /** 把已下载的字体二进制包装成 FontLoadedResult（懒解析 Font / SFNT）。 */
+  protected _createLoadedFont(src: string, families: string[], buffer = new ArrayBuffer(0)): FontLoadedResult {
+    let font: Font | undefined
+    function getFont(): Font | undefined {
+      if (!font) {
+        font = buffer.byteLength ? parseFont(buffer, false) : undefined
       }
-      function getSFNT(): SFNT | undefined {
-        const font = getFont()
-        if (font instanceof TTF || font instanceof WOFF) {
-          return font.sfnt
-        }
-        return undefined
+      return font
+    }
+    function getSFNT(): SFNT | undefined {
+      const font = getFont()
+      // OTF extends TTF，TTC 解析后也得到 TTF/OTF，故 instanceof TTF 已覆盖；WOFF 单列。
+      if (font instanceof TTF || font instanceof WOFF) {
+        return font.sfnt
       }
-      return {
-        src,
-        family,
-        buffer,
-        familySet: new Set(families),
-        getFont,
-        getSFNT,
-      }
+      return undefined
+    }
+    return {
+      src,
+      family: families.length === 1 ? families[0] : families,
+      buffer,
+      familySet: new Set(families),
+      getFont,
+      getSFNT,
     }
   }
 

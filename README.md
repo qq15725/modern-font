@@ -55,6 +55,29 @@ fetch('font.woff')
   })
 ```
 
+## 🅰️ Fallback font
+
+`Fonts` falls back to a designated font whenever a requested family is missing.
+Provide your own, or call `loadFallbackFont()` with no argument to auto-resolve
+one:
+
+```ts
+import { fonts } from 'modern-font'
+
+// explicit fallback
+await fonts.loadFallbackFont('/fallback.woff')
+
+// or auto — two stages:
+//   1. Local Font Access API: a real system font (covers CJK). Chromium + HTTPS
+//      only, and needs a user gesture + permission; on failure it moves on.
+//   2. a tiny built-in placeholder font, so text never breaks for lack of a font.
+await fonts.loadFallbackFont()
+```
+
+The built-in placeholder is a 552-byte `glyf` font (a single `.notdef` tofu
+box) — every character renders as a box. Load the real fonts you actually
+typeset with (especially CJK) on demand as usual.
+
 ## 🚀 WOFF to TTF
 
 ```ts
