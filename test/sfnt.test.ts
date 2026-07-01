@@ -61,3 +61,27 @@ describe('vertical metrics & GSUB substitution', () => {
     expect(sfnt.getSubstituteGlyphIndex(0xFFFE, 'vert')).toBe(0xFFFE)
   })
 })
+
+describe('CFF charset/encoding offset', () => {
+  it('reads a real CFF font charset without going out of bounds', async () => {
+    const sfnt = await loadSFNT('./test/assets/example-cff.woff')
+    expect(sfnt.hasGlyf).toBe(false) // CFF outlines, not glyf
+    // charset sits at a real (non-predefined) offset relative to the CFF table.
+    // Regression: the table's file base was added a second time → seek past the
+    // local view → RangeError. Reading it must now succeed and be correct.
+    expect(() => sfnt.cff.charset).not.toThrow()
+    expect(sfnt.cff.charset[0]).toBe('.notdef')
+    expect(sfnt.cff.charset.length).toBeGreaterThan(1)
+    const idx = sfnt.charToGlyphIndex('A')
+    expect(idx).toBeGreaterThan(0)
+    expect(sfnt.glyphs.get(idx).getPathCommands().length).toBeGreaterThan(0)
+  })
+
+  it('maps a cmap-missing char to .notdef (0), not -1, without crashing', async () => {
+    const sfnt = await loadSFNT('./test/assets/example-cff.woff')
+    // A private-use char misses cmap → CFF charset/encoding fallback: the path
+    // that used to throw (OOB), then returned -1 (charset.indexOf miss). Must be 0.
+    expect(() => sfnt.textToGlyphIndexes('\uE000')).not.toThrow()
+    expect(sfnt.charToGlyphIndex('\uE000')).toBe(0)
+  })
+})
