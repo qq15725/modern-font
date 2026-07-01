@@ -94,8 +94,11 @@ export class Cff extends SFNTTable {
       this.charset = cffExpertSubsetStrings
     }
     else {
+      // this.view 已是 CFF 表的局部 DataView（坐标系相对 CFF 表起始），topDict.charset
+      // 也是相对 CFF 表的偏移，直接传即可——不能再加表基址 offset，否则 seek 会落到
+      // view 之外越界。（上面 charStrings/private 等用的是整个 buffer + 绝对偏移，那是对的。）
       this.charset = this._readCharset(
-        offset + this.topDict.charset,
+        this.topDict.charset,
         nGlyphs,
         this.stringIndex.objects,
       )
@@ -107,7 +110,8 @@ export class Cff extends SFNTTable {
       this.encoding = cffExpertEncoding
     }
     else {
-      this.encoding = this._readEncoding(offset + this.topDict.encoding) as any
+      // 同 charset：encoding 偏移也相对 CFF 表，_readEncoding 用 this.view 相对读，不加 offset。
+      this.encoding = this._readEncoding(this.topDict.encoding) as any
     }
   }
 
