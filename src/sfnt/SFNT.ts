@@ -121,7 +121,10 @@ export class SFNT {
     let index = this.cmap.unicodeToGlyphIndexMap.get(char.codePointAt(0)!)
     if (index === undefined && !this.hasGlyf) {
       const { encoding, charset } = this.cff
-      index = charset.indexOf(encoding[char.codePointAt(0)!])
+      // charset.indexOf 未命中返回 -1，而下面 `?? 0` 只兜 undefined、不兜 -1，
+      // 缺字会漏成 -1（非法字形索引）。这里归一到 undefined，让缺字落到 .notdef(0)。
+      const gid = charset.indexOf(encoding[char.codePointAt(0)!])
+      index = gid >= 0 ? gid : undefined
     }
     return index ?? 0
   }
