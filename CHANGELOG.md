@@ -1,3 +1,15 @@
+## [0.6.2](https://github.com/qq15725/modern-font/compare/v0.6.1...v0.6.2) (2026-07-01)
+
+
+### Bug Fixes
+
+* correct CFF charset/encoding out-of-bounds read ([bc206bb](https://github.com/qq15725/modern-font/commit/bc206bbed479df23b4d76676af5cf150ef3c7a82))
+* map a cmap-missing CFF glyph to .notdef instead of -1 ([766dc60](https://github.com/qq15725/modern-font/commit/766dc60609e93ac51b14f758c9b03a9104819384))
+
+
+### Features
+
+* auto-resolve fallback font when none is provided ([490c363](https://github.com/qq15725/modern-font/commit/490c363839c34986f20180a4183e0c651edd572b))
 ## [0.6.1](https://github.com/qq15725/modern-font/compare/v0.6.0...v0.6.1) (2026-06-17)
 # [0.6.0](https://github.com/qq15725/modern-font/compare/v0.5.0...v0.6.0) (2026-05-23)
 
